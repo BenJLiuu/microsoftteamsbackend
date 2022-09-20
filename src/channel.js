@@ -13,3 +13,13 @@ function channelMessagesV1(authUserId, channelId, start) {
     end: 50,
   }
 }
+
+// Sends a user specific invite to a given channel 
+function channelInviteV1(authUserId, channelId, uId) {
+  return {}
+}
+
+// Allows users to join a channel after recieving an invite
+function channelJoinV1(authUserId, channelId) {
+  return {}
+}
