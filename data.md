@@ -9,7 +9,7 @@ let data = {
       handleStr: 'mitchellgayfer',
       passwordHash: 0x5AF3d6,
     }
-],
+  ],
 
   Channels: [
     {
