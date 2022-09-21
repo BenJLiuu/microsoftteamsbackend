@@ -19,7 +19,3 @@ function channelInviteV1(authUserId, channelId, uId) {
   return {}
 }
 
-// Allows users to join a channel after recieving an invite
-function channelJoinV1(authUserId, channelId) {
-  return {}
-}
