@@ -13,3 +13,9 @@ function channelMessagesV1(authUserId, channelId, start) {
     end: 50,
   }
 }
+
+// Sends a user specific invite to a given channel 
+function channelInviteV1(authUserId, channelId, uId) {
+  return {}
+}
+
