@@ -43,3 +43,8 @@ function channelDetailsV1() {
     ],
   }
 }
+
+// Allows user to join channel given a UserId
+function channelJoinV1(authUserId,channelId) {
+  return {}
+}
