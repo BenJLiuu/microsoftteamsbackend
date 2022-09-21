@@ -6,3 +6,10 @@ function authLoginV1(email, password) {
   }
 }
   
+// Authorises registration given registration details
+// Return User ID on success
+function authRegisterV1(email, password, nameFirst, nameLast) {
+  return {
+    authUserId: 1,
+  }
+}
