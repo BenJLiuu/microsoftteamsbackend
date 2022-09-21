@@ -1,3 +1,12 @@
+//Lists all channels according to authUserId
+function channelsListAllV1 (authUserId) {
+  channels: [
+    {
+      channelId: 1,
+      name: 'My Channel',
+    }
+  ],
+}
 //Lists channels according to authUserID
 function channelsListV1(authUserId) {
   channels: [
@@ -6,6 +15,8 @@ function channelsListV1(authUserId) {
       name: 'My Channel',
     }
   ],
+}
+
 
 }
 
@@ -17,4 +28,3 @@ function channelsCreateV1(authUserId, name, isPublic ) {
         channelId: 1,
     }
 }
-
