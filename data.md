@@ -1,6 +1,6 @@
 ```javascript
 let data = {
-  Users: [ 
+  users: [ 
     {
       uId: 1,
       nameFirst: 'Mitchell',
@@ -11,7 +11,7 @@ let data = {
     }
   ],
 
-  Channels: [
+  channels: [
     {
       channelId: 1,
       name: 'myChannel',
