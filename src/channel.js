@@ -19,6 +19,31 @@ function channelInviteV1(authUserId, channelId, uId) {
   return {}
 }
 
+// Provides the details of the owner and members of a given channel
+function channelDetailsV1() {
+  return {
+	  name: 'Hayden',
+	  ownerMembers: [
+      {
+        uId: 1,
+        email: 'example@gmail.com',
+        nameFirst: 'Hayden',
+        nameLast: 'Jacobs',
+        handleStr: 'haydenjacobs',
+      }
+    ],
+    allMembers: [
+      {
+        uId: 1,
+        email: 'example@gmail.com',
+        nameFirst: 'Hayden',
+        nameLast: 'Jacobs',
+        handleStr: 'haydenjacobs',
+      }
+    ],
+  }
+}
+
 // Allows user to join channel given a UserId
 function channelJoinV1(authUserId,channelId) {
   return {}
