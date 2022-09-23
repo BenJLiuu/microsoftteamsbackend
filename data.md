@@ -13,19 +13,19 @@ let data = {
 
   channels: [
     {
-      channelId: 2,
+      channelId: 20,
       name: 'myChannel',
       isPublic: true,
-      ownerMembers: ['mitchell', 'joe'],
-      allMembers: ['mitchell', 'joe', 'john', 'jack']
+      ownerMembers: [1, 2, 3],
+      allMembers: [1, 2, 3, 4, 5, 6, 7]
     }
   ],
 
   messages: [
     {
-      messageId: 3,
+      messageId: 300,
       uId: 1,
-      channelId: 2,
+      channelId: 20,
       message: 'hello world!',
       timeSent: 100000000
     }
