@@ -26,7 +26,7 @@ let data = {
       messageId: 3,
       uId: 1,
       channelId: 2,
-      messageStr: 'hello world!',
+      message: 'hello world!',
       timeSent: 100000000
     }
   ],
