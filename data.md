@@ -38,4 +38,4 @@ The example object in the 'users' array contains a uId, first and last names, em
 
 The example object in the 'channels' array contains a channel Id and a name for the channel. We have also added an isPublic field containing a boolean showing whether or not the channel is public. Moreover, arrays containing the members with owner privileges and all members have also been added.
 
-The example object in the 'messages' array contains the message's Id, the Id of the user that sent it, a string that contains the contents of the messages and its sent time. Furthermore, the Id of the channel the message has been sent to
+The example object in the 'messages' array contains the message's Id, the Id of the user that sent it, a string that contains the contents of the messages and its sent time. Furthermore, the Id of the channel the message has been sent to has also been included.
