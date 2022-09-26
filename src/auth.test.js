@@ -13,6 +13,6 @@ test('Test successful echo', () => {
 test('Test invalid echo', () => {
   const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
   const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-  expect(authLoginV1('johnS@email.com', 'wrongpassword')).toStrictEqual({ error: 'error' });
-  expect(authLoginV1('not@person.co', 'abc123')).toStrictEqual({ error: 'error' });
+  expect(authLoginV1('johnS@email.com', 'wrongpassword')).toStrictEqual({ error: 'Incorrect Password.' });
+  expect(authLoginV1('not@person.co', 'abc123')).toStrictEqual({ error: 'Username Not Found.' });
 });
