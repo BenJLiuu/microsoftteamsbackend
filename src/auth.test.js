@@ -1,6 +1,6 @@
 import { authLoginV1, authRegisterV1 } from './auth';
 
-test('Test successful echo', () => {
+test('Test successful login', () => {
   const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
   const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
   expect(authLoginV1('johnS@email.com', 'passJohn').authUserId === user1.authUserId);
@@ -10,7 +10,7 @@ test('Test successful echo', () => {
   
 });
 
-test('Test invalid echo', () => {
+test('Test invalid login', () => {
   const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
   const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
   expect(authLoginV1('johnS@email.com', 'wrongpassword')).toStrictEqual({ error: 'Incorrect Password.' });
