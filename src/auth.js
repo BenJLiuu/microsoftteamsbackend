@@ -1,6 +1,18 @@
 import { getData } from './dataStore'
-// Authorises a login given login details
-// Returns the User Id on a success.
+
+
+/**
+  * Logs in a user and returns their user Id.
+  * 
+  * @param {string} email - the users' email
+  * @param {string} password - the users' password, unencrypted
+  * ...
+  * 
+  * @returns {authUserId : integer} - If login is successful
+  * @returns {error : 'Incorrect Password.'} - If email is found, but password is incorrect
+  * @returns {error : 'Email Not Found.'} - If email was not found.
+*/
+
 function authLoginV1(email, password) {
   const data = getData();
   for (const user of data.users) {
@@ -22,7 +34,7 @@ function authLoginV1(email, password) {
   }
   // If nothing has been returned, user has not been found.
   return {
-    error: 'Username Not Found.' 
+    error: 'Email Not Found.' 
   }
 }
   
