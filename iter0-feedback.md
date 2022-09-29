@@ -68,6 +68,8 @@ General Iteration 1 tips:
   * (presumably) the creator is most familiar with the changes and knows best when they're ready to be merged in, and
   * the merge commit will be attributed to them.
 
+* Note that the "will I remember what this is if I look at this in 3 months' time?" principle also applies to your MR titles. Also, remember to always chuck in a brief description of what you've changed and why, especially if the MR contains non-trivial changes (which you have been doing already because you are awesome).
+
 * Earlier branch names did not always contain the name of whoever was working on the task, and the branch-naming format varied a lot across the team. Your recent branches look great though!
 * Although "in the real world" it's normal practice to delete merged branches, it does help with marking if you do not delete them, at least until you get your iteration grades back.
 
