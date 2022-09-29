@@ -131,7 +131,7 @@ function authRegisterV1(email, password, nameFirst, nameLast) {
   setData(data);
   
   return {
-    authUserId: newUId
+    authUserId: data.users[data.users.length - 1].uId
   }
 }
 
