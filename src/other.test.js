@@ -1,9 +1,13 @@
-import { clearV1 } from './other'
-import { authRegisterV1 } from './auth';
-import { channelsCreateV1, channelsListAllV1 } from './channels'
-import { channelDetailsV1, channelJoinV1, channelMessagesV1 } from './channel'
+import { clearV1 } from './other.js'
+import { authRegisterV1 } from './auth.js';
+import { channelsCreateV1, channelsListAllV1 } from './channels.js'
+import { channelDetailsV1, channelJoinV1, channelMessagesV1 } from './channel.js'
 
 describe('Test clearV1 ', () => {
+  beforeEach(() => {
+    clearV1();
+  });
+
   test('authLogin error, user data cleared', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');

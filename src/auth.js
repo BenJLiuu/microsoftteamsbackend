@@ -1,4 +1,4 @@
-import { getData } from './dataStore'
+import { getData } from './dataStore.js'
 
 
 /**
