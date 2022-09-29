@@ -8,7 +8,7 @@ import { clearV1 } from './other';
     });
     
     test('Test only email already in use', () => {
-      const user1 = authRegisterV1('Ben10@gmail.com', 'password', 'Ben', 'Ten'));
+      const user1 = authRegisterV1('Ben10@gmail.com', 'password', 'Ben', 'Ten');
       expect(authRegisterV1('Ben10@gmail.com', 'pass123', 'Bob', 'Smith')).toEqual({ error: 'Email Already in Use.' });
       });
       
