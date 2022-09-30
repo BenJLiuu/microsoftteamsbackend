@@ -108,7 +108,7 @@ function authRegisterV1(email, password, nameFirst, nameLast) {
   for (const user of data.users) {
     if (handleString === user.handleStr) {
       i = 0;
-    } else if ((handleString === user.handleStr.substring(0,handleString.length) === true) && (isNumber(user.handleStr[user.handleStr.length - 1]))) {
+    } else if ((handleString === user.handleStr.substring(0,handleString.length) === true) && (isNumber(user.handleStr[user.handleStr.length - 1]) === true)) {
       i++;
     }
   }
