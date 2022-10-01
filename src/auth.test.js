@@ -1,5 +1,44 @@
-import { authLoginV1, authRegisterV1 } from './auth';
-import { clearV1 } from './other'
+import { authLoginV1, authRegisterV1 } from './auth.js';
+import { clearV1 } from './other.js';
+// authRegisterV1 tests
+
+// Error tests.
+  test('Test only invalid email', () => {
+    expect(authRegisterV1('@bob@.org.org', 'pass123', 'Bob', 'Smith')).toStrictEqual({ error: 'Invalid Email Address.' });
+    });
+    
+    test('Test only email already in use', () => {
+      const user1 = authRegisterV1('Ben10@gmail.com', 'password', 'Ben', 'Ten');
+      expect(authRegisterV1('Ben10@gmail.com', 'pass123', 'Bob', 'Smith')).toStrictEqual({ error: 'Email Already in Use.' });
+      });
+      
+    test('Test only password too short', () => {
+      expect(authRegisterV1('bobsmith@gmail.com', 'abc3', 'Bob', 'Smith')).toStrictEqual({ error: 'Password too Short.' });
+      });
+      
+    test('Test only first name too long', () => {
+      expect(authRegisterV1('bobsmith@gmail.com', 'pass123', 'Bobbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'Smith')).toStrictEqual({ error: 'Invalid First Name.' });
+      });
+      
+    test('Test only first name too short', () => {
+      expect(authRegisterV1('bobsmith@gmail.com', 'pass123', '', 'Smith')).toStrictEqual({ error: 'Invalid First Name.' });
+      });
+      
+    test('Test only last name too long', () => {
+      expect(authRegisterV1('bobsmith@gmail.com', 'pass123', 'Bob', 'Smithhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')).toStrictEqual({ error: 'Invalid Last Name.' });
+      });
+      
+    test('Test only last name too short', () => {
+      expect(authRegisterV1('bobsmith@gmail.com', 'pass123', 'Bob', '')).toStrictEqual({ error: 'Invalid Last Name.' });
+      });
+
+// Successful Registration tests
+
+    test('Successful Registration', () => {
+      expect(authRegisterV1('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate')).toEqual({ authUserId: expect.any(Number) });
+    });
+    
+// authLoginV1 tests
 
 describe('Test authLoginV1 ', () => {
   beforeEach(() => {
@@ -36,3 +75,4 @@ describe('Test authLoginV1 ', () => {
     expect(authLoginV1('', '')).toStrictEqual({ error: 'Username Not Found.' });
   });
 });
+
