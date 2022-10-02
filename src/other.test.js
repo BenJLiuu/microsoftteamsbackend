@@ -5,10 +5,10 @@ import { channelDetailsV1, channelJoinV1, channelMessagesV1 } from './channel.js
 
 describe('Test clearV1 ', () => {
   beforeEach(() => {
+    clearV1();
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user3 = authRegisterV1('jamieS@later.co', '&##@P', 'Jamie', 'Son');
-    clearV1();
   });
 
   test('authLogin error, user data cleared', () => {
