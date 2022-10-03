@@ -4,11 +4,17 @@ import { getData, setData } from './dataStore.js'
 function clearV1 () {
   const data = getData();
 
-  // Iterates through data, removing all properties within the object.
-  for (const key in data) {
-    delete data[key];
+  // Iterates through users, removing all properties within the object.
+  for (const key in data.users) {
+    delete data.users[key];
+  }
+
+  for (const key in data.channels) {
+    delete data.channels[key];
   }
 
   setData(data);
   return;
 }
+
+export { clearV1 }
