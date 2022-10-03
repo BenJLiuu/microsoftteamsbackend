@@ -18,7 +18,7 @@ describe('Test validUserId ', () => {
 
   test('fails with invalid user', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    expect(validUserId(user1.uId + 1)).toBe(true);
+    expect(validUserId(user1.uId + 1)).toBe(false);
   });
 
   test('has valid user with multiple users', () => {

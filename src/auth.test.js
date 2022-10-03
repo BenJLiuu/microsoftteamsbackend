@@ -65,21 +65,21 @@ describe('Test authLoginV1 ', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     expect(authLoginV1('johnS@email.com', 'wrongpassword')).toStrictEqual({ error: 'Incorrect Password.' });
-    expect(authLoginV1('not@person.co', 'abc123')).toStrictEqual({ error: 'Username Not Found.' });
+    expect(authLoginV1('not@person.co', 'abc123')).toStrictEqual({ error: 'Email Not Found.' });
   });
 
   test('Invalid email', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(authLoginV1('not@person.co', 'abc123')).toStrictEqual({ error: 'Username Not Found.' });
+    expect(authLoginV1('not@person.co', 'abc123')).toStrictEqual({ error: 'Email Not Found.' });
   });
 
   test('No users login', () => {
-    expect(authLoginV1('not@person.co', 'abc123')).toStrictEqual({ error: 'Username Not Found.' });
+    expect(authLoginV1('not@person.co', 'abc123')).toStrictEqual({ error: 'Email Not Found.' });
   });
 
   test('Empty string login', () => {
-    expect(authLoginV1('', '')).toStrictEqual({ error: 'Username Not Found.' });
+    expect(authLoginV1('', '')).toStrictEqual({ error: 'Email Not Found.' });
   });
 });
 
