@@ -125,8 +125,7 @@ function authRegisterV1(email, password, nameFirst, nameLast) {
     email: email,
     handleStr: handleString,
     passwordHash: password
-  }
-  
+  };
   data.users.push(newUser);
   setData(data);
   
