@@ -96,6 +96,12 @@ function authRegisterV1(email, password, nameFirst, nameLast) {
   }
   
   let newUId = new Date().getTime();
+  for (const user of data.users) {
+    if (newUId === user.uId) {
+      newUId = newUId + Math.floor(Math.random() * (1000 - 1 + 1)) + 1;
+    }
+  }
+  
   let handleString = nameFirst + nameLast;
   handleString = handleString.toLowerCase();
   handleString = handleString.replace(/[^a-z0-9]/gi, '');
@@ -104,18 +110,24 @@ function authRegisterV1(email, password, nameFirst, nameLast) {
   }
   
   let i = 0;
+  let doesNotExist = false;
   
   for (const user of data.users) {
     if (handleString === user.handleStr) {
       i = 0;
     } else if ((handleString === user.handleStr.substring(0,handleString.length) === true) && (isNumber(user.handleStr[user.handleStr.length - 1]) === true)) {
       i++;
+    } else {
+      doesNotExist = true;
     }
   }
-  if (i == 0) {
+  
+  if (i === 0 && doesNotExist === true) {
+    handleString = handleString;
+  } else if (i === 0) {
     handleString += '0';
   } else if (i > 0) {
-    handleString += (i + 1);
+    handleString += i;
   }
   
   const newUser = {
