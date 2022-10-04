@@ -1,5 +1,5 @@
 import { authLoginV1, authRegisterV1 } from './auth.js';
-import { channelsCreateV1, channelsListAllV1 } from './channels.js'; 
+import { channelsCreateV1, channelsListAllV1, channelsListV1 } from './channels.js'; 
 import { channelDetailsV1, channelJoinV1 } from './channel.js'; 
 import { clearV1 } from './other.js';
 
@@ -82,7 +82,6 @@ describe('Test channelsListAllv1 ', () => {
   beforeEach(() => {
     clearV1();
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    clearV1();
   });
   
   test('one public channel list', () => {
@@ -127,6 +126,50 @@ describe('Test channelsListAllv1 ', () => {
     const user2 = authRegisterV1('aliceP@email.com', 'alice123', 'Alice', 'Person');
     const channel1 = channelsCreateV1(user1.authUserId, 'general', true);
     expect(channelsListAllV1(user2)).toStrictEqual({
+      error: "Invalid user permissions."
+    });
+  });
+});
+
+// channelsListV1 tests
+describe('Test channelsListAllv1 ', () => {
+  beforeEach(() => {
+    clearV1();
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = authRegisterV1('aliceP@email.com', 'alice123', 'Alice', 'Person');
+  });
+  
+  test('one joined public channel list', () => {
+    const channel1 = channelsCreateV1(user1.authUserId, 'general', true);
+    const channel2 = channelsCreateV1(user2.authUserId, 'private', false);
+    const user_channels_details = channelsListV1(user1);
+    expect(user_channels_details).toStrictEqual({
+      channelId: channel1,
+      name: 'general'
+    });
+  });
+
+  test('one joined private channel list', () => {
+    const channel1 = channelsCreateV1(user2.authUserId, 'secret', false);
+    const channel2 = channelsCreateV1(user1.authUserId, 'private', false);
+    const user_channels_details = channelsListV1(user1);
+    expect(user_channels_details).toStrictEqual({
+      channelId: channel2,
+      name: 'private'
+    });
+  });
+
+  test('listing no channels', () => {
+    const channel1 = channelsCreateV1(user2.authUserId, 'lounge', true);
+    const user_channels_details = channelsListV1(user1);
+    expect(user_channels_details).toStrictEqual({});
+  });
+
+  test('invalid authuserid', () => {
+    const user2 = authRegisterV1('aliceP@email.com', 'alice123', 'Alice', 'Person');
+    const channel1 = channelsCreateV1(user2.authUserId, 'general', true);
+    channelJoinV1(user1, channel1);
+    expect(channelsListV1(user1)).toStrictEqual({
       error: "Invalid user permissions."
     });
   });
