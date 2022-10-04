@@ -30,3 +30,56 @@ describe('Test validUserId ', () => {
     expect(validUserId(user3.uId)).toBe(true);
   });
 });
+
+describe ('userProfileV1', () => {
+  beforeEach(() => {
+    clearV1();
+  });
+  
+  test('authUserId is invalid', () => {
+    const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(userProfile(user1.authUserId, user2.uId)).toStrictEqual({error: 'authUserId is invalid.'});
+  });
+
+  test('uId does not refer to a valid user', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    expect(userProfile(user1.authUserId, user2.uId)).toStrictEqual({error: 'uId does not refer to a valid user.'});
+  })
+
+  test('Returns user object for a valid user', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(userProfile(user1.authUserId, user2.uId)).toStrictEqual([
+      {
+        uId: user2.authUserId,
+        nameFirst: 'Alice',
+        nameLast: 'Person',
+        email: 'aliceP@fmail.au',
+        handleStr: 'aliceperson',
+      },
+    ]);
+  });
+
+  test('Returns user object for multiple valid users', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(userProfile(user1.authUserId, user2.authUserId)).toStrictEqual([
+      {
+        uId: user2.authUserId,
+        nameFirst: 'Alice',
+        nameLast: 'Person',
+        email: 'aliceP@fmail.au',
+        handleStr: 'aliceperson',
+      },
+    ]);
+    expect(userProfile(user2.authUserId, user1.authUserId)).toStrictEqual([
+      {
+        uId: user1.authUserId,
+        nameFirst: 'John',
+        nameLast: 'Smith',
+        email: 'johnS@email.com',
+        handleStr: 'johnsmith',
+      },
+    ]);
+  });
+});
