@@ -95,7 +95,7 @@ function authRegisterV1(email, password, nameFirst, nameLast) {
     }
   }
   
-  let newUId = new Date().getTime();
+  let newUId = Math.floor(Math.random() * 899999 + 100000);
   let handleString = nameFirst + nameLast;
   handleString = handleString.toLowerCase();
   handleString = handleString.replace(/[^a-z0-9]/gi, '');
@@ -125,7 +125,8 @@ function authRegisterV1(email, password, nameFirst, nameLast) {
     email: email,
     handleStr: handleString,
     passwordHash: password
-  };
+  }
+  
   data.users.push(newUser);
   setData(data);
   
