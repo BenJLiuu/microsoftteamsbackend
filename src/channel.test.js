@@ -1,4 +1,5 @@
 import { channelInviteV1, channelDetailsV1, channelJoinV1 } from './channel.js';
+import { channelsCreateV1 } from './channels.js';
 import { clearV1 } from './other.js';
 
 // channelInviteV1 tests
@@ -31,7 +32,7 @@ describe('Test channelInviteV1', () => {
   });
     
   test('Test only invalid authorised user Id', () => {
-    expect(channelInviteV1('test', channel1, user2)).toStrictEqual({ error: 'Authorised User is not a member.' });
+    expect(channelInviteV1('test', channel1, user2)).toStrictEqual({ error: 'Invalid Authorised User Id.' });
   });
     
 
