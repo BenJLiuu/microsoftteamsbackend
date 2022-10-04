@@ -1,3 +1,6 @@
+import { getData, setData } from './dataStore.js';
+import { validUserId, validChannelId } from './users.js';
+
 // Sends a message from a user to a given channel, recording time sent.
 function channelMessagesV1(authUserId, channelId, start) {
   return {
@@ -16,7 +19,42 @@ function channelMessagesV1(authUserId, channelId, start) {
 
 // Sends a user specific invite to a given channel 
 function channelInviteV1(authUserId, channelId, uId) {
-  return {}
+
+  if (!validChannelId(channelId)) {
+    return {
+      error: 'Invalid Channel Id.'
+    }
+  } 
+  if (!validUserId(uId)) {
+    return {
+      error: 'Invalid User Id.'
+    }
+  } 
+  if (!validUserId(authUserId)) {
+    return {
+      error: 'Invalid Authorised User Id.'
+    }
+  } 
+  if (checkUserIdtoChannel(uId, channelId)) {
+    return {
+      error: 'User is already a member.'
+    }
+  } 
+  if (!checkUserIdtoChannel(authUserId, channelId)) {
+    return {
+      error: 'Authorised User is not a member.'
+    }
+  } 
+    
+  const data = getData();
+  let position = 0;
+  for (let i = 0; i < data.channels.length; i++) {
+    if (data.channels[i].channelId === channelId) {
+        position = i;
+    }
+  }
+  data.channels[i].allMembers.push(uId);
+  setData(data);
 }
 
 // Provides the details of the owner and members of a given channel
