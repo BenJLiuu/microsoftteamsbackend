@@ -9,24 +9,27 @@ export function channelMessagesV1(authUserId, channelId, start) {
   const index = data.channels.findIndex(channel => channel.channelId === channelId);
   if (start > data.channels[index].messages.length) return { error: 'Start is greater than total messages'};
 
-  // This error is waiting on channel create fix.
-  /*if (Boolean(data.channels[index].allMembers.some(users => users.uId === authUserId)) === false) return {
+  if (Boolean(data.channels[index].allMembers.some(users => users.uId === authUserId)) === false) return {
     error: 'Authorised user is not a channel member'
-  }*/
+  }
 
-  const end = 0;
+  var end = 0;
   if (data.channels[index].messages.length + start > 50) {
     end = start + 50;
   } else {
-    end = data.channels[index].messages.length;
+    if (data.channels[index].messages.length !== 0) {
+      end -= 1;
+    }
   }
-
-  var endTracker = 0;
 
   const messagesArray = new Array();
   for (let i = start; i < end - start; i++) {
     messagesArray.push(data.channels[index].messages[i]);
   }
+
+  messagesArray.sort(function(a,b){
+    return new Date(a.timeSent) - new Date(b.timeSent);
+  });
 
   const returnedMessages = {
     messages: messagesArray,
@@ -34,10 +37,10 @@ export function channelMessagesV1(authUserId, channelId, start) {
     end: end,
   }
 
-  return { returnedMessages };
+  return returnedMessages;
 }
 
-export function channelSendMessageV1 (authUserId, channelId, message) {
+/*export function channelSendMessageV1 (authUserId, channelId, message) {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' }
   if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
 
@@ -55,8 +58,8 @@ export function channelSendMessageV1 (authUserId, channelId, message) {
 
   data.channels[index].messages.push(newMessage);
   setData(data);
-  return { message: messageId };
-}
+  return { messageId: messageId };
+}*/
 
 // Sends a user specific invite to a given channel 
 export function channelInviteV1(authUserId, channelId, uId) {

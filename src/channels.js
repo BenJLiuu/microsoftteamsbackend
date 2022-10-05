@@ -35,19 +35,30 @@ function channelsCreateV1(authUserId, name, isPublic ) {
   if (name.length < 1 || name.length > 20) return {
     error: "Channel name must be between 1-20 characters.",
   };
+
   const data = getData();
-  const newChannelId = new Date().getTime();
-  let channel = {
+  const newChannelId = Math.floor(Math.random() * 899999 + 100000);
+
+  const newChannel = {
     channelId: newChannelId,
     name: name,
     isPublic: isPublic,
-    ownerMembers: [authUserId],
-    allMembers: [authUserId],
+    ownerMembers: [],
+    allMembers: [],
+    messages: [],
   };
-  data.channels.push(channel);
+
+  data.channels.push(newChannel);
+  const index1 = data.users.findIndex(user => user.uId === authUserId);
+  const index2 = data.channels.findIndex(channel => channel.channelId === newChannelId);
+  data.channels[index2].ownerMembers.push(data.users[index1]);
+  data.channels[index2].allMembers.push(data.users[index1]);
+
   setData(data);
 
-  return { channelId: channel.channelId };
+  console.log(newChannel);
+
+  return { channelId: newChannel.channelId };
 }
 
 export { channelsCreateV1 };
