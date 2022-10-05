@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore.js';
-import { validUserId, validChannelId } from './users.js';
+import { validUserId, validChannelId, checkUserIdtoChannel } from './users.js';
 
 // Sends a message from a user to a given channel, recording time sent.
 export function channelMessagesV1(authUserId, channelId, start) {
@@ -133,26 +133,39 @@ export function channelJoinV1(authUserId,channelId) {
 
   const data = getData();
   
-  if (!validChannelId(channelId)) return {
-    error: 'Invalid Channel Id.',
-    };
-    
-  if (checkUserIdToChannel(authUserId, channelId) === true) return {
-    error: 'User is already a member.',
-    };
+  let i = 0;
+  for (const chann of data.channels) {
+    if (channelId === chann.channelId) {
+      i++;
+    }
+  }
+  if (i === 0) {
+    return {
+      error: 'Invalid Channel Id.'
+    }
+  }
   
-  let index = data.channels.map(object => object.channelId).indexOf(channelId);
-  if ((data.channels[index].isPublic === false) && (data.channels[index].allMembers.includes(authUserId) === false) && (data.users[0].uId !== authUserId)) {
+  if (!validUserId(authUserId)) {
+    return {
+      error: 'Invalid User Id.'
+    }
+  }
+  
+  const index = data.channels.map(object => object.channelId).indexOf(channelId);
+  if (data.channels[index].allMembers.includes(authUserId) === true) {
+    return {
+      error: 'You are already a member.'
+    }
+  }
+  
+  if (data.channels[index].isPublic === false && data.channels[index].allMembers.includes(authUserId) === false && data.users[0].uId !== authUserId) {
     return {
       error: 'You do not have access to this channel.'
     }
   }
-    
-  if (!validUserId(authUserId)) return {
-    error: 'Invalid User Id.'
-    }
-    
-  data.channels[index].allMembers.push(authUserId);
-    
+  
+  data.channels[index].allMembers.push(authUserId)
+  setData(data);
+  
   return {};
 }
