@@ -2,7 +2,7 @@ import { getData, setData } from './dataStore.js';
 import { validUserId, validChannelId } from './users.js';
 
 // Sends a message from a user to a given channel, recording time sent.
-function channelMessagesV1(authUserId, channelId, start) {
+export function channelMessagesV1(authUserId, channelId, start) {
   return {
     messages: [
       {
@@ -18,7 +18,7 @@ function channelMessagesV1(authUserId, channelId, start) {
 }
 
 // Sends a user specific invite to a given channel 
-function channelInviteV1(authUserId, channelId, uId) {
+export function channelInviteV1(authUserId, channelId, uId) {
 
   if (!validChannelId(channelId)) {
     return {
@@ -58,7 +58,7 @@ function channelInviteV1(authUserId, channelId, uId) {
 }
 
 // Provides the details of the owner and members of a given channel
-function channelDetailsV1() {
+export function channelDetailsV1() {
   return {
 	  name: 'Hayden',
 	  ownerMembers: [

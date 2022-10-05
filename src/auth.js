@@ -95,6 +95,7 @@ function authRegisterV1(email, password, nameFirst, nameLast) {
     }
   }
   
+
   let newUId = new Date().getTime();
   for (const user of data.users) {
     if (newUId === user.uId) {
@@ -110,16 +111,15 @@ function authRegisterV1(email, password, nameFirst, nameLast) {
   }
   
   let i = 0;
-  let doesNotExist = false;
+  let doesNotExist = true;
   
   for (const user of data.users) {
     if (handleString === user.handleStr) {
       i = 0;
+      doesNotExist = false;
     } else if ((handleString === user.handleStr.substring(0,handleString.length) === true) && (isNumber(user.handleStr[user.handleStr.length - 1]) === true)) {
       i++;
-    } else {
-      doesNotExist = true;
-    }
+    } 
   }
   
   if (i === 0 && doesNotExist === true) {
@@ -137,7 +137,8 @@ function authRegisterV1(email, password, nameFirst, nameLast) {
     email: email,
     handleStr: handleString,
     passwordHash: password
-  };
+  }
+  
   data.users.push(newUser);
   setData(data);
   
