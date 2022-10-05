@@ -3,7 +3,7 @@ import { channelsCreateV1, channelsListAllV1, channelsListV1 } from './channels.
 import { channelDetailsV1, channelJoinV1 } from './channel.js'; 
 import { clearV1 } from './other.js';
 
-// channelsCreateV1 tests
+/* channelsCreateV1 tests
 
 describe('Test channelsCreateV1 ', () => {
   beforeEach(() => {
@@ -76,15 +76,17 @@ describe('Test channelsCreateV1 ', () => {
   });
 
 });
+*/
 
 // channelsListAllv1 testing
 describe('Test channelsListAllv1 ', () => {
   beforeEach(() => {
     clearV1();
-    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    
   });
   
   test('one public channel list', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = channelsCreateV1(user1.authUserId, 'general', true);
     const all_channels_details = channelsListAllV1(user1);
     expect(all_channels_details).toStrictEqual({
@@ -94,6 +96,7 @@ describe('Test channelsListAllv1 ', () => {
   });
 
   test('one private channel list', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = channelsCreateV1(user1.authUserId, 'private', false);
     const all_channels_details = channelsListAllV1(user1);
     expect(all_channels_details).toStrictEqual({
@@ -103,6 +106,7 @@ describe('Test channelsListAllv1 ', () => {
   });
 
   test('three channel list', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = channelsCreateV1(user1.authUserId, 'general', true);
     const channel2 = channelsCreateV1(user1.authUserId, 'private', false);
     const channel3 = channelsCreateV1(user1.authUserId, 'Lounge', true);
@@ -118,15 +122,17 @@ describe('Test channelsListAllv1 ', () => {
   });
 
   test('listing no channels', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const all_channels_details = channelsListAllV1(user1);
     expect(all_channels_details).toStrictEqual({});
   });
 
   test('invalid authuserid', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = authRegisterV1('aliceP@email.com', 'alice123', 'Alice', 'Person');
     const channel1 = channelsCreateV1(user1.authUserId, 'general', true);
     expect(channelsListAllV1(user2)).toStrictEqual({
-      error: "Invalid user permissions."
+      error: 'Invalid Authorised User Id.'
     });
   });
 });
@@ -135,11 +141,11 @@ describe('Test channelsListAllv1 ', () => {
 describe('Test channelsListAllv1 ', () => {
   beforeEach(() => {
     clearV1();
-    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const user2 = authRegisterV1('aliceP@email.com', 'alice123', 'Alice', 'Person');
   });
   
   test('one joined public channel list', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = authRegisterV1('aliceP@email.com', 'alice123', 'Alice', 'Person');
     const channel1 = channelsCreateV1(user1.authUserId, 'general', true);
     const channel2 = channelsCreateV1(user2.authUserId, 'private', false);
     const user_channels_details = channelsListV1(user1);
@@ -150,6 +156,8 @@ describe('Test channelsListAllv1 ', () => {
   });
 
   test('one joined private channel list', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = authRegisterV1('aliceP@email.com', 'alice123', 'Alice', 'Person');
     const channel1 = channelsCreateV1(user2.authUserId, 'secret', false);
     const channel2 = channelsCreateV1(user1.authUserId, 'private', false);
     const user_channels_details = channelsListV1(user1);
@@ -160,17 +168,21 @@ describe('Test channelsListAllv1 ', () => {
   });
 
   test('listing no channels', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = authRegisterV1('aliceP@email.com', 'alice123', 'Alice', 'Person');
     const channel1 = channelsCreateV1(user2.authUserId, 'lounge', true);
     const user_channels_details = channelsListV1(user1);
     expect(user_channels_details).toStrictEqual({});
   });
 
   test('invalid authuserid', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    
     const user2 = authRegisterV1('aliceP@email.com', 'alice123', 'Alice', 'Person');
     const channel1 = channelsCreateV1(user2.authUserId, 'general', true);
     channelJoinV1(user1, channel1);
     expect(channelsListV1(user1)).toStrictEqual({
-      error: "Invalid user permissions."
+      error: 'Invalid Authorised User Id.'
     });
   });
 });
