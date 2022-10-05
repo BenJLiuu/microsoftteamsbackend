@@ -1,6 +1,7 @@
 import { channelInviteV1, channelDetailsV1, channelJoinV1 } from './channel.js';
 import { channelsCreateV1 } from './channels.js';
 import { clearV1 } from './other.js';
+import { authRegisterV1 } from './auth.js';
 
 // channelInviteV1 tests
 describe('Test channelInviteV1', () => {
