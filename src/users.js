@@ -41,8 +41,8 @@ export function checkUserIdtoChannel(authUserId, channelId) {
   let posititon = 0;
   for (let i = 0; i < data.channels.length; i++) {
       if (data.channels[i].channelId === channelId) {
-          position = i;
+        posititon = i;
       }
   }
-  return data.channels[position].allMembers.some(user => user === authUserId);
+  return data.channels[posititon].allMembers.some(user => user === authUserId);
 }

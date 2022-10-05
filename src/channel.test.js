@@ -10,18 +10,17 @@ describe('Test channelInviteV1', () => {
   });
 
   // Error tests.
-  
+
   test('Test only invalid channel Id', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     expect(channelInviteV1(user1, 'test', user2)).toStrictEqual({ error: 'Invalid Channel Id.' });
   });
-    
+
   test('Test only invalid user Id', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const channel1 = channelsCreateV1(user1, 'channel1', true);
-    expect(channelInviteV1(user1, channel1, 'test')).toStrictEqual({ error: 'Invalid User Id.' });
+    expect(channelInviteV1(user1.authUserId, channel1.channelId, 'test')).toStrictEqual({ error: 'Invalid User Id.' });
   });
     
   test('Test only user Id is already a member', () => {
@@ -45,6 +44,49 @@ describe('Test channelInviteV1', () => {
     const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const channel1 = channelsCreateV1(user1, 'channel1', true);
     expect(channelInviteV1('test', channel1, user2)).toStrictEqual({ error: 'Invalid Authorised User Id.' });
+  });
+    
+
+// Successful Registration tests
+
+  test('Successful Registration', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    channelInviteV1(user1, channel1, user2);
+    expect(channelsListV1(user2)).toStrictEqual(
+        {
+            channelId: channel1,
+            name: 'channel1',
+        }
+    );
+  });
+});
+
+// channelDetailsV1 tests
+describe('Test channelDetailsV1', () => {
+  beforeEach(() => {
+    clearV1();
+  });
+
+  // Error tests.
+
+  test('Test only invalid channel Id', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    expect(channelDetailsV1(user1, 'test')).toStrictEqual({ error: 'Invalid Channel Id.' });
+  });
+
+  test('Test only authorised user Id is not a member', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    expect(channelInviteV1(user2, channel1)).toStrictEqual({ error: 'Authorised User is not a member.' });
+  });
+    
+  test('Test only invalid authorised user Id', () => {
+    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    expect(channelInviteV1('test', channel1)).toStrictEqual({ error: 'Invalid Authorised User Id.' });
   });
     
 
