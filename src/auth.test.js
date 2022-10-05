@@ -1,5 +1,6 @@
 import { authLoginV1, authRegisterV1 } from './auth.js';
 import { clearV1 } from './other.js';
+import { userProfileV1 } from './users.js'
 
 // authRegisterV1 tests
 describe('Test authRegisterV1 ', () => {
@@ -42,6 +43,13 @@ describe('Test authRegisterV1 ', () => {
 
   test('Successful Registration', () => {
     expect(authRegisterV1('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate')).toEqual({ authUserId: expect.any(Number) });
+  });
+
+  test('Registration of existing handle', () => {
+    const user1 = authRegisterV1('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const user2 = authRegisterV1('johnnymatey@gmail.com', 'password1234', 'Johnny', 'Mate');
+    const userConfirm = userProfileV1(user1.authUserId, user2.authUserId);
+    expect(userConfirm.user.handleStr).toStrictEqual('johnnymate0');
   });
 });
     

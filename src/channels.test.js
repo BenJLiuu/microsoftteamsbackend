@@ -71,7 +71,7 @@ describe('Test channelsCreateV1 ', () => {
       error: "Channel name must be between 1-20 characters.",
     });
     expect(channel3).toStrictEqual({
-      channelId: expect.any(Integer),
+      channelId: channel3.channelId,
     });
   });
 
