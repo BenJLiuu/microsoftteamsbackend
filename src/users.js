@@ -2,7 +2,7 @@ import {getData} from './dataStore.js';
 
 export function validUserId(authUserId) {
   const data = getData();
-  return data.users.some(user => user.authUserId === authUserId);
+  return data.users.some(user => user.uId === authUserId);
 }
 
 // For a valid user, returns information about their user ID, email, first name, 
