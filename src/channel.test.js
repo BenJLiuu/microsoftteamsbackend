@@ -166,8 +166,10 @@ describe('channelJoinV1', () => {
   
   test('Authorised user is already a member of the channel', () => {
     const user1 = authRegisterV1('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
-    const channel1 = channelsCreateV1(user1.authUserId, 'channel1cool', true);
-    expect(channelJoinV1(user1.authUserId, channel1)).toStrictEqual({ error: 'You are already a member.' });
+    const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
+    const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    channelJoinV1(user2.authUserId, channel1.channelId);
+    expect(channelJoinV1(user2.authUserId, channel1.channelId)).toStrictEqual({ error: 'You are already a member.' });
   });
   
   test('Channel is private and user is not member or global owner', () => {
@@ -185,7 +187,7 @@ describe('channelJoinV1', () => {
   
   test('Successful join', () => {
     const user1 = authRegisterV1('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
-    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
     const user2 = authRegisterV1('walter@gmail.com', 'white123', 'Walt', 'White');
     expect(channelJoinV1(user2.authUserId, channel1.channelId)).toStrictEqual( {} );
   });

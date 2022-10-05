@@ -164,7 +164,7 @@ export function channelJoinV1(authUserId,channelId) {
     }
   }
   
-  data.channels[index].allMembers.push(authUserId)
+  data.channels[index].allMembers.push(authUserId);
   setData(data);
   
   return {};
