@@ -1,10 +1,90 @@
-import { channelInviteV1, channelDetailsV1, channelJoinV1 } from './channel.js';
+import { channelInviteV1, channelDetailsV1, channelJoinV1, channelMessagesV1, channelSendMessageV1 } from './channel.js';
 import { channelsCreateV1 } from './channels.js';
 import { clearV1 } from './other.js';
 import { authRegisterV1 } from './auth.js';
 
+describe('channelMessagesV1', () => {
+  beforeEach(() => {
+    clearV1();
+  });
+  
+
+  test('Not valid channelId', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    expect(channelMessagesV1(user.authUserId, channel1.channelId + 1)).toStrictEqual({error: 'Not valid channelId'});
+  });
+
+  test('Start is greater than total messages', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    const message1 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
+    expect(channelMessagesV1(user1.authUserId, channel1.channelId, 2)).toStrictEqual({error: 'Start is greater than total messages'});
+  });
+
+  test('Authorised user is not a channel member', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    const message1 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
+    expect(channelMessagesV1(user2.authUserId, channel1.channelId, 0)).toStrictEqual({error: 'Authorised user is not a channel member'});
+  });
+
+  test('Authorised user is invalid', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
+    expect(channelMessagesV1(user1.authUserId + 1, channel1.channelId, 0)).toStrictEqual({error: 'Start is greater than total messages'});
+  });
+
+  test('Success, less than 50 messages.', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    const message1 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
+    const message2 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
+    const message3 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
+    expect(channelMessagesV1(user.authUserId, channel1.channelId, 0)).toStrictEqual({
+      messages: [
+        {
+          messageId: message1.messageId,
+          uId: user1.authUserId,
+          message: 'hello',
+          timeSent: expect.any(Number),
+        }, 
+        {
+          messageId: message2.messageId,
+          uId: user1.authUserId,
+          message: 'hello',
+          timeSent: expect.any(Number),
+        }, 
+        {
+          messageId: message3.messageId,
+          uId: user1.authUserId,
+          message: 'hello',
+          timeSent: expect.any(Number),
+        },
+      ],
+      start: 0,
+      end: 2,
+    });
+  });
+
+  test('Success, more than 50 messages', () => {
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    for (let i = 0; i < 60; i++) {
+      const message = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
+    }
+    expect(channelMessagesV1(user.authUserId, channel1.channelId, 5)).toStrictEqual({
+      messages: expect.any(Array),
+      start: 5,
+      end: 55,
+    });
+  });
+});
+
 // channelInviteV1 tests
-describe('Test channelInviteV1', () => {
+describe('channelInviteV1', () => {
   beforeEach(() => {
     clearV1();
   });
@@ -28,7 +108,7 @@ describe('Test channelInviteV1', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const channel1 = channelsCreateV1(user1, 'channel1', true);
-    channelJoinV1(user2, channel1);
+    channelJoinV1(user2.authUserId, channel1.channelId);
     expect(channelInviteV1(user1, channel1, user2)).toStrictEqual({ error: 'User is already a member.' });
   });
     
@@ -63,4 +143,6 @@ describe('Test channelInviteV1', () => {
     );
   });
 });
+
+
     
