@@ -161,35 +161,35 @@ describe('channelJoinV1', () => {
   
   test('Invalid channel id', () => {
     const user1 = authRegisterV1('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
-    const channel1 = channelsCreate(user1, 'channel1cool', true);
-    expect(channelJoinV1(user1, 30)).toStrictEqual({ error: 'Invalid Channel Id.' });
+    expect(channelJoinV1(user1.authUserId, 30)).toStrictEqual({ error: 'Invalid Channel Id.' });
   });
   
   test('Authorised user is already a member of the channel', () => {
     const user1 = authRegisterV1('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
-    const channel1 = channelsCreate(user1, 'channel1cool', true);
-    expect(channelJoinV1(user1, channel1)).toStrictEqual({ error: 'You are already a member.' });
+    const channel1 = channelsCreateV1(user1.authUserId, 'channel1cool', true);
+    expect(channelJoinV1(user1.authUserId, channel1)).toStrictEqual({ error: 'You are already a member.' });
   });
   
   test('Channel is private and user is not member or global owner', () => {
     const user1 = authRegisterV1('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    const channel1 = channelsCreateV1(user1, 'example', false);
-    expect(channelJoinV1(user2, channel1)).toStrictEqual({ error: 'You do not have access to this channel.' });
+    const channel1 = channelsCreateV1(user1.authUserId, 'example', false);
+    expect(channelJoinV1(user2.authUserId, channel1.channelId)).toStrictEqual({ error: 'You do not have access to this channel.' });
   });
     
   test('Invalid authorised user Id', () => {
     const user1 = authRegisterV1('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
-    const channel1 = channelsCreateV1(user1, 'example', true);
-    expect(channelJoinV1('123132332983', channel1)).toStrictEqual({ error: 'Invalid User Id.' });
+    const channel1 = channelsCreateV1(user1.authUserId, 'example', true);
+    expect(channelJoinV1('123132332983', channel1.channelId)).toStrictEqual({ error: 'Invalid User Id.' });
   });
   
   test('Successful join', () => {
     const user1 = authRegisterV1('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = channelsCreateV1(user1, 'channel1', true);
     const user2 = authRegisterV1('walter@gmail.com', 'white123', 'Walt', 'White');
-    expect(channelJoinV1(user2, channel1)).toStrictEqual( {} );
+    expect(channelJoinV1(user2.authUserId, channel1.channelId)).toStrictEqual( {} );
   });
+});
 
   
     
