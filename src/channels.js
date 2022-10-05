@@ -61,4 +61,4 @@ function channelsCreateV1(authUserId, name, isPublic ) {
   return { channelId: newChannel.channelId };
 }
 
-export { channelsCreateV1 };
+export { channelsCreateV1, channelsListV1 };

@@ -1,5 +1,5 @@
 import { channelInviteV1, channelDetailsV1, channelJoinV1, channelMessagesV1, channelSendMessageV1 } from './channel.js';
-import { channelsCreateV1 } from './channels.js';
+import { channelsCreateV1, channelsListV1 } from './channels.js';
 import { clearV1 } from './other.js';
 import { authRegisterV1 } from './auth.js';
 
@@ -182,12 +182,26 @@ describe('Test channelDetailsV1', () => {
 
   test('Successful Registration', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
     expect(channelDetailsV1(user1.authUserId, channel1.channelId)).toStrictEqual(
       { name: 'channel1', 
         isPublic: true, 
-        ownerMembers: [user1.authUserId], 
-        allMembers: [user1.authUserId],
+        ownerMembers: [{
+          uId: user1.authUserId,
+          nameFirst: 'John',
+          nameLast: 'Smith',
+          email: 'johnS@email.com',
+          handleStr: 'johnsmith',
+          passwordHash: 'passJohn'
+        }], 
+        allMembers: [{
+          uId: user1.authUserId,
+          nameFirst: 'John',
+          nameLast: 'Smith',
+          email: 'johnS@email.com',
+          handleStr: 'johnsmith',
+          passwordHash: 'passJohn'
+        }],
       });
   });
 });
