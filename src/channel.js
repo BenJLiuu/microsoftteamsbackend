@@ -92,7 +92,7 @@ export function channelInviteV1(authUserId, channelId, uId) {
     
   const data = getData();
 
-  const index1 = data.users.findIndex(user => user.uId === authUserId);
+  const index1 = data.users.findIndex(user => user.uId === uId);
   const index2 = data.channels.findIndex(channel => channel.channelId === channelId);
   data.channels[index2].allMembers.push(data.users[index1]);
 
@@ -118,7 +118,6 @@ export function channelDetailsV1(authUserId, channelId) {
       error: 'Authorised User is not a member.'
     }
   } 
-
 
   const data = getData();
 

@@ -114,8 +114,7 @@ describe('channelInviteV1', () => {
   test('Test only user Id is already a member', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
-    channelJoinV1(user2.authUserId, channel1.channelId);
+    const channel1 = channelsCreateV1(user2.authUserId, 'channel1', true);
     expect(channelInviteV1(user1.authUserId, channel1.channelId, user2.authUserId)).toStrictEqual({ error: 'User is already a member.' });
   });
     
@@ -142,12 +141,34 @@ describe('channelInviteV1', () => {
     const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
     channelInviteV1(user1.authUserId, channel1.channelId, user2.authUserId);
-    expect(channelsListV1(user2.authUserId)).toStrictEqual(
+    expect(channelDetailsV1(user2.authUserId, channel1.channelId)).toStrictEqual(
+      { name: 'channel1', 
+        isPublic: true, 
+        ownerMembers: [{
+          uId: user1.authUserId,
+          nameFirst: 'John',
+          nameLast: 'Smith',
+          email: 'johnS@email.com',
+          handleStr: 'johnsmith',
+          passwordHash: 'passJohn'
+        }], 
+        allMembers: [{
+          uId: user1.authUserId,
+          nameFirst: 'John',
+          nameLast: 'Smith',
+          email: 'johnS@email.com',
+          handleStr: 'johnsmith',
+          passwordHash: 'passJohn'
+        },
         {
-            channelId: channel1.channelId,
-            name: 'channel1',
-        }
-    );
+          uId: user2.authUserId,
+          nameFirst: 'Alice',
+          nameLast: 'Person',
+          email: 'aliceP@fmail.au',
+          handleStr: 'aliceperson',
+          passwordHash: 'alice123'
+        }],
+      });
   });
 });
 
