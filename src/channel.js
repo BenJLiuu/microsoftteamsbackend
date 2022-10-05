@@ -17,6 +17,27 @@ export function channelMessagesV1(authUserId, channelId, start) {
   }
 }
 
+export function channelSendMessageV1 (authUserId, channelId, message) {
+  if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' }
+  if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
+
+  const data = getData();
+  const index = data.channels.findIndex(channel => channel.channelId === channelId);
+  const messageId = Math.floor(Math.random() * 899999 + 100000);
+  const messageTime = new Date().getTime();
+
+  const newMessage = {
+    messageId: messageId,
+    uId: authUserId,
+    message: message,
+    timeSent: messageTime,
+  }
+
+  data.channels[index].messages.push(newMessage);
+  setData(data);
+  return { message: messageId };
+}
+
 // Sends a user specific invite to a given channel 
 export function channelInviteV1(authUserId, channelId, uId) {
 
@@ -55,6 +76,8 @@ export function channelInviteV1(authUserId, channelId, uId) {
   }
   data.channels[i].allMembers.push(uId);
   setData(data);
+
+  return {};
 }
 
 // Provides the details of the owner and members of a given channel
