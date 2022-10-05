@@ -46,6 +46,8 @@ function channelsCreateV1(authUserId, name, isPublic ) {
   };
   data.channels.push(channel);
   setData(data);
+
+  return { channelId: channel.channelId };
 }
 
 export { channelsCreateV1 };
