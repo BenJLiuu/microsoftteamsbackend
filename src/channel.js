@@ -3,18 +3,38 @@ import { validUserId, validChannelId } from './users.js';
 
 // Sends a message from a user to a given channel, recording time sent.
 export function channelMessagesV1(authUserId, channelId, start) {
-  return {
-    messages: [
-      {
-        messageId: 1,
-        uId: 1,
-        message: 'Hello world',
-        timeSent: 1582426789,
-      }
-    ],
-    start: 0,
-    end: 50,
+  if (!validChannelId(channelId)) return { error: 'Not valid channelId' }
+  if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
+  const data = getData()
+  const index = data.channels.findIndex(channel => channel.channelId === channelId);
+  if (start > data.channels[index].messages.length) return { error: 'Start is greater than total messages'};
+
+  // This error is waiting on channel create fix.
+  /*if (Boolean(data.channels[index].allMembers.some(users => users.uId === authUserId)) === false) return {
+    error: 'Authorised user is not a channel member'
+  }*/
+
+  const end = 0;
+  if (data.channels[index].messages.length + start > 50) {
+    end = start + 50;
+  } else {
+    end = data.channels[index].messages.length;
   }
+
+  var endTracker = 0;
+
+  const messagesArray = new Array();
+  for (let i = start; i < end - start; i++) {
+    messagesArray.push(data.channels[index].messages[i]);
+  }
+
+  const returnedMessages = {
+    messages: messagesArray,
+    start: start,
+    end: end,
+  }
+
+  return { returnedMessages };
 }
 
 export function channelSendMessageV1 (authUserId, channelId, message) {
