@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore.js';
-import { validUserId, validChannelId } from './users.js';
+import { validUserId, validChannelId, checkUserIdtoChannel } from './users.js';
 
 // Sends a message from a user to a given channel, recording time sent.
 export function channelMessagesV1(authUserId, channelId, start) {
