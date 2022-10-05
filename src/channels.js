@@ -3,17 +3,15 @@ import { validUserId, checkUserIdtoChannel } from './users.js';
 
 //Lists all channels according to authUserId
 function channelsListAllV1 (authUserId) {
-  if (!validUserId(authUserId)) {
-    return {
-      error: 'Invalid Authorised User Id.'
-    }
-  } 
+  if (!validUserId(authUserId)) return {
+    error: 'Invalid Authorised User Id.',
+  }
   const data = getData();
   const channel_list = [];
   for (let i of data.channels) {
     channel_list.push({
-      channelId: i.channels.channelId,
-      name: i.channels.name
+      channelId: i.channelId,
+      name: i.name
     });
   }
 
@@ -30,10 +28,10 @@ function channelsListV1(authUserId) {
   const data = getData();
   const channel_list = [];
   for (let i of data.channels) {
-    if (checkUserIdtoChannel(i.users.uId, i.channels.channelId)) {
+    if (checkUserIdtoChannel(authUserId, i.channelId)) {
       channel_list.push({
-        channelId: i.channels.channelId,
-        name: i.channels.name
+        channelId: i.channelId,
+        name: i.name
       });
     }
   }
