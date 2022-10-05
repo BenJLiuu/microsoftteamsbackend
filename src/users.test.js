@@ -9,7 +9,7 @@ describe('Test validUserId ', () => {
 
   test('has valid user', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    expect(validUserId(user1.uId)).toBe(true);
+    expect(validUserId(user1.authUserId)).toBe(true);
   });
 
   test('fails with no users', () => {
@@ -18,16 +18,16 @@ describe('Test validUserId ', () => {
 
   test('fails with invalid user', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    expect(validUserId(user1.uId + 1)).toBe(false);
+    expect(validUserId(user1.authUserId + 1)).toBe(false);
   });
 
   test('has valid user with multiple users', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    const user3 = authRegisterV1('jamieS@later.co', '&##@P', 'Jamie', 'Son');
-    expect(validUserId(user1.uId)).toBe(true);
-    expect(validUserId(user2.uId)).toBe(true);
-    expect(validUserId(user3.uId)).toBe(true);
+    const user3 = authRegisterV1('jamieS@later.co', '&##@Ppassword', 'Jamie', 'Son');
+    expect(validUserId(user1.authUserId)).toBe(true);
+    expect(validUserId(user2.authUserId)).toBe(true);
+    expect(validUserId(user3.authUserId)).toBe(true);
   });
 });
 
