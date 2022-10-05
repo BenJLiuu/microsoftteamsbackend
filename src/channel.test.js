@@ -11,13 +11,13 @@ describe('channelMessagesV1', () => {
 
   test('Not valid channelId', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = channelsCreateV1(user1, 'channel1', true);
-    expect(channelMessagesV1(user.authUserId, channel1.channelId + 1)).toStrictEqual({error: 'Not valid channelId'});
+    const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
+    expect(channelMessagesV1(user1.authUserId, channel1.channelId + 1)).toStrictEqual({error: 'Not valid channelId'});
   });
 
   test('Start is greater than total messages', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
     const message1 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
     expect(channelMessagesV1(user1.authUserId, channel1.channelId, 2)).toStrictEqual({error: 'Start is greater than total messages'});
   });
@@ -25,25 +25,25 @@ describe('channelMessagesV1', () => {
   test('Authorised user is not a channel member', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
     const message1 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
     expect(channelMessagesV1(user2.authUserId, channel1.channelId, 0)).toStrictEqual({error: 'Authorised user is not a channel member'});
   });
 
   test('Authorised user is invalid', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
     channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-    expect(channelMessagesV1(user1.authUserId + 1, channel1.channelId, 0)).toStrictEqual({error: 'Start is greater than total messages'});
+    expect(channelMessagesV1(user1.authUserId + 1, channel1.channelId, 0)).toStrictEqual({error: 'Invalid Authorised User Id.'});
   });
 
   test('Success, less than 50 messages.', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
     const message1 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
     const message2 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
     const message3 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-    expect(channelMessagesV1(user.authUserId, channel1.channelId, 0)).toStrictEqual({
+    expect(channelMessagesV1(user1.authUserId, channel1.channelId, 0)).toStrictEqual({
       messages: [
         {
           messageId: message1.messageId,
@@ -71,11 +71,11 @@ describe('channelMessagesV1', () => {
 
   test('Success, more than 50 messages', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = channelsCreateV1(user1, 'channel1', true);
+    const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
     for (let i = 0; i < 60; i++) {
       const message = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
     }
-    expect(channelMessagesV1(user.authUserId, channel1.channelId, 5)).toStrictEqual({
+    expect(channelMessagesV1(user1.authUserId, channel1.channelId, 5)).toStrictEqual({
       messages: expect.any(Array),
       start: 5,
       end: 55,
