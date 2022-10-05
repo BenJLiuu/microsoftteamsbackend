@@ -129,6 +129,30 @@ export function channelDetailsV1() {
 }
 
 // Allows user to join channel given a UserId
-function channelJoinV1(authUserId,channelId) {
-  return {}
+export function channelJoinV1(authUserId,channelId) {
+
+  const data = getData();
+  
+  if (!validChannelId(channelId)) return {
+    error: 'Invalid Channel Id.',
+    };
+    
+  if (checkUserIdToChannel(authUserId, channelId) === true) return {
+    error: 'User is already a member.',
+    };
+  
+  let index = data.channels.map(object => object.channelId).indexOf(channelId);
+  if ((data.channels[index].isPublic === false) && (data.channels[index].allMembers.includes(authUserId) === false) && (data.users[0].uId !== authUserId)) {
+    return {
+      error: 'You do not have access to this channel.'
+    }
+  }
+    
+  if (!validUserId(authUserId)) return {
+    error: 'Invalid User Id.'
+    }
+    
+  data.channels[index].allMembers.push(authUserId);
+    
+  return {};
 }
