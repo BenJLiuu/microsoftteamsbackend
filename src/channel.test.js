@@ -1,4 +1,4 @@
-import { channelInviteV1, channelDetailsV1, channelJoinV1, channelMessagesV1, channelSendMessageV1 } from './channel.js';
+import { channelInviteV1, channelDetailsV1, channelJoinV1, channelMessagesV1 } from './channel.js';
 import { channelsCreateV1 } from './channels.js';
 import { clearV1 } from './other.js';
 import { authRegisterV1 } from './auth.js';
