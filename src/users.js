@@ -38,7 +38,7 @@ export function validChannelId(channelId) {
 
 export function checkUserIdtoChannel(authUserId, channelId) {
   const data = getData();
-  let posititon = 0;
+  let position = 0;
   for (let i = 0; i < data.channels.length; i++) {
       if (data.channels[i].channelId === channelId) {
           position = i;

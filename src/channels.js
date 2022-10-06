@@ -1,28 +1,42 @@
 import { getData, setData } from './dataStore.js';
-import { validUserId } from './users.js';
+import { validUserId, checkUserIdtoChannel } from './users.js';
 
 //Lists all channels according to authUserId
 function channelsListAllV1 (authUserId) {
-  return {
-    channels: [
-      {
-        channelId: 1,
-        name: 'My Channel',
-      }
-    ],
+  if (!validUserId(authUserId)) return {
+    error: 'Invalid Authorised User Id.',
   }
+  const data = getData();
+  const channel_list = [];
+  for (let i of data.channels) {
+    channel_list.push({
+      channelId: i.channelId,
+      name: i.name
+    });
+  }
+
+  return channel_list;
 }
 
 //Lists channels according to authUserID
 function channelsListV1(authUserId) {
-  return {
-    channels: [
-      {
-        channelId: 1,
-        name: 'My Channel',
-      }
-    ],
+  if (!validUserId(authUserId)) {
+    return {
+      error: 'Invalid Authorised User Id.'
+    }
+  } 
+  const data = getData();
+  const channel_list = [];
+  for (let i of data.channels) {
+    if (checkUserIdtoChannel(authUserId, i.channelId)) {
+      channel_list.push({
+        channelId: i.channelId,
+        name: i.name
+      });
+    }
   }
+
+  return channel_list;
 }
 
 // Create a channel as requested by a user, given the name of the channel
@@ -61,4 +75,4 @@ function channelsCreateV1(authUserId, name, isPublic ) {
   return { channelId: newChannel.channelId };
 }
 
-export { channelsCreateV1 };
+export { channelsCreateV1, channelsListAllV1, channelsListV1 };
