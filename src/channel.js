@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore.js';
-import { validUserId, validChannelId } from './users.js';
+import { validUserId, validChannelId, checkUserIdtoChannel } from './users.js';
 
 // Sends a message from a user to a given channel, recording time sent.
 export function channelMessagesV1(authUserId, channelId, start) {
@@ -91,44 +91,86 @@ export function channelInviteV1(authUserId, channelId, uId) {
   } 
     
   const data = getData();
-  let position = 0;
-  for (let i = 0; i < data.channels.length; i++) {
-    if (data.channels[i].channelId === channelId) {
-        position = i;
-    }
-  }
-  data.channels[i].allMembers.push(uId);
-  setData(data);
 
+  const index1 = data.users.findIndex(user => user.uId === uId);
+  const index2 = data.channels.findIndex(channel => channel.channelId === channelId);
+  data.channels[index2].allMembers.push(data.users[index1]);
+
+  setData(data);
   return {};
 }
 
 // Provides the details of the owner and members of a given channel
-export function channelDetailsV1() {
+export function channelDetailsV1(authUserId, channelId) {
+
+  if (!validChannelId(channelId)) {
+    return {
+      error: 'Invalid Channel Id.'
+    }
+  } 
+  if (!validUserId(authUserId)) {
+    return {
+      error: 'Invalid Authorised User Id.'
+    }
+  } 
+  if (!checkUserIdtoChannel(authUserId, channelId)) {
+    return {
+      error: 'Authorised User is not a member.'
+    }
+  } 
+
+  const data = getData();
+
+  const index1 = data.users.findIndex(user => user.uId === authUserId);
+  const index2 = data.channels.findIndex(channel => channel.channelId === channelId);
+
+  setData(data);
   return {
-	  name: 'Hayden',
-	  ownerMembers: [
-      {
-        uId: 1,
-        email: 'example@gmail.com',
-        nameFirst: 'Hayden',
-        nameLast: 'Jacobs',
-        handleStr: 'haydenjacobs',
-      }
-    ],
-    allMembers: [
-      {
-        uId: 1,
-        email: 'example@gmail.com',
-        nameFirst: 'Hayden',
-        nameLast: 'Jacobs',
-        handleStr: 'haydenjacobs',
-      }
-    ],
-  }
+	  name: data.channels[index2].name,
+    isPublic: data.channels[index2].isPublic,
+	  ownerMembers: data.channels[index2].ownerMembers,
+    allMembers: data.channels[index2].allMembers,
+  };
 }
 
 // Allows user to join channel given a UserId
-function channelJoinV1(authUserId,channelId) {
-  return {}
+export function channelJoinV1(authUserId,channelId) {
+
+  const data = getData();
+  
+  let i = 0;
+  for (const chann of data.channels) {
+    if (channelId === chann.channelId) {
+      i++;
+    }
+  }
+  if (i === 0) {
+    return {
+      error: 'Invalid Channel Id.'
+    }
+  }
+  
+  if (!validUserId(authUserId)) {
+    return {
+      error: 'Invalid User Id.'
+    }
+  }
+  
+  const index = data.channels.map(object => object.channelId).indexOf(channelId);
+  if (data.channels[index].allMembers.includes(authUserId) === true) {
+    return {
+      error: 'You are already a member.'
+    }
+  }
+  
+  if (data.channels[index].isPublic === false && data.channels[index].allMembers.includes(authUserId) === false && data.users[0].uId !== authUserId) {
+    return {
+      error: 'You do not have access to this channel.'
+    }
+  }
+  
+  data.channels[index].allMembers.push(authUserId);
+  setData(data);
+  
+  return {};
 }

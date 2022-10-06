@@ -1,5 +1,8 @@
 import { clearV1 } from './other.js'
 import { authRegisterV1 } from './auth.js';
+<<<<<<< src/users.test.js
+import { userProfileV1 } from './users.js';
+=======
 import { validUserId, userProfileV1 } from './users.js';
 
 describe('Test validUserId ', () => {
@@ -30,6 +33,7 @@ describe('Test validUserId ', () => {
     expect(validUserId(user3.authUserId)).toBe(true);
   });
 });
+>>>>>>> src/users.test.js
 
 describe ('userProfileV1', () => {
   beforeEach(() => {
