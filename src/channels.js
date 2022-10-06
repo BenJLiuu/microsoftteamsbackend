@@ -15,7 +15,7 @@ function channelsListAllV1 (authUserId) {
     });
   }
 
-  return channel_list;
+  return { channels: channel_list };
 }
 
 //Lists channels according to authUserID

@@ -38,15 +38,15 @@ describe('Test channelsCreateV1 ', () => {
     expect(channelDetailsV1(user1.authUserId, channel1.channelId)).toStrictEqual({
       name: "General",
       isPublic: false,
-      ownerMembers: [user1.authUserId],
-      allMembers: [user1.authUserId],
+      ownerMembers: expect.any(Array),
+      allMembers: expect.any(Array),
     });
 
     expect(channelDetailsV1(user1.authUserId, channel2.channelId)).toStrictEqual({
       name: "Homework",
       isPublic: true,
-      ownerMembers: [user1.authUserId],
-      allMembers: [user1.authUserId],
+      ownerMembers: expect.any(Array),
+      allMembers: expect.any(Array),
     });
   });
 
@@ -88,20 +88,24 @@ describe('Test channelsListAllv1 ', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = channelsCreateV1(user1.authUserId, 'general', true);
     const all_channels_details = channelsListAllV1(user1.authUserId);
-    expect(all_channels_details).toStrictEqual([{
-      channelId: channel1.channelId,
-      name: 'general'
-    }]);
+    expect(all_channels_details).toStrictEqual({
+      channels: [{
+        channelId: channel1.channelId,
+        name: 'general'
+      }]
+    });
   });
 
   test('one private channel list', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = channelsCreateV1(user1.authUserId, 'private', false);
     const all_channels_details = channelsListAllV1(user1.authUserId);
-    expect(all_channels_details).toStrictEqual([{
-      channelId: channel1.channelId,
-      name: 'private'
-    }]);
+    expect(all_channels_details).toStrictEqual({
+      channels: [{
+        channelId: channel1.channelId,
+        name: 'private'
+      }]
+    });
   });
 
   test('three channel list', () => {
@@ -110,20 +114,22 @@ describe('Test channelsListAllv1 ', () => {
     const channel2 = channelsCreateV1(user1.authUserId, 'private', false);
     const channel3 = channelsCreateV1(user1.authUserId, 'Lounge', true);
     const all_channels_details = channelsListAllV1(user1.authUserId);
-    expect(all_channels_details).toStrictEqual([{
-      channelId: channel1.channelId,
-      name: 'general'}, {
-      channelId: channel2.channelId,
-      name: 'private'}, {
-      channelId: channel3.channelId,
-      name: 'Lounge'
-    }]);
+    expect(all_channels_details).toStrictEqual({
+      channels: [{
+        channelId: channel1.channelId,
+        name: 'general'}, {
+        channelId: channel2.channelId,
+        name: 'private'}, {
+        channelId: channel3.channelId,
+        name: 'Lounge'
+      }]
+    });
   });
 
   test('listing no channels', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const all_channels_details = channelsListAllV1(user1.authUserId);
-    expect(all_channels_details).toStrictEqual([]);
+    expect(all_channels_details).toStrictEqual({ channels: [] });
   });
 
   test('invalid authuserid', () => {
@@ -174,15 +180,13 @@ describe('Test channelsListAllv1 ', () => {
     const user2 = authRegisterV1('aliceP@email.com', 'alice123', 'Alice', 'Person');
     const channel1 = channelsCreateV1(user2.authUserId, 'lounge', true);
     const user_channels_details = channelsListV1(user1.authUserId);
-    expect(user_channels_details).toStrictEqual({ channels: [{}] });
+    expect(user_channels_details).toStrictEqual({ channels: [] });
   });
 
   test('invalid authuserid', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = channelsCreateV1(user1.authUserId, 'general', true);
     channelJoinV1(user1.authUserId, channel1);
-    expect(channelsListV1('test')).toStrictEqual([{
-      error: 'Invalid Authorised User Id.'
-    }]);
+    expect(channelsListV1('test')).toStrictEqual({ error: 'Invalid Authorised User Id.' });
   });
 });
