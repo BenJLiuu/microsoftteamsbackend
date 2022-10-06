@@ -15,7 +15,7 @@ function channelsListAllV1 (authUserId) {
     });
   }
 
-  return channel_list;
+  return { channels: channel_list };
 }
 
 //Lists channels according to authUserID
@@ -36,7 +36,7 @@ function channelsListV1(authUserId) {
     }
   }
 
-  return channel_list;
+  return { channels: channel_list };
 }
 
 // Create a channel as requested by a user, given the name of the channel
@@ -69,8 +69,6 @@ function channelsCreateV1(authUserId, name, isPublic ) {
   data.channels[index2].allMembers.push(data.users[index1]);
 
   setData(data);
-
-  console.log(newChannel);
 
   return { channelId: newChannel.channelId };
 }
