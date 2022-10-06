@@ -39,6 +39,14 @@ describe('Test authRegisterV1 ', () => {
     expect(authRegisterV1('bobsmith@gmail.com', 'pass123', 'Bob', '')).toStrictEqual({ error: 'Invalid Last Name.' });
   });
 
+  test('Test first name contains invalid characters', () => {
+    expect(authRegisterV1('johnnymate@gmail.com', 'password123', 'Joh%$y', 'Mate')).toEqual({ error: 'Invalid First Name.' });
+  });
+
+  test('Test last name contains invalid characters', () => {
+    expect(authRegisterV1('johnnymate@gmail.com', 'password123', 'Johnny', 'M%$e')).toEqual({ error: 'Invalid Last Name.' });
+  });
+
 // Successful Registration tests
 
   test('Successful Registration', () => {

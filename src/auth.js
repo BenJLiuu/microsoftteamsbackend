@@ -94,6 +94,9 @@ function authRegisterV1(email, password, nameFirst, nameLast) {
       error: 'Invalid Last Name.'
     }
   }
+
+  if (/[^a-zA-Z]/.test(nameFirst)) return { error: 'Invalid First Name.' };
+  if (/[^a-zA-Z]/.test(nameLast)) return { error: 'Invalid Last Name.' };
   
 
   let newUId = new Date().getTime();
