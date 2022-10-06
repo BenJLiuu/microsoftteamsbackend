@@ -63,7 +63,7 @@ describe('Test channelsCreateV1 ', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = channelsCreateV1(user1.authUserId, '', true);
     const channel2 = channelsCreateV1(user1.authUserId, 'ABCDEFGHIJKLMNOPQRSTU', true);
-    const channel2 = channelsCreateV1(user1.authUserId, 'ABCDEFGHIJKLMNOPQRST', true);
+    const channel3 = channelsCreateV1(user1.authUserId, 'ABCDEFGHIJKLMNOPQRST', true);
     expect(channel1).toStrictEqual({
       error: "Channel name must be between 1-20 characters.",
     });
@@ -148,10 +148,12 @@ describe('Test channelsListAllv1 ', () => {
     const channel1 = channelsCreateV1(user1.authUserId, 'general', true);
     const channel2 = channelsCreateV1(user2.authUserId, 'private', false);
     const user_channels_details = channelsListV1(user1.authUserId);
-    expect(user_channels_details).toStrictEqual([{
+    expect(user_channels_details).toStrictEqual({
+      channels = [{
       channelId: channel1.channelId,
-      name: 'general'
-    }]);
+      name: 'general',
+      }]
+    });
   });
 
   test('one joined private channel list', () => {
@@ -160,10 +162,12 @@ describe('Test channelsListAllv1 ', () => {
     const channel1 = channelsCreateV1(user2.authUserId, 'secret', false);
     const channel2 = channelsCreateV1(user1.authUserId, 'private', false);
     const user_channels_details = channelsListV1(user1.authUserId);
-    expect(user_channels_details).toStrictEqual([{
+    expect(user_channels_details).toStrictEqual({
+      channels = [{
       channelId: channel2.channelId,
-      name: 'private'
-    }]);
+      name: 'private',
+      }]
+    });
   });
 
   test('listing no channels', () => {
@@ -171,7 +175,7 @@ describe('Test channelsListAllv1 ', () => {
     const user2 = authRegisterV1('aliceP@email.com', 'alice123', 'Alice', 'Person');
     const channel1 = channelsCreateV1(user2.authUserId, 'lounge', true);
     const user_channels_details = channelsListV1(user1.authUserId);
-    expect(user_channels_details).toStrictEqual([]);
+    expect(user_channels_details).toStrictEqual({ channels = [{}] });
   });
 
   test('invalid authuserid', () => {
