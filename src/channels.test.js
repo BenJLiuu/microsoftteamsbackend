@@ -1,6 +1,6 @@
 import { authLoginV1, authRegisterV1 } from './auth.js';
-import { channelsCreateV1 } from './channels.js'; 
-import { channelDetailsV1 } from './channel.js'; 
+import { channelsCreateV1, channelsListAllV1 } from './channels.js'; 
+import { channelDetailsV1, channelJoinV1 } from './channel.js'; 
 import { clearV1 } from './other.js';
 
 // channelsCreateV1 tests
@@ -71,9 +71,63 @@ describe('Test channelsCreateV1 ', () => {
       error: "Channel name must be between 1-20 characters.",
     });
     expect(channel3).toStrictEqual({
-      channelId: expect.any(Integer),
+      channelId: channel3.channelId,
     });
   });
 
 });
 
+// channelsListAllv1 testing
+describe('Test channelsListAllv1 ', () => {
+  beforeEach(() => {
+    clearV1();
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
+    clearV1();
+  });
+  
+  test('one public channel list', () => {
+    const channel1 = channelsCreateV1(user1.authUserId, 'general', true);
+    const all_channels_details = channelsListAllV1(user1);
+    expect(all_channels_details).toStrictEqual({
+      channelId: channel1,
+      name: 'general'
+    });
+  });
+
+  test('one private channel list', () => {
+    const channel1 = channelsCreateV1(user1.authUserId, 'private', false);
+    const all_channels_details = channelsListAllV1(user1);
+    expect(all_channels_details).toStrictEqual({
+      channelId: channel1,
+      name: 'private'
+    });
+  });
+
+  test('three channel list', () => {
+    const channel1 = channelsCreateV1(user1.authUserId, 'general', true);
+    const channel2 = channelsCreateV1(user1.authUserId, 'private', false);
+    const channel3 = channelsCreateV1(user1.authUserId, 'Lounge', true);
+    const all_channels_details = channelsListAllV1(user1);
+    expect(all_channels_details).toStrictEqual({
+      channelId: channel1,
+      name: 'general',
+      channelId: channel2,
+      name: 'private',
+      channelId: channel3,
+      name: 'Lounge',
+    });
+  });
+
+  test('listing no channels', () => {
+    const all_channels_details = channelsListAllV1(user1);
+    expect(all_channels_details).toStrictEqual({});
+  });
+
+  test('invalid authuserid', () => {
+    const user2 = authRegisterV1('aliceP@email.com', 'alice123', 'Alice', 'Person');
+    const channel1 = channelsCreateV1(user1.authUserId, 'general', true);
+    expect(channelsListAllV1(user2)).toStrictEqual({
+      error: "Invalid user permissions."
+    });
+  });
+});
