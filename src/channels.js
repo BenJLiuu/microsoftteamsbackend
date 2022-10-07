@@ -39,9 +39,19 @@ function channelsListV1(authUserId) {
   return { channels: channel_list };
 }
 
-// Create a channel as requested by a user, given the name of the channel
-// and whether it should be public/private.
-// Returns the new channel id.
+/**
+  * Creates a channel as requested by a user, and returns the new channels' id.
+  * Assigns the user that created the channel as the owner of that channel,
+  * as well as making them a normal member.
+  *
+  * @param {integer} authUserId - the channel creator's user ID
+  * @param {string} name - the new channel's name
+  * @param {boolean} isPublic - whether the new channel should be public or private
+  *
+  * @returns {channelId: integer} - if channel creation is successfull
+  * @returns {error: 'Invalid user permissions.'} - If user is not a valid user
+  * @returns {error: 'Channel name must be between 1-20 characters.'} - If channel name is too long/short
+*/
 function channelsCreateV1(authUserId, name, isPublic ) {
   if (!validUserId(authUserId)) return {
     error: "Invalid user permissions.",
