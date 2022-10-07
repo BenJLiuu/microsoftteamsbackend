@@ -3,9 +3,7 @@ import { validUserId, checkUserIdtoChannel } from './users.js';
 
 //Lists all channels according to authUserId
 function channelsListAllV1 (authUserId) {
-  if (!validUserId(authUserId)) return {
-    error: 'Invalid Authorised User Id.',
-  }
+  
   const data = getData();
   const channel_list = [];
   for (let i of data.channels) {
