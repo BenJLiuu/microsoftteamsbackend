@@ -12,7 +12,6 @@ import validator from 'validator';
   * @returns {error : 'Incorrect Password.'} - If email is found, but password is incorrect
   * @returns {error : 'Email Not Found.'} - If email was not found.
 */
-
 function authLoginV1(email, password) {
   const data = getData();
   for (const user of data.users) {
@@ -44,20 +43,20 @@ function isNumber(char) {
 }
 
 /**
-  * Registers a user and returns their user Id.
+  * Registers a user and returns their new user Id.
   * Also generates a unique user handle.
   *
-  * @ param {string} email - the user's email address
-  * @ param {string} password - the user's password
-  * @ param {string} nameFirst - the user's first name
-  * @ param {string} nameLast - the user's last name
+  * @param {string} email - the user's email address
+  * @param {string} password - the user's password
+  * @param {string} nameFirst - the user's first name
+  * @param {string} nameLast - the user's last name
   *
-  * @ returns {AuthUserId: integer} - if registration is successfull
-  * @ returns {error: 'Invalid Email Address.'} - if email inputted is invalid
-  * @ returns {error: 'Email Already in Use.'} - if email is already in data
-  * @ returns {error: 'Password too Short.'} - if password is <6 characters
-  * @ returns {error: Invalid First Name.'} - if first name is too short/long
-  * @ returns {error: Invalid Last Name.'} - if last name is too short/long
+  * @returns {authUserId: integer} - if registration is successfull
+  * @returns {error: 'Invalid Email Address.'} - if email is invalid (fails validator.isEmail)
+  * @returns {error: 'Email Already in Use.'} - if email is already in data
+  * @returns {error: 'Password too Short.'} - if password is <6 characters
+  * @returns {error: Invalid First Name.'} - if first name is too short/long
+  * @returns {error: Invalid Last Name.'} - if last name is too short/long
 */
 
 function authRegisterV1(email, password, nameFirst, nameLast) {
