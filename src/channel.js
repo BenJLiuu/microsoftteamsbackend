@@ -143,11 +143,10 @@ export function channelInviteV1(authUserId, channelId, uId) {
 }
 
 /**
-  * Provides the details of the owner and members of a given channel.
+  * Provides the details of the owners and members of a given channel.
   * 
   * @param {integer} authUserId - Id of user sending the invite.
   * @param {integer} channelId - Id of channel user is being invited to.
-  * ...
   * 
   * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
   * @returns {error: 'Invalid Authorised User Id.'} - authUserId does not correspond to an existing user.
@@ -191,7 +190,19 @@ export function channelDetailsV1(authUserId, channelId) {
   };
 }
 
-// Allows user to join channel given a UserId
+/**
+  * Allows a user to attempt to join a channel.
+  * 
+  * @param {integer} authUserId - Id of user sending the invite.
+  * @param {integer} channelId - Id of channel user is being invited to.
+  * 
+  * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
+  * @returns {error: 'Invalid User Id.'} - authUserId does not correspond to an existing user.
+  * @returns {error: 'You are already a member.'} - authUserId corresponds to user already in channel.
+  * @returns {error: 'You do not have access to this channel.'} - Channel is private.
+  * @returns {} - authUserId successfully joins the specified channel.
+  * 
+*/
 export function channelJoinV1(authUserId, channelId) {
 
   const data = getData();
