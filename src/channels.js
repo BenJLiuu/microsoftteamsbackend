@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore.js';
-import { validUserId, checkUserIdtoChannel } from './users.js';
+import { validUserId, checkUserIdtoChannel, removePassword } from './users.js';
 
 //Lists all channels according to authUserId
 function channelsListAllV1 (authUserId) {
@@ -63,10 +63,12 @@ function channelsCreateV1(authUserId, name, isPublic ) {
   };
 
   data.channels.push(newChannel);
-  const index1 = data.users.findIndex(user => user.uId === authUserId);
-  const index2 = data.channels.findIndex(channel => channel.channelId === newChannelId);
-  data.channels[index2].ownerMembers.push(data.users[index1]);
-  data.channels[index2].allMembers.push(data.users[index1]);
+  const userIndex = data.users.findIndex(user => user.uId === authUserId);
+  const channelIndex = data.channels.findIndex(channel => channel.channelId === newChannelId);
+  const privateUser = removePassword(data.users[userIndex]);
+
+  data.channels[channelIndex].ownerMembers.push(privateUser);
+  data.channels[channelIndex].allMembers.push(privateUser);
 
   setData(data);
 

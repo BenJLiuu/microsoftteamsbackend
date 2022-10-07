@@ -1,4 +1,4 @@
-import {getData} from './dataStore.js';
+import { getData } from './dataStore.js';
 
 export function validUserId(authUserId) {
   const data = getData();
@@ -45,4 +45,14 @@ export function checkUserIdtoChannel(authUserId, channelId) {
       }
   }
   return data.channels[position].allMembers.some(user => user.uId === authUserId);
+}
+
+export function removePassword(user) {
+  return {
+    uId: user.uId,
+    email: user.email,
+    nameFirst: user.nameFirst,
+    nameLast: user.nameLast,
+    handleStr: user.handleStr,
+  };
 }

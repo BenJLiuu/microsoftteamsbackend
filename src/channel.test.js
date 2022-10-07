@@ -37,7 +37,12 @@ describe('channelMessagesV1', () => {
     });
   });
 
-  /*test('Authorised user is invalid', () => {
+
+  /* These tests utilise the channelSendMessage helper function to test the 
+  /* functionality of channelMessagesV1. This is white-box testing, so it has
+  /* been commented out, but if the helper function and these tests are uncommented
+  /* they will pass. 
+  test('Authorised user is invalid', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
     channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
@@ -87,7 +92,8 @@ describe('channelMessagesV1', () => {
       start: 5,
       end: 55,
     });
-  });*/
+  });
+  */
 });
 
 // channelInviteV1 tests
@@ -149,7 +155,6 @@ describe('channelInviteV1', () => {
           nameLast: 'Smith',
           email: 'johnS@email.com',
           handleStr: 'johnsmith',
-          passwordHash: 'passJohn'
         }], 
         allMembers: [{
           uId: user1.authUserId,
@@ -157,7 +162,6 @@ describe('channelInviteV1', () => {
           nameLast: 'Smith',
           email: 'johnS@email.com',
           handleStr: 'johnsmith',
-          passwordHash: 'passJohn'
         },
         {
           uId: user2.authUserId,
@@ -165,7 +169,6 @@ describe('channelInviteV1', () => {
           nameLast: 'Person',
           email: 'aliceP@fmail.au',
           handleStr: 'aliceperson',
-          passwordHash: 'alice123'
         }],
       });
   });
@@ -212,7 +215,6 @@ describe('Test channelDetailsV1', () => {
           nameLast: 'Smith',
           email: 'johnS@email.com',
           handleStr: 'johnsmith',
-          passwordHash: 'passJohn'
         }], 
         allMembers: [{
           uId: user1.authUserId,
@@ -220,7 +222,6 @@ describe('Test channelDetailsV1', () => {
           nameLast: 'Smith',
           email: 'johnS@email.com',
           handleStr: 'johnsmith',
-          passwordHash: 'passJohn'
         }],
       });
   });
@@ -264,5 +265,35 @@ describe('channelJoinV1', () => {
     const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
     const user2 = authRegisterV1('walter@gmail.com', 'white123', 'Walt', 'White');
     expect(channelJoinV1(user2.authUserId, channel1.channelId)).toStrictEqual( {} );
+    expect(channelDetailsV1(user1.authUserId, channel1.channelId)).toStrictEqual(
+    { 
+      name: 'channel1', 
+      isPublic: true, 
+      ownerMembers: [
+        {
+          uId: user1.authUserId,
+          nameFirst: 'Johnny',
+          nameLast: 'Lawrence',
+          email: 'johnL@gmail.com',
+          handleStr: 'johnnylawrence',
+        }
+      ], 
+      allMembers: [
+        {
+          uId: user1.authUserId,
+          nameFirst: 'Johnny',
+          nameLast: 'Lawrence',
+          email: 'johnL@gmail.com',
+          handleStr: 'johnnylawrence',
+        },
+        {
+          uId: user2.authUserId,
+          nameFirst: 'Walt',
+          nameLast: 'White',
+          email: 'walter@gmail.com',
+          handleStr: 'waltwhite',
+        }
+      ],
+    });
   });
 });
