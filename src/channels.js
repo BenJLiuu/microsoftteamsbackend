@@ -1,7 +1,20 @@
 import { getData, setData } from './dataStore.js';
 import { validUserId, checkUserIdtoChannel, removePassword } from './users.js';
 
-//Lists all channels according to authUserId
+/**
+  * Lists all channels that currently exists. Returns an error if authUserID isn't an authorised user
+  * 
+  * @param {integer} authUserId - The user ID of the person calling the function
+  * 
+  * @returns {error: 'Invalid Authorised User Id.'} - If the person calling the function is not an authorised user
+  * @returns {
+  *   channelId: integer,
+  *   name: string
+  * } - If the user calling the function is authorised and if there are currently any existing channels
+  * @returns {channels: []} - No channels have been created
+  * 
+*/
+
 function channelsListAllV1 (authUserId) {
   if (!validUserId(authUserId)) {
     return {
@@ -20,7 +33,20 @@ function channelsListAllV1 (authUserId) {
   return { channels: channel_list };
 }
 
-//Lists channels according to authUserID
+/**
+  * Lists the channels that given userId is a member of. Returns an error if authUserID isn't an authorised user
+  * 
+  * @param {integer} authUserId - The user ID of the person calling the function
+  * 
+  * @returns {error: 'Invalid Authorised User Id.'} - If the person calling the function is not an authorised user
+  * @returns {
+ *   channelId: integer,
+ *   name: string
+ * } - If the user calling the function is authorised and has joined a channel/s
+ * @returns {channels: []} - The user has not joined any channels
+ * 
+*/
+
 function channelsListV1(authUserId) {
   if (!validUserId(authUserId)) {
     return {
