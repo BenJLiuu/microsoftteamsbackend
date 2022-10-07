@@ -1,7 +1,25 @@
 import { getData, setData } from './dataStore.js';
-import { validUserId, validChannelId, checkUserIdtoChannel } from './users.js';
+import { validUserId, validChannelId, checkUserIdtoChannel, removePassword } from './users.js';
 
-// Sends a message from a user to a given channel, recording time sent.
+
+/**
+  * Returns an object containing all messages sent from a certain start point in
+  * a given channel, stopping at either 50 total messages or 
+  * 
+  * @param {integer} authUserId - The Id of the user attempting to see messages.
+  * @param {integer} channelId - The Id of the channel which messages are being returned.
+  * @param {integer} start - The number of messages from the most recent to begin returning messages.
+  * 
+  * @returns {
+  *   messages: array of user objects,
+  *   start: integer,
+  *   end: integer
+  * } - Object containing start offset, end offset, and array of message objects.
+  * @returns {error : 'Not valid channelId'} - If channelId was not found.
+  * @returns {error : 'Invalid Authorised User Id'} - If authUserId was not found.
+  * @returns {error : 'Start is greater than total messages'} - If start offset is greater than total messages in channel.
+  * @returns {error : 'Authorised user is not a channel member'} - authUserId is not in channel allMembers array.
+*/
 export function channelMessagesV1(authUserId, channelId, start) {
   if (!validChannelId(channelId)) return { error: 'Not valid channelId' }
   if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
@@ -41,8 +59,13 @@ export function channelMessagesV1(authUserId, channelId, start) {
 }
 
 
-/* Helper function intended to implement message sending for the sake of future 
-/* iterations of channel messages. 
+/** 
+  * Helper function intended to implement message sending for the sake of future 
+  * iterations of channel messages. If uncommented along with the white-box tests
+  * in channel.test.js, will pass. Will be redone in a black-box fashion in a 
+  * future iteration.
+  *  
+*/
 /*
 export function channelSendMessageV1 (authUserId, channelId, message) {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' }
@@ -66,7 +89,20 @@ export function channelSendMessageV1 (authUserId, channelId, message) {
 }
 */
 
-// Sends a user specific invite to a given channel 
+/**
+  * Sends a user specific invite to a given channel 
+  * 
+  * @param {integer} authUserId - Id of user sending the invite.
+  * @param {integer} channelId - Id of channel user is being invited to.
+  * @param {integer} uId - Id of user to be invited.
+  * 
+  * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
+  * @returns {error: 'Invalid User Id.'}  - uId does not correspond to an existing user.
+  * @returns {error: 'Invalid Authorised User Id.'} - authUserId does not correspond to an existing user.
+  * @returns {error: 'User is already a member.'} - uId corresponds to user already in channel.
+  * @returns {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
+  * @returns {} - uId has been succesfully invited to corresponding channel.
+*/
 export function channelInviteV1(authUserId, channelId, uId) {
 
   if (!validChannelId(channelId)) {
@@ -97,15 +133,32 @@ export function channelInviteV1(authUserId, channelId, uId) {
     
   const data = getData();
 
-  const index1 = data.users.findIndex(user => user.uId === uId);
-  const index2 = data.channels.findIndex(channel => channel.channelId === channelId);
-  data.channels[index2].allMembers.push(data.users[index1]);
+  const userIndex = data.users.findIndex(user => user.uId === uId);
+  const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  const privateUser = removePassword(data.users[userIndex]);
+  data.channels[channelIndex].allMembers.push(privateUser);
 
   setData(data);
   return {};
 }
 
-// Provides the details of the owner and members of a given channel
+/**
+  * Provides the details of the owner and members of a given channel.
+  * 
+  * @param {integer} authUserId - Id of user sending the invite.
+  * @param {integer} channelId - Id of channel user is being invited to.
+  * ...
+  * 
+  * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
+  * @returns {error: 'Invalid Authorised User Id.'} - authUserId does not correspond to an existing user.
+  * @returns {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
+  * @returns {
+  *   name: string,
+  *   isPublic: Boolean,
+  *   ownerMembers: array of user objects,
+  *   allMembers: array of user objects
+  * } - Channel successfully examined by authUserId.
+*/
 export function channelDetailsV1(authUserId, channelId) {
 
   if (!validChannelId(channelId)) {
@@ -164,19 +217,21 @@ export function channelJoinV1(authUserId, channelId) {
   
   const channelIndex = data.channels.map(object => object.channelId).indexOf(channelId);
   const userIndex = data.users.findIndex(user => user.uId === authUserId);
-  if (data.channels[channelIndex].allMembers.includes(data.users[userIndex]) === true) {
+  const privateUser = removePassword(data.users[userIndex]);
+
+  if (data.channels[channelIndex].allMembers.some(user => user.uId === authUserId)) {
     return {
       error: 'You are already a member.'
     }
   }
   
   if (data.channels[channelIndex].isPublic === false 
-      && data.channels[channelIndex].allMembers.includes(authUserId) === false 
+      && data.channels[channelIndex].allMembers.includes(privateUser) === false 
       && data.users[0].uId !== authUserId) {
     return { error: 'You do not have access to this channel.' }
   }
 
-  data.channels[channelIndex].allMembers.push(data.users[userIndex]);
+  data.channels[channelIndex].allMembers.push(privateUser);
   setData(data);
   
   return {};
