@@ -1,12 +1,26 @@
-import {getData} from './dataStore.js';
+import { getData } from './dataStore.js';
 
 export function validUserId(authUserId) {
   const data = getData();
   return data.users.some(user => user.uId === authUserId);
 }
 
-// For a valid user, returns information about their user ID, email, first name, 
-// last name, and handle.
+/**
+  * For a valid user, returns information about a requested valid user profile
+  * 
+  * @param {integer} authUserId - Id of user sending the request to view the profile.
+  * @param {integer} uId - Id of user, whose profile is to be viewed.
+  * 
+  * @returns {error: 'authUserId is invalid.'} - authUserId does not correspond to an existing user.
+  * @returns {error: 'uId does not refer to a valid user.'}  - uId does not correspond to an existing user.
+  * @returns {
+  *   uId: integer,
+  *   nameFirst: string,
+  *   nameLast: string,
+  *   email: string,
+  *   handleStr: string
+  * } - Users verified and user profile is returned.
+*/
 export function userProfileV1 (authUserId, uId) {
   const data = getData();
 
@@ -41,8 +55,18 @@ export function checkUserIdtoChannel(authUserId, channelId) {
   let position = 0;
   for (let i = 0; i < data.channels.length; i++) {
       if (data.channels[i].channelId === channelId) {
-          position = i;
+        position = i;
       }
   }
-  return data.channels[position].allMembers.some(user => user === authUserId);
+  return data.channels[position].allMembers.some(user => user.uId === authUserId);
+}
+
+export function removePassword(user) {
+  return {
+    uId: user.uId,
+    email: user.email,
+    nameFirst: user.nameFirst,
+    nameLast: user.nameLast,
+    handleStr: user.handleStr,
+  };
 }

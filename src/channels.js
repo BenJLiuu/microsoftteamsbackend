@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore.js';
-import { validUserId, checkUserIdtoChannel } from './users.js';
+import { validUserId, checkUserIdtoChannel, removePassword } from './users.js';
 
 //Lists all channels according to authUserId
 function channelsListAllV1 (authUserId) {
@@ -17,7 +17,7 @@ function channelsListAllV1 (authUserId) {
     });
   }
 
-  return channel_list;
+  return { channels: channel_list };
 }
 
 //Lists channels according to authUserID
@@ -38,12 +38,22 @@ function channelsListV1(authUserId) {
     }
   }
 
-  return channel_list;
+  return { channels: channel_list };
 }
 
-// Create a channel as requested by a user, given the name of the channel
-// and whether it should be public/private.
-// Returns the new channel id.
+/**
+  * Creates a channel as requested by a user, and returns the new channels' id.
+  * Assigns the user that created the channel as the owner of that channel,
+  * as well as making them a normal member.
+  *
+  * @param {integer} authUserId - the channel creator's user ID
+  * @param {string} name - the new channel's name
+  * @param {boolean} isPublic - whether the new channel should be public or private
+  *
+  * @returns {channelId: integer} - if channel creation is successfull
+  * @returns {error: 'Invalid user permissions.'} - If user is not a valid user
+  * @returns {error: 'Channel name must be between 1-20 characters.'} - If channel name is too long/short
+*/
 function channelsCreateV1(authUserId, name, isPublic ) {
   if (!validUserId(authUserId)) return {
     error: "Invalid user permissions.",
@@ -65,14 +75,14 @@ function channelsCreateV1(authUserId, name, isPublic ) {
   };
 
   data.channels.push(newChannel);
-  const index1 = data.users.findIndex(user => user.uId === authUserId);
-  const index2 = data.channels.findIndex(channel => channel.channelId === newChannelId);
-  data.channels[index2].ownerMembers.push(data.users[index1]);
-  data.channels[index2].allMembers.push(data.users[index1]);
+  const userIndex = data.users.findIndex(user => user.uId === authUserId);
+  const channelIndex = data.channels.findIndex(channel => channel.channelId === newChannelId);
+  const privateUser = removePassword(data.users[userIndex]);
+
+  data.channels[channelIndex].ownerMembers.push(privateUser);
+  data.channels[channelIndex].allMembers.push(privateUser);
 
   setData(data);
-
-  console.log(newChannel);
 
   return { channelId: newChannel.channelId };
 }
