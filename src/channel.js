@@ -40,7 +40,11 @@ export function channelMessagesV1(authUserId, channelId, start) {
   return returnedMessages;
 }
 
-/*export function channelSendMessageV1 (authUserId, channelId, message) {
+
+/* Helper function intended to implement message sending for the sake of future 
+/* iterations of channel messages. 
+/*
+export function channelSendMessageV1 (authUserId, channelId, message) {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' }
   if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
 
@@ -59,7 +63,8 @@ export function channelMessagesV1(authUserId, channelId, start) {
   data.channels[index].messages.push(newMessage);
   setData(data);
   return { messageId: messageId };
-}*/
+}
+*/
 
 // Sends a user specific invite to a given channel 
 export function channelInviteV1(authUserId, channelId, uId) {
@@ -121,20 +126,20 @@ export function channelDetailsV1(authUserId, channelId) {
 
   const data = getData();
 
-  const index1 = data.users.findIndex(user => user.uId === authUserId);
-  const index2 = data.channels.findIndex(channel => channel.channelId === channelId);
+  const userIndex = data.users.findIndex(user => user.uId === authUserId);
+  const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
 
   setData(data);
   return {
-	  name: data.channels[index2].name,
-    isPublic: data.channels[index2].isPublic,
-	  ownerMembers: data.channels[index2].ownerMembers,
-    allMembers: data.channels[index2].allMembers,
+	  name: data.channels[channelIndex].name,
+    isPublic: data.channels[channelIndex].isPublic,
+	  ownerMembers: data.channels[channelIndex].ownerMembers,
+    allMembers: data.channels[channelIndex].allMembers,
   };
 }
 
 // Allows user to join channel given a UserId
-export function channelJoinV1(authUserId,channelId) {
+export function channelJoinV1(authUserId, channelId) {
 
   const data = getData();
   
@@ -144,6 +149,7 @@ export function channelJoinV1(authUserId,channelId) {
       i++;
     }
   }
+
   if (i === 0) {
     return {
       error: 'Invalid Channel Id.'
@@ -156,20 +162,21 @@ export function channelJoinV1(authUserId,channelId) {
     }
   }
   
-  const index = data.channels.map(object => object.channelId).indexOf(channelId);
-  if (data.channels[index].allMembers.includes(authUserId) === true) {
+  const channelIndex = data.channels.map(object => object.channelId).indexOf(channelId);
+  const userIndex = data.users.findIndex(user => user.uId === authUserId);
+  if (data.channels[channelIndex].allMembers.includes(data.users[userIndex]) === true) {
     return {
       error: 'You are already a member.'
     }
   }
   
-  if (data.channels[index].isPublic === false && data.channels[index].allMembers.includes(authUserId) === false && data.users[0].uId !== authUserId) {
-    return {
-      error: 'You do not have access to this channel.'
-    }
+  if (data.channels[channelIndex].isPublic === false 
+      && data.channels[channelIndex].allMembers.includes(authUserId) === false 
+      && data.users[0].uId !== authUserId) {
+    return { error: 'You do not have access to this channel.' }
   }
-  
-  data.channels[index].allMembers.push(authUserId);
+
+  data.channels[channelIndex].allMembers.push(data.users[userIndex]);
   setData(data);
   
   return {};

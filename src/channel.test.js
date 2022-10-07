@@ -37,7 +37,12 @@ describe('channelMessagesV1', () => {
     });
   });
 
-  /*test('Authorised user is invalid', () => {
+
+  /* These tests utilise the channelSendMessage helper function to test the 
+  /* functionality of channelMessagesV1. This is white-box testing, so it has
+  /* been commented out, but if the helper function and these tests are uncommented
+  /* they will pass. 
+  test('Authorised user is invalid', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = channelsCreateV1(user1.authUserId, 'channel1', true);
     channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
@@ -87,7 +92,8 @@ describe('channelMessagesV1', () => {
       start: 5,
       end: 55,
     });
-  });*/
+  });
+  */
 });
 
 // channelInviteV1 tests
