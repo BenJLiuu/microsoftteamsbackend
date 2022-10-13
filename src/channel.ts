@@ -47,7 +47,7 @@ export function channelMessagesV1(authUserId, channelId, start) {
   }
 
   messagesArray.sort(function(a, b) {
-    return new Date(a.timeSent) - new Date(b.timeSent);
+    return a.timeSent - b.timeSent;
   });
 
   const returnedMessages = {

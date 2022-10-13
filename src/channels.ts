@@ -81,7 +81,7 @@ function channelsListV1(authUserId: number): Channels | Error {
   * @returns {error: 'Invalid user permissions.'} - If user is not a valid user
   * @returns {error: 'Channel name must be between 1-20 characters.'} - If channel name is too long/short
 */
-function channelsCreateV1(authUserId: number, name: string, isPublic: Boolean): ChannelId | Error {
+function channelsCreateV1(authUserId: number, name: string, isPublic: boolean): ChannelId | Error {
   if (!validUserId(authUserId)) {
     return {
       error: 'Invalid user permissions.',
@@ -95,7 +95,6 @@ function channelsCreateV1(authUserId: number, name: string, isPublic: Boolean): 
 
   const data = getData();
   const newChannelId = Math.floor(Math.random() * 899999 + 100000);
-
   const newChannel = {
     channelId: newChannelId,
     name: name,

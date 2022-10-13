@@ -1,6 +1,8 @@
 import { authLoginV1, authRegisterV1 } from './../auth';
 import { clearV1 } from './../other';
 import { userProfileV1 } from './../users';
+// TEMPORARY WHITE BOX TESTING PRE-HTTP
+import { UserOmitPassword } from './../objects';
 
 // authRegisterV1 tests
 describe('Test authRegisterV1 ', () => {
@@ -56,16 +58,8 @@ describe('Test authRegisterV1 ', () => {
   test('Registration of existing handle', () => {
     const user1 = authRegisterV1('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
     const user2 = authRegisterV1('johnnymatey@gmail.com', 'password1234', 'Johnny', 'Mate');
-    const userConfirm = userProfileV1(user1.authUserId, user2.authUserId);
-    expect(userConfirm).toEqual({ 
-      user: { 
-        uId: expect.any(Number),
-        nameFirst: expect.any(String),
-        nameLast: expect.any(String),
-        email: expect.any(String),
-        handleStr: 'johnnymate0' 
-      }
-    });
+    const userConfirm = userProfileV1(user1.authUserId, user2.authUserId) as UserOmitPassword;
+    expect(userConfirm.user.handleStr).toStrictEqual('johnnymate0');
   });
 });
 

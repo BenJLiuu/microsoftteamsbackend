@@ -9,6 +9,10 @@ export type User = {
   passwordHash: number,
 };
 
+export type AuthUserId = {
+  userId: number;
+}
+
 export type PrivateUser = Omit<User, 'passwordHash'>;
 
 export type UserOmitPassword = {
@@ -26,8 +30,8 @@ export type Channel = {
   channelId: number,
   name: string,
   isPublic: boolean,
-  ownerMembers: number[],
-  allMembers: number[],
+  ownerMembers: PrivateUser[],
+  allMembers: PrivateUser[],
   messages: Message[],
 };
 

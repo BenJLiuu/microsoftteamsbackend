@@ -1,13 +1,13 @@
-import request from 'sync-request';
+/*import request from 'sync-request';
 import config from './../config.json';
 
 const OK = 200;
 const port = config.port;
 const url = config.url;
 
-/*
+
 Iteration 2
-*/
+
 describe('HTTP tests using Jest', () => {
   test('Test successful echo', () => {
     const res = request(
@@ -38,3 +38,4 @@ describe('HTTP tests using Jest', () => {
     expect(bodyObj).toEqual({ error: 'error' });
   });
 });
+*/
