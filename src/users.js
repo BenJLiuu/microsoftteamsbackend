@@ -1,10 +1,5 @@
 import { getData } from './dataStore.js';
 
-export function validUserId(authUserId) {
-  const data = getData();
-  return data.users.some(user => user.uId === authUserId);
-}
-
 /**
   * For a valid user, returns information about a requested valid user profile
   * 
@@ -43,30 +38,4 @@ export function userProfileV1 (authUserId, uId) {
   }
 
   return { user: userNoPass };
-}
-
-export function validChannelId(channelId) {
-  const data = getData();
-  return data.channels.some(channel => channel.channelId === channelId);
-}
-
-export function checkUserIdtoChannel(authUserId, channelId) {
-  const data = getData();
-  let position = 0;
-  for (let i = 0; i < data.channels.length; i++) {
-      if (data.channels[i].channelId === channelId) {
-        position = i;
-      }
-  }
-  return data.channels[position].allMembers.some(user => user.uId === authUserId);
-}
-
-export function removePassword(user) {
-  return {
-    uId: user.uId,
-    email: user.email,
-    nameFirst: user.nameFirst,
-    nameLast: user.nameLast,
-    handleStr: user.handleStr,
-  };
 }
