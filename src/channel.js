@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore.js';
-import { validUserId, validChannelId, checkUserIdtoChannel, removePassword } from './users.js';
+import { validUserId, validChannelId, checkUserIdtoChannel, removePassword } from './helper.ts';
 
 /**
   * Returns an object containing all messages sent from a certain start point in
