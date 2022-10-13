@@ -15,7 +15,7 @@ import { validUserId, checkUserIdtoChannel, removePassword } from './helper.ts';
   *
 */
 
-function channelsListAllV1 (authUserId) {
+function channelsListAllV1 (authUserId: number): Channels {
   if (!validUserId(authUserId)) {
     return {
       error: 'Invalid Authorised User Id.'
@@ -47,7 +47,7 @@ function channelsListAllV1 (authUserId) {
  *
 */
 
-function channelsListV1(authUserId) {
+function channelsListV1(authUserId: number): Channels {
   if (!validUserId(authUserId)) {
     return {
       error: 'Invalid Authorised User Id.'
@@ -80,7 +80,7 @@ function channelsListV1(authUserId) {
   * @returns {error: 'Invalid user permissions.'} - If user is not a valid user
   * @returns {error: 'Channel name must be between 1-20 characters.'} - If channel name is too long/short
 */
-function channelsCreateV1(authUserId, name, isPublic) {
+function channelsCreateV1(authUserId: number, name: string, isPublic: Boolean): ChannelId {
   if (!validUserId(authUserId)) {
     return {
       error: 'Invalid user permissions.',
