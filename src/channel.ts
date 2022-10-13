@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import { validUserId, validChannelId, checkUserIdtoChannel, removePassword } from './helper';
-import { Error, Message, MessageList, ChannelDetails } from './objects';
+import { Error, MessageList, ChannelDetails } from './objects';
 
 /**
   * Returns an object containing all messages sent from a certain start point in
@@ -17,7 +17,7 @@ import { Error, Message, MessageList, ChannelDetails } from './objects';
   * @returns {error : 'Authorised user is not a channel member'} - authUserId is not in channel allMembers array.
 */
 export function channelMessagesV1(authUserId: number, channelId: number, start: number): MessageList | Error {
-  if (!validChannelId(channelId)) return {error: 'Not valid channelId' };
+  if (!validChannelId(channelId)) return { error: 'Not valid channelId' };
   if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
 
   const data = getData();
@@ -96,11 +96,11 @@ export function channelSendMessageV1 (authUserId, channelId, message) {
   * @returns {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
   * @returns {} - uId has been succesfully invited to corresponding channel.
 */
-export function channelInviteV1(authUserId: number, channelId: number, uId: number): {} | Error {
+export function channelInviteV1(authUserId: number, channelId: number, uId: number): Record<string, never> | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
   if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
-  if (checkUserIdtoChannel(uId, channelId)) return { error: 'User is already a member.'};
+  if (checkUserIdtoChannel(uId, channelId)) return { error: 'User is already a member.' };
   if (!checkUserIdtoChannel(authUserId, channelId)) return { error: 'Authorised User is not a member.' };
 
   const data = getData();
@@ -156,7 +156,7 @@ export function channelDetailsV1(authUserId: number, channelId: number): Channel
   * @returns {} - authUserId successfully joins the specified channel.
   *
 */
-export function channelJoinV1(authUserId: number, channelId: number): {} | Error {
+export function channelJoinV1(authUserId: number, channelId: number): Record<string, never> | Error {
   const data = getData();
 
   if (!data.channels.some(channel => channel.channelId === channelId)) return { error: 'Invalid Channel Id.' };

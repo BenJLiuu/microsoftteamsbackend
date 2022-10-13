@@ -3,7 +3,7 @@ import { channelsCreateV1, channelsListAllV1, channelsListV1 } from './../channe
 import { channelDetailsV1, channelJoinV1 } from './../channel';
 import { clearV1 } from './../other';
 // TEMPORARY WHITE BOX TESTING PRE-HTTP
-import { UserOmitPassword, ChannelId, ChannelDetails, Channels, AuthUserId } from './../objects';
+import { ChannelId, Channels, AuthUserId } from './../objects';
 
 describe('Test channelsCreateV1 ', () => {
   beforeEach(() => {

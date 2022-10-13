@@ -13,7 +13,7 @@ import validator from 'validator';
   * @returns {error : 'Incorrect Password.'} - If email is found, but password is incorrect
   * @returns {error : 'Email Not Found.'} - If email was not found.
 */
-function authLoginV1(email: string, password: string): AuthUserId | Error{
+function authLoginV1(email: string, password: string): AuthUserId | Error {
   const data = getData();
   for (const user of data.users) {
     if (user.email === email) {

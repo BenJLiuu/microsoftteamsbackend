@@ -1,18 +1,17 @@
-import request from 'sync-request';
-import config from './../config.json';
+// import request from 'sync-request';
+// import config from './../config.json';
 
-const OK = 200;
-const port = config.port;
-const url = config.url;
+// const OK = 200;
+// const port = config.port;
+// const url = config.url;
 
-
-//Iteration 2
+// Iteration 2
 
 describe('HTTP tests using Jest', () => {
   test('stub', () => {
     expect(1).toStrictEqual(1);
   });
-  /*test('Test successful echo', () => {
+  /* test('Test successful echo', () => {
     const res = request(
       'GET',
             `${url}:${port}/echo`,
@@ -39,6 +38,5 @@ describe('HTTP tests using Jest', () => {
     const bodyObj = JSON.parse(res.body as string);
     expect(res.statusCode).toBe(OK);
     expect(bodyObj).toEqual({ error: 'error' });
-  });*/
+  }); */
 });
-

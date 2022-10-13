@@ -1,5 +1,5 @@
 import { getData } from './dataStore';
-import { User, UserOmitPassword, PrivateUser } from './objects';
+import { User, PrivateUser } from './objects';
 
 /**
  * Checks whether a user is valid (whether they exist in the database)

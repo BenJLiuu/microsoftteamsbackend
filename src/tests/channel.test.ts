@@ -4,7 +4,7 @@ import { clearV1 } from './../other';
 import { authRegisterV1 } from './../auth';
 
 // REMOVE THIS ONCE HTTP STUFF IS IMPLEMENTED
-import { ChannelId, AuthUserId }  from './../objects';
+import { ChannelId, AuthUserId } from './../objects';
 
 describe('channelMessagesV1', () => {
   beforeEach(() => {

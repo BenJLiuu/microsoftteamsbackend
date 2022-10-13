@@ -1,6 +1,6 @@
 import { getData } from './dataStore';
-import { User, UserOmitPassword, PrivateUser, Error } from './objects';
-import { removePassword } from './helper'
+import { UserOmitPassword, Error } from './objects';
+import { removePassword } from './helper';
 
 /**
   * For a valid user, returns information about a requested valid user profile
