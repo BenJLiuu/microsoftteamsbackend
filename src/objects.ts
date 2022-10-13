@@ -26,6 +26,12 @@ export type Message = {
   timeSent: number,
 };
 
+export type MessageList = {
+  messages: Message,
+  start: number,
+  end: number,
+}
+
 export type Channel = {
   channelId: number,
   name: string,
@@ -33,6 +39,13 @@ export type Channel = {
   ownerMembers: PrivateUser[],
   allMembers: PrivateUser[],
   messages: Message[],
+};
+
+export type ChannelDetails = {
+  name: string,
+  isPublic: boolean,
+  ownerMembers: PrivateUser[],
+  allMembers: PrivateUser[],
 };
 
 export type ChannelList = {

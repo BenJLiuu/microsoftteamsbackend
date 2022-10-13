@@ -7,7 +7,7 @@ import { setData } from './dataStore';
   *
   * @returns {} - function successfully resets all data directly at the data store.
 */
-function clearV1 () {
+function clearV1 (): {} {
   setData({
     users: [],
     channels: [],
