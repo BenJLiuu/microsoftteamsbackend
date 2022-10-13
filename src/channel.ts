@@ -10,11 +10,7 @@ import { Error, Messages, MessageList } from './objects';
   * @param {integer} channelId - The Id of the channel which messages are being returned.
   * @param {integer} start - The number of messages from the most recent to begin returning messages.
   *
-  * @returns {
-  *   messages: array of user objects,
-  *   start: integer,
-  *   end: integer
-  * } - Object containing start offset, end offset, and array of message objects.
+  * @returns MessageList - Object containing start offset, end offset, and array of message objects.
   * @returns {error : 'Not valid channelId'} - If channelId was not found.
   * @returns {error : 'Invalid Authorised User Id'} - If authUserId was not found.
   * @returns {error : 'Start is greater than total messages'} - If start offset is greater than total messages in channel.
@@ -100,7 +96,7 @@ export function channelSendMessageV1 (authUserId, channelId, message) {
   * @returns {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
   * @returns {} - uId has been succesfully invited to corresponding channel.
 */
-export function channelInviteV1(authUserId: number, channelId: number, uId: number): {} {
+export function channelInviteV1(authUserId: number, channelId: number, uId: number): {} | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
   if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
@@ -127,29 +123,12 @@ export function channelInviteV1(authUserId: number, channelId: number, uId: numb
   * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
   * @returns {error: 'Invalid Authorised User Id.'} - authUserId does not correspond to an existing user.
   * @returns {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
-  * @returns {
-  *   name: string,
-  *   isPublic: Boolean,
-  *   ownerMembers: array of user objects,
-  *   allMembers: array of user objects
-  * } - Channel successfully examined by authUserId.
+  * @returns ChannelDetails - Object containing channel successfully examined by authUserId.
 */
-export function channelDetailsV1(authUserId, channelId) {
-  if (!validChannelId(channelId)) {
-    return {
-      error: 'Invalid Channel Id.'
-    };
-  }
-  if (!validUserId(authUserId)) {
-    return {
-      error: 'Invalid Authorised User Id.'
-    };
-  }
-  if (!checkUserIdtoChannel(authUserId, channelId)) {
-    return {
-      error: 'Authorised User is not a member.'
-    };
-  }
+export function channelDetailsV1(authUserId: number, channelId: number): ChannelDetails | Error {
+  if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
+  if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
+  if (!checkUserIdtoChannel(authUserId, channelId)) return { error: 'Authorised User is not a member.' };
 
   const data = getData();
 
@@ -177,37 +156,17 @@ export function channelDetailsV1(authUserId, channelId) {
   * @returns {} - authUserId successfully joins the specified channel.
   *
 */
-export function channelJoinV1(authUserId, channelId) {
+export function channelJoinV1(authUserId: string, channelId: number): {} | Error {
   const data = getData();
 
-  let i = 0;
-  for (const chann of data.channels) {
-    if (channelId === chann.channelId) {
-      i++;
-    }
-  }
-
-  if (i === 0) {
-    return {
-      error: 'Invalid Channel Id.'
-    };
-  }
-
-  if (!validUserId(authUserId)) {
-    return {
-      error: 'Invalid User Id.'
-    };
-  }
+  if (!data.channels.some(channel => channel.channelId === channelId)) return { error: 'Invalid Channel Id.' };
+  if (!validUserId(authUserId)) return { error: 'Invalid User Id.' };
 
   const channelIndex = data.channels.map(object => object.channelId).indexOf(channelId);
   const userIndex = data.users.findIndex(user => user.uId === authUserId);
   const privateUser = removePassword(data.users[userIndex]);
 
-  if (data.channels[channelIndex].allMembers.some(user => user.uId === authUserId)) {
-    return {
-      error: 'You are already a member.'
-    };
-  }
+  if (data.channels[channelIndex].allMembers.some(user => user.uId === authUserId)) return { error: 'You are already a member.' };
 
   if (data.channels[channelIndex].isPublic === false &&
       data.channels[channelIndex].allMembers.includes(privateUser) === false &&

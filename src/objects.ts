@@ -32,9 +32,16 @@ export type Channel = {
   channelId: number,
   name: string,
   isPublic: boolean,
-  ownerMembers: number[],
-  allMembers: number[],
+  ownerMembers: PrivateUser[],
+  allMembers: PrivateUser[],
   messages: Message[],
+};
+
+export type ChannelDetails = {
+  name: string,
+  isPublic: boolean,
+  ownerMembers: PrivateUser[],
+  allMembers: PrivateUser[],
 };
 
 export type ChannelList = {
