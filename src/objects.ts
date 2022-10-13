@@ -22,6 +22,12 @@ export type Message = {
   timeSent: number,
 };
 
+export type MessageList = {
+  messages: Message,
+  start: number,
+  end: number,
+}
+
 export type Channel = {
   channelId: number,
   name: string,

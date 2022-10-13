@@ -1,5 +1,6 @@
 import { getData, setData } from './dataStore';
 import { validUserId, validChannelId, checkUserIdtoChannel, removePassword } from './helper';
+import { Error, Messages, MessageList } from './objects';
 
 /**
   * Returns an object containing all messages sent from a certain start point in
@@ -19,18 +20,16 @@ import { validUserId, validChannelId, checkUserIdtoChannel, removePassword } fro
   * @returns {error : 'Start is greater than total messages'} - If start offset is greater than total messages in channel.
   * @returns {error : 'Authorised user is not a channel member'} - authUserId is not in channel allMembers array.
 */
-export function channelMessagesV1(authUserId, channelId, start) {
-  if (!validChannelId(channelId)) return { error: 'Not valid channelId' };
+export function channelMessagesV1(authUserId: number, channelId: number, start: number): MessageList | Error {
+  if (!validChannelId(channelId)) return {error: 'Not valid channelId' };
   if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
+
   const data = getData();
   const index = data.channels.findIndex(channel => channel.channelId === channelId);
   if (start > data.channels[index].messages.length) return { error: 'Start is greater than total messages' };
 
-  if (Boolean(data.channels[index].allMembers.some(users => users.uId === authUserId)) === false) {
-    return {
-      error: 'Authorised user is not a channel member'
-    };
-  }
+  const isChannelMember = data.channels[index].allMembers.some(users => users.uId === authUserId);
+  if (!isChannelMember) return { error: 'Authorised user is not a channel member' };
 
   let end = 0;
   if (data.channels[index].messages.length + start > 50) {
@@ -50,13 +49,11 @@ export function channelMessagesV1(authUserId, channelId, start) {
     return new Date(a.timeSent) - new Date(b.timeSent);
   });
 
-  const returnedMessages = {
+  return {
     messages: messagesArray,
     start: start,
     end: end,
   };
-
-  return returnedMessages;
 }
 
 /**
