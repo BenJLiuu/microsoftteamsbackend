@@ -2,7 +2,7 @@ import { authLoginV1, authRegisterV1 } from './../auth';
 import { clearV1 } from './../other';
 import { userProfileV1 } from './../users';
 // TEMPORARY WHITE BOX TESTING PRE-HTTP
-import { UserOmitPassword } from './../objects';
+import { UserOmitPassword, AuthUserId } from './../objects';
 
 // authRegisterV1 tests
 describe('Test authRegisterV1 ', () => {
@@ -56,8 +56,8 @@ describe('Test authRegisterV1 ', () => {
   });
 
   test('Registration of existing handle', () => {
-    const user1 = authRegisterV1('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
-    const user2 = authRegisterV1('johnnymatey@gmail.com', 'password1234', 'Johnny', 'Mate');
+    const user1 = authRegisterV1('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate') as AuthUserId;
+    const user2 = authRegisterV1('johnnymatey@gmail.com', 'password1234', 'Johnny', 'Mate') as AuthUserId;
     const userConfirm = userProfileV1(user1.authUserId, user2.authUserId) as UserOmitPassword;
     expect(userConfirm.user.handleStr).toStrictEqual('johnnymate0');
   });
@@ -71,24 +71,27 @@ describe('Test authLoginV1 ', () => {
   });
 
   test('Successful login', () => {
-    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(authLoginV1('johnS@email.com', 'passJohn').authUserId).toStrictEqual(user1.authUserId);
-    const user3 = authRegisterV1('jamieS@later.co', '&##@P', 'Jamie', 'Son');
-    expect(authLoginV1('aliceP@fmail.au', 'alice123').authUserId).toStrictEqual(user2.authUserId);
-    expect(authLoginV1('jamieS@later.co', '&##@P').authUserId).toStrictEqual(user3.authUserId);
+    const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith') as AuthUserId;
+    const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person') as AuthUserId;
+    const user1login = authLoginV1('johnS@email.com', 'passJohn') as AuthUserId;
+    const user2login = authLoginV1('aliceP@fmail.au', 'alice123') as AuthUserId;
+    expect(user1login.authUserId).toStrictEqual(user1.authUserId);
+    const user3 = authRegisterV1('jamieS@later.co', '&##@P', 'Jamie', 'Son') as AuthUserId;
+    const user3login = authLoginV1('jamieS@later.co', '&##@P') as AuthUserId;
+    expect(user2login.authUserId).toStrictEqual(user2.authUserId);
+    expect(user3login.authUserId).toStrictEqual(user3.authUserId);
   });
 
   test('Invalid password', () => {
-    authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith') as AuthUserId;
+    authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person') as AuthUserId;
     expect(authLoginV1('johnS@email.com', 'wrongpassword')).toStrictEqual({ error: 'Incorrect Password.' });
     expect(authLoginV1('not@person.co', 'abc123')).toStrictEqual({ error: 'Email Not Found.' });
   });
 
   test('Invalid email', () => {
-    authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith') as AuthUserId;
+    authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person') as AuthUserId;
     expect(authLoginV1('not@person.co', 'abc123')).toStrictEqual({ error: 'Email Not Found.' });
   });
 

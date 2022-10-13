@@ -1,6 +1,7 @@
 import { clearV1 } from './../other';
 import { authRegisterV1 } from './../auth';
 import { userProfileV1 } from './../users';
+import { AuthUserId } from './../objects';
 
 describe('userProfileV1', () => {
   beforeEach(() => {
@@ -8,19 +9,19 @@ describe('userProfileV1', () => {
   });
 
   test('authUserId is invalid', () => {
-    const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person') as AuthUserId;
     expect(userProfileV1(0, user2.authUserId)).toStrictEqual({ error: 'authUserId is invalid.' });
   });
 
   test('uId does not refer to a valid user', () => {
-    const user1 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user1 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person') as AuthUserId;
     expect(userProfileV1(user1.authUserId, 0)).toStrictEqual({ error: 'uId does not refer to a valid user.' });
   });
 
   test('Returns user object for a valid user', () => {
     clearV1();
-    const user1 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    const user2 = authRegisterV1('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const user1 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person') as AuthUserId;
+    const user2 = authRegisterV1('johnmate@gmail.com', 'password123', 'John', 'Mate') as AuthUserId;
     expect(userProfileV1(user2.authUserId, user1.authUserId)).toStrictEqual({
       user: {
         uId: user1.authUserId,
@@ -34,8 +35,8 @@ describe('userProfileV1', () => {
 
   test('Returns user object for multiple valid users', () => {
     clearV1();
-    const user1 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    const user2 = authRegisterV1('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const user1 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person') as AuthUserId;
+    const user2 = authRegisterV1('johnmate@gmail.com', 'password123', 'John', 'Mate') as AuthUserId;
     expect(userProfileV1(user1.authUserId, user2.authUserId)).toStrictEqual({
       user: {
         uId: user2.authUserId,

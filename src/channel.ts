@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import { validUserId, validChannelId, checkUserIdtoChannel, removePassword } from './helper';
-import { Error, Message, MessageList } from './objects';
+import { Error, Message, MessageList, ChannelDetails } from './objects';
 
 /**
   * Returns an object containing all messages sent from a certain start point in

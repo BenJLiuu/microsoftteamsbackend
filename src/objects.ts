@@ -6,11 +6,11 @@ export type User = {
   nameLast: string,
   email: string,
   handleStr: string,
-  passwordHash: number,
+  passwordHash: string,
 };
 
 export type AuthUserId = {
-  userId: number;
+  authUserId: number;
 }
 
 export type PrivateUser = Omit<User, 'passwordHash'>;
