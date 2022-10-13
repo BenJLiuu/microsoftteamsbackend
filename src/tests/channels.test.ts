@@ -1,7 +1,7 @@
-import { authRegisterV1 } from './auth.ts';
-import { channelsCreateV1, channelsListAllV1, channelsListV1 } from './channels.ts';
-import { channelDetailsV1, channelJoinV1 } from './channel.ts';
-import { clearV1 } from './other.ts';
+import { authRegisterV1 } from './../auth';
+import { channelsCreateV1, channelsListAllV1, channelsListV1 } from './../channels';
+import { channelDetailsV1, channelJoinV1 } from './../channel';
+import { clearV1 } from './../other';
 
 // channelsCreateV1 tests
 

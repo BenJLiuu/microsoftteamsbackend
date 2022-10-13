@@ -1,6 +1,6 @@
-import { clearV1 } from './other.ts';
-import { authRegisterV1 } from './auth.ts';
-import { userProfileV1 } from './users.ts';
+import { clearV1 } from './../other';
+import { authRegisterV1 } from './../auth';
+import { userProfileV1 } from './../users';
 
 describe('userProfileV1', () => {
   beforeEach(() => {

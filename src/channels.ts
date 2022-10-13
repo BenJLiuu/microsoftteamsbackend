@@ -1,6 +1,6 @@
-import { getData, setData } from './dataStore.ts';
-import { validUserId, checkUserIdtoChannel, removePassword } from './helper.ts';
-import { Channels, ChannelId, Error } from './objects.ts';
+import { getData, setData } from './dataStore';
+import { validUserId, checkUserIdtoChannel, removePassword } from './helper';
+import { Channels, ChannelId, Error } from './objects';
 
 /**
   * Lists all channels that currently exists. Returns an error if authUserID isn't an authorised user
