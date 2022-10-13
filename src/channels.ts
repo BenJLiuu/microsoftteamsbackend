@@ -1,5 +1,6 @@
-import { getData, setData } from './dataStore.js';
+import { getData, setData } from './dataStore.ts';
 import { validUserId, checkUserIdtoChannel, removePassword } from './helper.ts';
+import { Channels, ChannelId, Error } from './objects.ts';
 
 /**
   * Lists all channels that currently exists. Returns an error if authUserID isn't an authorised user
@@ -15,7 +16,7 @@ import { validUserId, checkUserIdtoChannel, removePassword } from './helper.ts';
   *
 */
 
-function channelsListAllV1 (authUserId: number): Channels {
+function channelsListAllV1 (authUserId: number): Channels | Error {
   if (!validUserId(authUserId)) {
     return {
       error: 'Invalid Authorised User Id.'
@@ -47,7 +48,7 @@ function channelsListAllV1 (authUserId: number): Channels {
  *
 */
 
-function channelsListV1(authUserId: number): Channels {
+function channelsListV1(authUserId: number): Channels | Error {
   if (!validUserId(authUserId)) {
     return {
       error: 'Invalid Authorised User Id.'
@@ -80,7 +81,7 @@ function channelsListV1(authUserId: number): Channels {
   * @returns {error: 'Invalid user permissions.'} - If user is not a valid user
   * @returns {error: 'Channel name must be between 1-20 characters.'} - If channel name is too long/short
 */
-function channelsCreateV1(authUserId: number, name: string, isPublic: Boolean): ChannelId {
+function channelsCreateV1(authUserId: number, name: string, isPublic: Boolean): ChannelId | Error {
   if (!validUserId(authUserId)) {
     return {
       error: 'Invalid user permissions.',

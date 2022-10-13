@@ -1,4 +1,6 @@
-const data = {
+import { Data } from './objects';
+
+let data = {
   users: [],
   channels: [],
 };
@@ -25,7 +27,7 @@ function getData(): Data {
 }
 
 // Use set(newData) to pass in the entire data object, with modifications made
-function setData(Data: newData) {
+function setData(newData: Data) {
   data = newData;
 }
 

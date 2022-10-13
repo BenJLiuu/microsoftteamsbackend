@@ -1,4 +1,4 @@
-import { setData } from './dataStore.js';
+import { setData } from './dataStore';
 
 /**
   * Clears all the data in the dataStore, for creating fresh datasets in testing.

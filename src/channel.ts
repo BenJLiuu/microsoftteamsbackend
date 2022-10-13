@@ -1,4 +1,4 @@
-import { getData, setData } from './dataStore.js';
+import { getData, setData } from './dataStore.ts';
 import { validUserId, validChannelId, checkUserIdtoChannel, removePassword } from './helper.ts';
 
 /**

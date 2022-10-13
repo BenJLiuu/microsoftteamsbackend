@@ -9,7 +9,11 @@ export type User = {
   passwordHash: number,
 };
 
-export type UserOmitPassword = Omit<User, 'passwordHash'>;
+export type PrivateUser = Omit<User, 'passwordHash'>;
+
+export type UserOmitPassword = {
+  user: PrivateUser,
+};
 
 export type Message = {
   messageId: number,
@@ -44,3 +48,7 @@ export type Data = {
   users: User[],
   channels: Channel[],
 };
+
+export type Error = {
+  error: string;
+}

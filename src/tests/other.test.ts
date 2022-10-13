@@ -1,5 +1,5 @@
-import { clearV1 } from './other.js';
-import { authRegisterV1, authLoginV1 } from './auth.js';
+import { clearV1 } from './other.ts';
+import { authRegisterV1, authLoginV1 } from './auth.ts';
 
 describe('Test clearV1 ', () => {
   beforeEach(() => {

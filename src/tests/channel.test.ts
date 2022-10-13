@@ -1,7 +1,7 @@
-import { channelInviteV1, channelDetailsV1, channelJoinV1, channelMessagesV1 } from './channel.js';
-import { channelsCreateV1 } from './channels.js';
-import { clearV1 } from './other.js';
-import { authRegisterV1 } from './auth.js';
+import { channelInviteV1, channelDetailsV1, channelJoinV1, channelMessagesV1 } from './../channel';
+import { channelsCreateV1 } from './../channels';
+import { clearV1 } from './../other';
+import { authRegisterV1 } from './../auth';
 
 describe('channelMessagesV1', () => {
   beforeEach(() => {

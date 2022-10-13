@@ -1,4 +1,6 @@
-import { getData } from './dataStore.js';
+import { getData } from './dataStore';
+import { User, UserOmitPassword, PrivateUser, Error } from './objects';
+import { removePassword } from './helper'
 
 /**
   * For a valid user, returns information about a requested valid user profile
@@ -16,7 +18,7 @@ import { getData } from './dataStore.js';
   *   handleStr: string
   * } - Users verified and user profile is returned.
 */
-export function userProfileV1 (authUserId, uId) {
+export function userProfileV1 (authUserId: number, uId: number): UserOmitPassword | Error {
   const data = getData();
 
   if (Boolean(data.users.find(user => user.uId === authUserId)) === false) {
@@ -28,16 +30,7 @@ export function userProfileV1 (authUserId, uId) {
   }
 
   const user = data.users.find(user => user.uId === uId);
+  const privateUser = removePassword(user);
 
-  const userNoPass = {
-    uId: user.uId,
-    nameFirst: user.nameFirst,
-    nameLast: user.nameLast,
-    email: user.email,
-    handleStr: user.handleStr,
-  };
-
-  return {
-    user: userNoPass,
-  };
+  return { user: privateUser };
 }
