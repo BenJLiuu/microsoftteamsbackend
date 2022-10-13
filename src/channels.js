@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore.js';
-import { validUserId, checkUserIdtoChannel, removePassword } from './users.js';
+import { validUserId, checkUserIdtoChannel, removePassword } from './helper.ts';
 
 /**
   * Lists all channels that currently exists. Returns an error if authUserID isn't an authorised user
