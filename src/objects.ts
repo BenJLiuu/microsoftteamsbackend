@@ -27,7 +27,7 @@ export type Message = {
 };
 
 export type MessageList = {
-  messages: Message,
+  messages: Message[],
   start: number,
   end: number,
 }

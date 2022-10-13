@@ -3,7 +3,7 @@ import { channelsCreateV1, channelsListAllV1, channelsListV1 } from './../channe
 import { channelDetailsV1, channelJoinV1 } from './../channel';
 import { clearV1 } from './../other';
 // TEMPORARY WHITE BOX TESTING PRE-HTTP
-import { UserOmitPassword, ChannelId } from './../objects';
+import { UserOmitPassword, ChannelId, ChannelDetails } from './../objects';
 
 describe('Test channelsCreateV1 ', () => {
   beforeEach(() => {
@@ -186,7 +186,7 @@ describe('Test channelsListAllv1 ', () => {
   test('invalid authuserid', () => {
     const user1 = authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = channelsCreateV1(user1.authUserId, 'general', true) as ChannelId;
-    channelJoinV1(user1.authUserId, channel1);
+    channelJoinV1(user1.authUserId, channel1.channelId);
     expect(channelsListV1(user1.authUserId + 1)).toStrictEqual({ error: 'Invalid Authorised User Id.' });
   });
 });

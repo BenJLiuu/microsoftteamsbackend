@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import { validUserId, validChannelId, checkUserIdtoChannel, removePassword } from './helper';
-import { Error, Messages, MessageList } from './objects';
+import { Error, Message, MessageList } from './objects';
 
 /**
   * Returns an object containing all messages sent from a certain start point in
@@ -156,7 +156,7 @@ export function channelDetailsV1(authUserId: number, channelId: number): Channel
   * @returns {} - authUserId successfully joins the specified channel.
   *
 */
-export function channelJoinV1(authUserId: string, channelId: number): {} | Error {
+export function channelJoinV1(authUserId: number, channelId: number): {} | Error {
   const data = getData();
 
   if (!data.channels.some(channel => channel.channelId === channelId)) return { error: 'Invalid Channel Id.' };

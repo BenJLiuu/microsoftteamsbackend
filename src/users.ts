@@ -32,5 +32,5 @@ export function userProfileV1 (authUserId: number, uId: number): UserOmitPasswor
   const user = data.users.find(user => user.uId === uId);
   const privateUser = removePassword(user);
 
-  return { user: privateUser } as UserOmitPassword;
+  return { user: privateUser };
 }
