@@ -1,5 +1,6 @@
-import { clearV1 } from './other.js';
-import { authRegisterV1, authLoginV1 } from './auth.js';
+import { clearV1 } from './../other';
+import { authRegisterV1, authLoginV1 } from './../auth';
+import { AuthUserId } from './../objects';
 
 describe('Test clearV1 ', () => {
   beforeEach(() => {
@@ -7,9 +8,9 @@ describe('Test clearV1 ', () => {
   });
 
   test('authLogin error, user data cleared', () => {
-    authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith');
-    authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    authRegisterV1('jamieS@later.co', '&##@P', 'Jamie', 'Son');
+    authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith') as AuthUserId;
+    authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person') as AuthUserId;
+    authRegisterV1('jamieS@later.co', '&##@P', 'Jamie', 'Son') as AuthUserId;
     clearV1();
     expect(authLoginV1('johnS@email.com', 'passJohn')).toStrictEqual({ error: 'Email Not Found.' });
     expect(authLoginV1('aliceP@fmail.au', 'alice123')).toStrictEqual({ error: 'Email Not Found.' });

@@ -1,4 +1,5 @@
-import { getData, setData } from './dataStore.js';
+import { getData, setData } from './dataStore';
+import { AuthUserId, Error } from './objects';
 import validator from 'validator';
 
 /**
@@ -12,7 +13,7 @@ import validator from 'validator';
   * @returns {error : 'Incorrect Password.'} - If email is found, but password is incorrect
   * @returns {error : 'Email Not Found.'} - If email was not found.
 */
-function authLoginV1(email, password) {
+function authLoginV1(email: string, password: string): AuthUserId | Error {
   const data = getData();
   for (const user of data.users) {
     if (user.email === email) {
@@ -36,7 +37,7 @@ function authLoginV1(email, password) {
 }
 
 // Returns true if a character in a string is a number
-function isNumber(char) {
+function isNumber(char: string): boolean {
   return /^\d$/.test(char);
 }
 
@@ -57,7 +58,7 @@ function isNumber(char) {
   * @returns {error: Invalid Last Name.'} - if last name is too short/long
 */
 
-function authRegisterV1(email, password, nameFirst, nameLast) {
+function authRegisterV1(email: string, password: string, nameFirst: string, nameLast: string): AuthUserId | Error {
   const data = getData();
 
   if (validator.isEmail(email) === false) {

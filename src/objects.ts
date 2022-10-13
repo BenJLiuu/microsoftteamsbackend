@@ -1,28 +1,71 @@
 // User and Channel objects based on data.md file
 
 export type User = {
-    uId: number,
-    nameFirst: string,
-    nameLast: string,
-    email: string,
-    handleStr: string,
-    passwordHash: number,
+  uId: number,
+  nameFirst: string,
+  nameLast: string,
+  email: string,
+  handleStr: string,
+  passwordHash: string,
 };
 
-export type UserOmitPassword = Omit<User, 'passwordHash'>;
+export type AuthUserId = {
+  authUserId: number;
+}
+
+export type PrivateUser = Omit<User, 'passwordHash'>;
+
+export type UserOmitPassword = {
+  user: PrivateUser,
+};
 
 export type Message = {
-    messageId: number,
-    uId: number,
-    message: string,
-    timeSent: number,
+  messageId: number,
+  uId: number,
+  message: string,
+  timeSent: number,
 };
 
+export type MessageList = {
+  messages: Message[],
+  start: number,
+  end: number,
+}
+
 export type Channel = {
-    channelId: number,
-    name: string,
-    isPublic: boolean,
-    ownerMembers: number[],
-    allMembers: number[],
-    messages: Message[],
+  channelId: number,
+  name: string,
+  isPublic: boolean,
+  ownerMembers: PrivateUser[],
+  allMembers: PrivateUser[],
+  messages: Message[],
 };
+
+export type ChannelDetails = {
+  name: string,
+  isPublic: boolean,
+  ownerMembers: PrivateUser[],
+  allMembers: PrivateUser[],
+};
+
+export type ChannelList = {
+  channelId: number,
+  name: string,
+};
+
+export type Channels = {
+  channels: ChannelList[],
+};
+
+export type ChannelId = {
+  channelId: number,
+};
+
+export type Data = {
+  users: User[],
+  channels: Channel[],
+};
+
+export type Error = {
+  error: string;
+}

@@ -1,4 +1,4 @@
-import { setData } from './dataStore.js';
+import { setData } from './dataStore';
 
 /**
   * Clears all the data in the dataStore, for creating fresh datasets in testing.
@@ -7,7 +7,7 @@ import { setData } from './dataStore.js';
   *
   * @returns {} - function successfully resets all data directly at the data store.
 */
-function clearV1 () {
+function clearV1 (): Record<string, never> {
   setData({
     users: [],
     channels: [],

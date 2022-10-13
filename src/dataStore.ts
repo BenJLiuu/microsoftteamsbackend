@@ -1,3 +1,4 @@
+import { Data } from './objects';
 
 let data = {
   users: [],
@@ -21,12 +22,12 @@ Example usage
 */
 
 // Use get() to access the data
-function getData() {
+function getData(): Data {
   return data;
 }
 
 // Use set(newData) to pass in the entire data object, with modifications made
-function setData(newData) {
+function setData(newData: Data) {
   data = newData;
 }
 

@@ -1,5 +1,5 @@
-import { getData } from './dataStore.ts';
-import { User, UserOmitPassword } from '.objects.ts';
+import { getData } from './dataStore';
+import { User, PrivateUser } from './objects';
 
 /**
  * Checks whether a user is valid (whether they exist in the database)
@@ -53,7 +53,7 @@ export function checkUserIdtoChannel(authUserId : number, channelId : number) : 
  *   handleStr: string
  * } - a user but without the password key
  */
-export function removePassword(user : User) : UserOmitPassword {
+export function removePassword(user : User) : PrivateUser {
   return {
     uId: user.uId,
     email: user.email,
