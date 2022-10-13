@@ -100,32 +100,12 @@ export function channelSendMessageV1 (authUserId, channelId, message) {
   * @returns {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
   * @returns {} - uId has been succesfully invited to corresponding channel.
 */
-export function channelInviteV1(authUserId, channelId, uId) {
-  if (!validChannelId(channelId)) {
-    return {
-      error: 'Invalid Channel Id.'
-    };
-  }
-  if (!validUserId(uId)) {
-    return {
-      error: 'Invalid User Id.'
-    };
-  }
-  if (!validUserId(authUserId)) {
-    return {
-      error: 'Invalid Authorised User Id.'
-    };
-  }
-  if (checkUserIdtoChannel(uId, channelId)) {
-    return {
-      error: 'User is already a member.'
-    };
-  }
-  if (!checkUserIdtoChannel(authUserId, channelId)) {
-    return {
-      error: 'Authorised User is not a member.'
-    };
-  }
+export function channelInviteV1(authUserId: number, channelId: number, uId: number): {} {
+  if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
+  if (!validUserId(uId)) return { error: 'Invalid User Id.' };
+  if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
+  if (checkUserIdtoChannel(uId, channelId)) return { error: 'User is already a member.'};
+  if (!checkUserIdtoChannel(authUserId, channelId)) return { error: 'Authorised User is not a member.' };
 
   const data = getData();
 
