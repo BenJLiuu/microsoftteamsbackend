@@ -38,6 +38,6 @@ export function userProfileV1 (authUserId, uId) {
   };
 
   return {
-    user: userNoPass
+    user: userNoPass,
   };
 }

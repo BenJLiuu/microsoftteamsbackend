@@ -9,7 +9,7 @@ export type User = {
     passwordHash: number,
 };
 
-type UserNoPassword = Without<User, "passwordHash">;
+export type UserOmitPassword = Omit<User, 'passwordHash'>;
 
 export type Message = {
     messageId: number,
