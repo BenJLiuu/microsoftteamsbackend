@@ -1,9 +1,8 @@
 function echo(value: string) {
-    if (value === 'echo') {
-      return { error: 'error' };
-    }
-    return value;
+  if (value === 'echo') {
+    return { error: 'error' };
   }
-  
-  export { echo };
-  
+  return value;
+}
+
+export { echo };
