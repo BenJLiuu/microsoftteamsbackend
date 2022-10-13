@@ -3,11 +3,11 @@ import validator from 'validator';
 
 /**
   * Logs in a user and returns their user Id.
-  * 
+  *
   * @param {string} email - the users' email
   * @param {string} password - the users' password, unencrypted
   * ...
-  * 
+  *
   * @returns {authUserId : integer} - If login is successful
   * @returns {error : 'Incorrect Password.'} - If email is found, but password is incorrect
   * @returns {error : 'Email Not Found.'} - If email was not found.
@@ -15,29 +15,27 @@ import validator from 'validator';
 function authLoginV1(email, password) {
   const data = getData();
   for (const user of data.users) {
-
     if (user.email === email) {
       // Found an email match
       if (user.passwordHash === password) {
         return {
           authUserId: user.uId,
-        }
+        };
       } else {
         // Email found, but password was incorrect
         return {
-          error: 'Incorrect Password.' 
-        }
+          error: 'Incorrect Password.'
+        };
       }
     }
-
   }
   // If nothing has been returned, user has not been found.
   return {
-    error: 'Email Not Found.' 
-  }
+    error: 'Email Not Found.'
+  };
 }
 
-//Returns true if a character in a string is a number 
+// Returns true if a character in a string is a number
 function isNumber(char) {
   return /^\d$/.test(char);
 }
@@ -61,42 +59,41 @@ function isNumber(char) {
 
 function authRegisterV1(email, password, nameFirst, nameLast) {
   const data = getData();
-  
+
   if (validator.isEmail(email) === false) {
     return {
       error: 'Invalid Email Address.'
-    }
+    };
   }
-  
+
   for (const user of data.users) {
     if (user.email === email) {
       return {
         error: 'Email Already in Use.'
-      }
+      };
     }
   }
-  
+
   if (password.length < 6) {
     return {
       error: 'Password too Short.'
-    }
+    };
   }
-  
+
   if (nameFirst.length < 1 || nameFirst.length > 50) {
     return {
       error: 'Invalid First Name.'
-    }
+    };
   }
-  
+
   if (nameLast.length < 1 || nameLast.length > 50) {
     return {
       error: 'Invalid Last Name.'
-    }
+    };
   }
 
   if (/[^a-zA-Z]/.test(nameFirst)) return { error: 'Invalid First Name.' };
   if (/[^a-zA-Z]/.test(nameLast)) return { error: 'Invalid Last Name.' };
-  
 
   let newUId = new Date().getTime();
   for (const user of data.users) {
@@ -104,34 +101,30 @@ function authRegisterV1(email, password, nameFirst, nameLast) {
       newUId = newUId + Math.floor(Math.random() * (1000 - 1 + 1)) + 1;
     }
   }
-  
+
   let handleString = nameFirst + nameLast;
   handleString = handleString.toLowerCase();
   handleString = handleString.replace(/[^a-z0-9]/gi, '');
   if (handleString.length > 20) {
-    handleString = handleString.substring(0,20);
+    handleString = handleString.substring(0, 20);
   }
-  
+
   let i = 0;
-  let doesNotExist = true;
-  
+  let HandleStringExists = false;
+
   for (const user of data.users) {
     if (handleString === user.handleStr) {
       i = 0;
-      doesNotExist = false;
-    } else if ((handleString === user.handleStr.substring(0,handleString.length) === true) && (isNumber(user.handleStr[user.handleStr.length - 1]) === true)) {
+      HandleStringExists = true;
+    } else if ((handleString === user.handleStr.substring(0, handleString.length) === true) && (isNumber(user.handleStr[user.handleStr.length - 1]) === true)) {
       i++;
-    } 
+    }
   }
-  
-  if (i === 0 && doesNotExist === true) {
-    handleString = handleString;
-  } else if (i === 0) {
-    handleString += '0';
-  } else if (i > 0) {
+
+  if (HandleStringExists) {
     handleString += i;
   }
-  
+
   const newUser = {
     uId: newUId,
     nameFirst: nameFirst,
@@ -139,14 +132,14 @@ function authRegisterV1(email, password, nameFirst, nameLast) {
     email: email,
     handleStr: handleString,
     passwordHash: password
-  }
-  
+  };
+
   data.users.push(newUser);
   setData(data);
-  
+
   return {
     authUserId: data.users[data.users.length - 1].uId
-  }
+  };
 }
 
-export { authLoginV1, authRegisterV1 }
+export { authLoginV1, authRegisterV1 };

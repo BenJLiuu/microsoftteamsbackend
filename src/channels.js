@@ -3,68 +3,68 @@ import { validUserId, checkUserIdtoChannel, removePassword } from './users.js';
 
 /**
   * Lists all channels that currently exists. Returns an error if authUserID isn't an authorised user
-  * 
+  *
   * @param {integer} authUserId - The user ID of the person calling the function
-  * 
+  *
   * @returns {error: 'Invalid Authorised User Id.'} - If the person calling the function is not an authorised user
   * @returns {
   *   channelId: integer,
   *   name: string
   * } - If the user calling the function is authorised and if there are currently any existing channels
   * @returns {channels: []} - No channels have been created
-  * 
+  *
 */
 
 function channelsListAllV1 (authUserId) {
   if (!validUserId(authUserId)) {
     return {
       error: 'Invalid Authorised User Id.'
-    }
-  } 
+    };
+  }
   const data = getData();
-  const channel_list = [];
-  for (let i of data.channels) {
-    channel_list.push({
+  const channelList = [];
+  for (const i of data.channels) {
+    channelList.push({
       channelId: i.channelId,
       name: i.name
     });
   }
 
-  return { channels: channel_list };
+  return { channels: channelList };
 }
 
 /**
   * Lists the channels that given userId is a member of. Returns an error if authUserID isn't an authorised user
-  * 
+  *
   * @param {integer} authUserId - The user ID of the person calling the function
-  * 
+  *
   * @returns {error: 'Invalid Authorised User Id.'} - If the person calling the function is not an authorised user
   * @returns {
  *   channelId: integer,
  *   name: string
  * } - If the user calling the function is authorised and has joined a channel/s
  * @returns {channels: []} - The user has not joined any channels
- * 
+ *
 */
 
 function channelsListV1(authUserId) {
   if (!validUserId(authUserId)) {
     return {
       error: 'Invalid Authorised User Id.'
-    }
-  } 
+    };
+  }
   const data = getData();
-  const channel_list = [];
-  for (let i of data.channels) {
+  const channelList = [];
+  for (const i of data.channels) {
     if (checkUserIdtoChannel(authUserId, i.channelId)) {
-      channel_list.push({
+      channelList.push({
         channelId: i.channelId,
         name: i.name
       });
     }
   }
 
-  return { channels: channel_list };
+  return { channels: channelList };
 }
 
 /**
@@ -80,13 +80,17 @@ function channelsListV1(authUserId) {
   * @returns {error: 'Invalid user permissions.'} - If user is not a valid user
   * @returns {error: 'Channel name must be between 1-20 characters.'} - If channel name is too long/short
 */
-function channelsCreateV1(authUserId, name, isPublic ) {
-  if (!validUserId(authUserId)) return {
-    error: "Invalid user permissions.",
-  };
-  if (name.length < 1 || name.length > 20) return {
-    error: "Channel name must be between 1-20 characters.",
-  };
+function channelsCreateV1(authUserId, name, isPublic) {
+  if (!validUserId(authUserId)) {
+    return {
+      error: 'Invalid user permissions.',
+    };
+  }
+  if (name.length < 1 || name.length > 20) {
+    return {
+      error: 'Channel name must be between 1-20 characters.',
+    };
+  }
 
   const data = getData();
   const newChannelId = Math.floor(Math.random() * 899999 + 100000);
