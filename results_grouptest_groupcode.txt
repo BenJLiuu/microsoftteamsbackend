@@ -1,0 +1,53 @@
+npm verb cli /import/kamen/3/cs1531/.nvm/versions/node/v18.10.0/bin/node /import/kamen/3/cs1531/.nvm/versions/node/v18.10.0/bin/npm
+npm info using npm@8.19.2
+npm info using node@v18.10.0
+npm timing npm:load:whichnode Completed in 0ms
+npm timing config:load:defaults Completed in 2ms
+npm timing config:load:file:/import/kamen/3/cs1531/.nvm/versions/node/v18.10.0/lib/node_modules/npm/npmrc Completed in 1ms
+npm timing config:load:builtin Completed in 1ms
+npm timing config:load:cli Completed in 3ms
+npm timing config:load:env Completed in 0ms
+npm timing config:load:file:/import/kamen/3/cs1531/project-automarking/tempstore/.npmrc Completed in 0ms
+npm timing config:load:project Completed in 7ms
+npm timing config:load:file:/import/kamen/3/cs1531/.npmrc Completed in 0ms
+npm timing config:load:user Completed in 0ms
+npm timing config:load:file:/import/kamen/3/cs1531/.nvm/versions/node/v18.10.0/etc/npmrc Completed in 0ms
+npm timing config:load:global Completed in 0ms
+npm timing config:load:validate Completed in 1ms
+npm timing config:load:credentials Completed in 0ms
+npm timing config:load:setEnvs Completed in 1ms
+npm timing config:load Completed in 15ms
+npm timing npm:load:configload Completed in 15ms
+npm timing npm:load:mkdirpcache Completed in 1ms
+npm timing npm:load:mkdirplogs Completed in 1ms
+npm verb title npm run test
+npm verb argv "run" "test" "--loglevel" "verbose"
+npm timing npm:load:setTitle Completed in 1ms
+npm timing config:load:flatten Completed in 2ms
+npm timing npm:load:display Completed in 5ms
+npm verb logfile logs-max:10 dir:/import/kamen/3/cs1531/.npm/_logs
+npm verb logfile /import/kamen/3/cs1531/.npm/_logs/2022-10-08T04_57_29_947Z-debug-0.log
+npm timing npm:load:logFile Completed in 4ms
+npm timing npm:load:timers Completed in 0ms
+npm timing npm:load:configScope Completed in 0ms
+npm timing npm:load Completed in 27ms
+
+> test
+> jest
+
+PASS src/echo.test.ts
+PASS src/auth.test.js
+PASS src/users.test.js
+PASS src/other.test.js
+PASS src/channels.test.js
+PASS src/channel.test.js
+
+Test Suites: 6 passed, 6 total
+Tests:       56 passed, 56 total
+Snapshots:   0 total
+Time:        2.015 s
+Ran all test suites.
+npm timing command:run Completed in 3722ms
+npm verb exit 0
+npm timing npm Completed in 3756ms
+npm info ok 

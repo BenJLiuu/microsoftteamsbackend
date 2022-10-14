@@ -1,0 +1,125 @@
+npm verb cli /import/kamen/3/cs1531/.nvm/versions/node/v18.10.0/bin/node /import/kamen/3/cs1531/.nvm/versions/node/v18.10.0/bin/npm
+npm info using npm@8.19.2
+npm info using node@v18.10.0
+npm timing npm:load:whichnode Completed in 0ms
+npm timing config:load:defaults Completed in 2ms
+npm timing config:load:file:/import/kamen/3/cs1531/.nvm/versions/node/v18.10.0/lib/node_modules/npm/npmrc Completed in 1ms
+npm timing config:load:builtin Completed in 1ms
+npm timing config:load:cli Completed in 2ms
+npm timing config:load:env Completed in 0ms
+npm timing config:load:file:/import/kamen/3/cs1531/project-automarking/tempstore/.npmrc Completed in 0ms
+npm timing config:load:project Completed in 5ms
+npm timing config:load:file:/import/kamen/3/cs1531/.npmrc Completed in 0ms
+npm timing config:load:user Completed in 1ms
+npm timing config:load:file:/import/kamen/3/cs1531/.nvm/versions/node/v18.10.0/etc/npmrc Completed in 0ms
+npm timing config:load:global Completed in 0ms
+npm timing config:load:validate Completed in 0ms
+npm timing config:load:credentials Completed in 1ms
+npm timing config:load:setEnvs Completed in 1ms
+npm timing config:load Completed in 13ms
+npm timing npm:load:configload Completed in 13ms
+npm timing npm:load:mkdirpcache Completed in 3ms
+npm timing npm:load:mkdirplogs Completed in 1ms
+npm verb title npm run test course_tests/
+npm verb argv "run" "test" "--loglevel" "verbose" "course_tests/"
+npm timing npm:load:setTitle Completed in 1ms
+npm timing config:load:flatten Completed in 2ms
+npm timing npm:load:display Completed in 5ms
+npm verb logfile logs-max:10 dir:/import/kamen/3/cs1531/.npm/_logs
+npm verb logfile /import/kamen/3/cs1531/.npm/_logs/2022-10-08T04_57_34_052Z-debug-0.log
+npm timing npm:load:logFile Completed in 5ms
+npm timing npm:load:timers Completed in 0ms
+npm timing npm:load:configScope Completed in 0ms
+npm timing npm:load Completed in 28ms
+
+> test
+> jest course_tests/
+
+PASS course_tests/tests/channel_tests/channelJoin.test.js
+PASS course_tests/tests/channels_tests/channelsCreate.test.js
+FAIL course_tests/tests/channel_tests/channelDetails.test.js
+  ● Test handles generated correctly › Should behave correctly for duplicate names
+
+    expect(received).toContainEqual(expected) // deep equality
+
+    Expected value: {"email": "blah1@email.com", "handleStr": "bcdefghjklmnopqrst", "nameFirst": "@bcdefgh!j", "nameLast": "klmn opqrst", "uId": undefined}
+    Received array: [{"email": "sheriff.woody@andysroom.com", "handleStr": "sheriffwoody", "nameFirst": "sheriff", "nameLast": "woody", "uId": 1665205056907}, {"email": "blah2@email.com", "handleStr": "bcdefghjklmnopqrst", "nameFirst": "bcdefghj", "nameLast": "klmnopqrst", "uId": 1665205056969}]
+
+      41 |       const expected1 = { uId: uId1, email: email1, nameFirst: first1, nameLast: last1, handleStr: handle1 };
+      42 |       const expected2 = { uId: uId2, email: email2, nameFirst: first2, nameLast: last2, handleStr: handle2 };
+    > 43 |       expect(chDeets.allMembers).toContainEqual(expected1);
+         |                                  ^
+      44 |       expect(chDeets.allMembers).toContainEqual(expected2);
+      45 |     }
+      46 |   );
+
+      at toContainEqual (course_tests/tests/channel_tests/channelDetails.test.js:43:34)
+
+  ● Test handles generated correctly › Should behave correctly for duplicate names
+
+    expect(received).toContainEqual(expected) // deep equality
+
+    Expected value: {"email": "blah1@email.com", "handleStr": "abcdef0", "nameFirst": "abc", "nameLast": "def0", "uId": undefined}
+    Received array: [{"email": "sheriff.woody@andysroom.com", "handleStr": "sheriffwoody", "nameFirst": "sheriff", "nameLast": "woody", "uId": 1665205057161}, {"email": "blah2@email.com", "handleStr": "abcdef0", "nameFirst": "abc", "nameLast": "def", "uId": 1665205056393}]
+
+      41 |       const expected1 = { uId: uId1, email: email1, nameFirst: first1, nameLast: last1, handleStr: handle1 };
+      42 |       const expected2 = { uId: uId2, email: email2, nameFirst: first2, nameLast: last2, handleStr: handle2 };
+    > 43 |       expect(chDeets.allMembers).toContainEqual(expected1);
+         |                                  ^
+      44 |       expect(chDeets.allMembers).toContainEqual(expected2);
+      45 |     }
+      46 |   );
+
+      at toContainEqual (course_tests/tests/channel_tests/channelDetails.test.js:43:34)
+
+PASS course_tests/tests/channel_tests/channelInvite.test.js
+PASS course_tests/tests/channels_tests/channelsList.test.js
+PASS course_tests/tests/auth_tests/authLogin.test.js
+FAIL course_tests/tests/channel_tests/channelMessages.test.js
+  ● Test successful no messages
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: -1
+    Received: 0
+
+      19 |   const res = channelMessagesV1(uIdWoody, chIdWoody, 0);
+      20 |   expect(res.start).toBe(0);
+    > 21 |   expect(res.end).toBe(-1);
+         |                   ^
+      22 |   expect(res.messages).toStrictEqual([]);
+      23 | });
+      24 |
+
+      at Object.toBe (course_tests/tests/channel_tests/channelMessages.test.js:21:19)
+
+PASS course_tests/tests/channels_tests/channelsListall.test.js
+PASS course_tests/tests/user_tests/userProfile.test.js
+FAIL course_tests/tests/auth_tests/authRegister.test.js
+  ● Test same password auth register
+
+    expect(received).toBeTruthy()
+
+    Received: false
+
+       97 | test('Test same password auth register', () => {
+       98 |   expect(isValid(authRegisterV1(EMAIL, PASSWORD, FIRST, LAST))).toBeTruthy();
+    >  99 |   expect(isValid(authRegisterV1('second.email@domain.com', PASSWORD, 'F2', 'L2'))).toBeTruthy();
+          |                                                                                    ^
+      100 | });
+      101 |
+      102 | test('Test same name auth register', () => {
+
+      at Object.toBeTruthy (course_tests/tests/auth_tests/authRegister.test.js:99:84)
+
+PASS course_tests/tests/other_tests/clear.test.js
+
+Test Suites: 3 failed, 8 passed, 11 total
+Tests:       4 failed, 58 passed, 62 total
+Snapshots:   0 total
+Time:        2.824 s
+Ran all test suites matching /course_tests\//i.
+npm timing command:run Completed in 4093ms
+npm verb exit 1
+npm timing npm Completed in 4127ms
+npm verb code 1
