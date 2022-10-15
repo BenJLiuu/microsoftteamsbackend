@@ -1,4 +1,5 @@
 import { Data } from './objects';
+import fs from 'fs';
 
 let data = {
   users: [],
@@ -21,7 +22,7 @@ Example usage
     setData(store)
 */
 
-// Use get() to access the data
+/*// Use get() to access the data
 function getData(): Data {
   return data;
 }
@@ -29,6 +30,18 @@ function getData(): Data {
 // Use set(newData) to pass in the entire data object, with modifications made
 function setData(newData: Data) {
   data = newData;
+}*/
+
+export function setData(newData: Data) {
+  const jsonstr = JSON.stringify(newData);
+  fs.writeFileSync('./database.json', jsonstr);
+  data = newData;
+}
+
+export function getData(): Data {
+  const dbstr = fs.readFileSync('./database.json');
+  data = JSON.parse(String(dbstr));
+  return data;
 }
 
 export { getData, setData };
