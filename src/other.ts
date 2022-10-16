@@ -11,7 +11,7 @@ function clearV1 (): Record<string, never> {
   setData({
     users: [],
     channels: [],
-    tokens: [],
+    sessions: [],
   });
   return {};
 }

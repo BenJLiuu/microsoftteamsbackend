@@ -144,6 +144,14 @@ function authRegisterV1(email: string, password: string, nameFirst: string, name
 }
 
 export function authLogoutV1(token: string): Record<string, never> {
+  const data = getData();
+  if (!(data.sessions.some(session => session.token === token))) return { error: 'Invalid token' };
+
+  const sessionIndex = data.sessions.findIndex(session => session.token === token)
+  data.sessions.splice(tokenIndex, 1);
+
+  setData(data);
+  return {};
 }
 
 export { authLoginV1, authRegisterV1 };
