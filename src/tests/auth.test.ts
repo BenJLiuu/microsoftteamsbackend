@@ -82,7 +82,12 @@ describe('Test authRegister ', () => {
   // Successful Registration tests
 
   test('Successful Registration', () => {
-    expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate')).toEqual({ authUserId: expect.any(Number) });
+    expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate')).toEqual(
+      { 
+        token: expect.any(String),
+        authUserId: expect.any(Number) 
+      }
+    );
   });
 
   test('Registration of existing handle', () => {
@@ -116,7 +121,6 @@ describe('Test authLogin ', () => {
       token: expect.any(String),
     });
     const user3 = requestAuthRegister('jamieS@later.co', '&##@PA', 'Jamie', 'Son');
-    console.log(user3);
     const user3login = requestAuthLogin('jamieS@later.co', '&##@PA');
     expect(user2login).toStrictEqual({
       authUserId: user2.authUserId,
