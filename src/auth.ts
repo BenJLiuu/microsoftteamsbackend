@@ -94,10 +94,8 @@ function authRegisterV2(email: string, password: string, nameFirst: string, name
   if (/[^a-zA-Z]/.test(nameFirst)) return { error: 'Invalid First Name.' };
   if (/[^a-zA-Z]/.test(nameLast)) return { error: 'Invalid Last Name.' };
 
-  let newUId = Math.floor(Math.random() * (100000 - 1 + 1)) + 1;
-  if (data.users.some(user => user.uId === newUId)) {
-    newUId = newUId + Math.floor(Math.random() * (1000 - 1 + 1)) + 1;
-  }
+  let newUId = 0
+  while (data.users.some(user => user.uId === newUId)) newUId++;
 
   let handleString = nameFirst + nameLast;
   handleString = handleString.toLowerCase();
