@@ -50,12 +50,12 @@ app.post('/channels/create/v2', (req: Request, res: Response) => {
 
 app.get('/channels/list/v2', (req: Request, res: Response) => {
   const authUserId = req.query.authUserId as string;
-  res.json(channelsListV1(authUserId));
+  res.json(channelsListV1(authUserId ? parseInt(authUserId) : undefined));
 });
 
 app.get('/channels/listAll/v2', (req: Request, res: Response) => {
   const authUserId = req.query.authUserId as string;
-  res.json(channelsListAllV1(authUserId));
+  res.json(channelsListAllV1(authUserId ? parseInt(authUserId) : undefined));
 });
 
 app.post('/channel/invite/v2', (req: Request, res: Response) => {
@@ -66,7 +66,7 @@ app.post('/channel/invite/v2', (req: Request, res: Response) => {
 app.get('/channel/details/v2', (req: Request, res: Response) => {
   const authUserId = req.query.authUserId;
   const channelId = req.query.authUserId;
-  res.json(channelDetailsV1(authUserId, channelId));
+  res.json(channelDetailsV1(authUserId ? parseInt(authUserId) : undefined, channelId ? parseInt(channelId) : undefined));
 });
 
 app.post('/channel/join/v2', (req: Request, res: Response) => {
@@ -77,13 +77,13 @@ app.post('/channel/join/v2', (req: Request, res: Response) => {
 app.get('/channel/messages/v2', (req: Request, res: Response) => {
   const channelId = req.query.channelId as string;
   const start = req.query.start as string;
-  res.json(channelMessages(channelId, start))
+  res.json(channelMessages(channelId ? parseInt(channelId) : undefined, start ? parseInt(start) : undefined));
 });
 
 app.get('/user/profile/v2', (req: Request, res: Response) => {
   const authUserId = req.query.authUserId as string;
   const uId = req.query.uId as string;
-  res.json(userProfileV1(authUserId, uId));
+  res.json(userProfileV1(authUserId ? parseInt(authUserId) : undefined, uId ? parseInt(uId) : undefined));
 });
 
 app.delete('/clear/v2', (req: Request, res: Response) => {

@@ -1,59 +1,35 @@
 import request from 'sync-request';
+import { HttpVerb } from 'sync-request';
 import { port, url } from './../config.json';
 const SERVER_URL = `${url}:${port}`;
 
-// TEST REQUEST WRAPPERS
+function requestHelper(method: HttpVerb, path: string, payload: object) {
+  let qs = {};
+  let json = {};
+  if (['GET', 'DELETE'].includes(method)) {
+    qs = payload;
+  } else {
+    // PUT/POST
+    json = payload;
+  }
+  const res = request(method, SERVER_URL + path, { qs, json });
+  return JSON.parse(res.getBody('utf-8'));
+}
+
 function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
-  const res = request(
-    'POST',
-    SERVER_URL + '/auth/register/v2',
-    {
-      json: {
-        email,
-        password,
-        nameFirst,
-        nameLast
-      }
-    }
-  );
-  return JSON.parse(res.getBody() as string);
+  return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
 }
 
 function requestAuthLogin(email: string, password: string) {
-  const res = request(
-    'POST',
-    SERVER_URL + '/auth/login/v2',
-    {
-      json: {
-        email,
-        password,
-      }
-    }
-  );
-  return JSON.parse(res.getBody() as string);
+  return requestHelper('POST', '/auth/login/v2', { email, password });
 }
 
 function requestClear() {
-  const res = request(
-    'DELETE',
-    SERVER_URL + '/clear/v2',
-    {},
-  );
-  return;
+  return requestHelper('DELETE', '/clear/v2', {});
 }
 
 function requestUserProfile(authUserId: number, uId: number) {
-  const res = request(
-    'GET',
-    SERVER_URL + '/user/profile/v2',
-    {
-      json: {
-        authUserId,
-        uId
-      }
-    }
-  );
-  return JSON.parse(res.getBody() as string);
+  return requestHelper('GET', '/user/profile/v2', { authUserId, uId });
 }
 
 describe('Test requestAuthRegister ', () => {

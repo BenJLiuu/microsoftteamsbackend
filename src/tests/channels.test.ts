@@ -1,118 +1,50 @@
 import request from 'sync-request';
+import { HttpVerb } from 'sync-request';
 import { port, url } from './../config.json';
 const SERVER_URL = `${url}:${port}`;
 
-import { getData } from './../dataStore'
-
-function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
-  const res = request(
-    'POST',
-    SERVER_URL + '/auth/register/v2',
-    {
-      json: {
-        email,
-        password,
-        nameFirst,
-        nameLast
-      }
-    }
-  );
-  return JSON.parse(res.getBody() as string);
+function requestHelper(method: HttpVerb, path: string, payload: object) {
+  let qs = {};
+  let json = {};
+  if (['GET', 'DELETE'].includes(method)) {
+    qs = payload;
+  } else {
+    // PUT/POST
+    json = payload;
+  }
+  const res = request(method, SERVER_URL + path, { qs, json });
+  return JSON.parse(res.getBody('utf-8'));
 }
 
-function requestAuthLogin(email: string, password: string) {
-  const res = request(
-    'POST',
-    SERVER_URL + '/auth/login/v2',
-    {
-      json: {
-        email,
-        password,
-      }
-    }
-  );
-  return JSON.parse(res.getBody() as string);
+function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
+  return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
 }
 
 function requestClear() {
-  const res = request(
-    'DELETE',
-    SERVER_URL + '/clear/v2',
-    {},
-  );
-  return;
+  return requestHelper('DELETE', '/clear/v2', {});
 }
 
 function requestChannelsCreate(authUserId: number, name: string, isPublic: boolean) {
-  const res = request(
-    'POST',
-    SERVER_URL + '/channels/create/v2',
-    {
-      json: {
-        authUserId,
-        name,
-        isPublic
-      }
-    }
-  );
-  return JSON.parse(res.getBody() as string);
+  return requestHelper('POST', '/channels/create/v2', { authUserId, name, isPublic });
 }
 
 function requestChannelsList(authUserId: number) {
-  const res = request(
-    'GET',
-    SERVER_URL + '/channels/list/v2',
-    {
-      json: {
-        authUserId
-      }
-    }
-  );
-  return JSON.parse(res.getBody() as string);
+  return requestHelper('GET', '/channels/list/v2', { authUserId });
 }
 
 function requestChannelsListAll(authUserId: number) {
-  const res = request(
-    'GET',
-    SERVER_URL + '/channels/listAll/v2',
-    {
-      json: {
-        authUserId
-      }
-    }
-  );
-  return JSON.parse(res.getBody() as string);
+  return requestHelper('GET', '/channels/listAll/v2', { authUserId });
 }
 
 function requestChannelDetails(authUserId: number, channelId: number) {
-  const res = request(
-    'GET',
-    SERVER_URL + '/channel/details/v2',
-    {
-      json: {
-        authUserId,
-        channelId
-      }
-    }
-  );
-  return JSON.parse(res.getBody() as string);
+  return requestHelper('GET', '/channel/details/v2', { authUserId, channelId });
 }
 
 function requestChannelJoin(authUserId: number, channelId: number) {
-  const res = request(
-    'POST',
-    SERVER_URL + '/channel/join/v2',
-    {
-      json: {
-        authUserId,
-        channelId
-      }
-    }
-  );
-  return JSON.parse(res.getBody() as string);
+  return requestHelper('POST', '/channel/join/v2', { authUserId, channelId });
 }
 
-describe('Test channelsCreatev1', () => {
+describe('Test channelsCreateV1', () => {
   beforeEach(() => {
     requestClear();
   });
