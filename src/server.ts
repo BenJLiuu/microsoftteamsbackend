@@ -1,8 +1,14 @@
 import express, { json, Request, Response } from 'express';
-import { echo } from './echo';
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
+
+import { echo } from './echo';
+import { authRegisterV1, authLoginV1 } from './auth';
+import { channelsCreateV1, channelsListV1, channelsListAllV1 } from './channels';
+import { channelDetailsV1, channelJoinV1, channelInviteV1, channelMessagesV1 } from './channel';
+import { clearV1 } from './other';
+import { userProfileV1 } from './users';
 
 // Set up web app
 const app = express();
@@ -52,7 +58,7 @@ app.get('/channels/listAll/v2', (req: Request, res: Response) => {
   res.json(channelsListAllV1(authUserId));
 });
 
-app.put('/channel/invite/v2', (req: Request, res: Response) => {
+app.post('/channel/invite/v2', (req: Request, res: Response) => {
   const { authUserId, channelId, uId } = req.body;
   res.json(channelInviteV1(authUserId, channelId, uId));
 });
@@ -63,7 +69,7 @@ app.get('/channel/details/v2', (req: Request, res: Response) => {
   res.json(channelDetailsV1(authUserId, channelId));
 });
 
-app.put('/channel/join/v2', (req: Request, res: Response) => {
+app.post('/channel/join/v2', (req: Request, res: Response) => {
   const { authUserId, channelId } = req.body;
   res.json(channelJoinV1(authUserId, channelId));
 });
@@ -80,7 +86,7 @@ app.get('/user/profile/v2', (req: Request, res: Response) => {
   res.json(userProfileV1(authUserId, uId));
 });
 
-app.delete('/clear/v1', (req: Request, res: Response) => {
+app.delete('/clear/v2', (req: Request, res: Response) => {
   res.json(clearV1());
 });
 
