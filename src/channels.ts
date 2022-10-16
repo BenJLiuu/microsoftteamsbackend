@@ -3,8 +3,8 @@ import { Channels, ChannelId, Error } from './objects';
 
 import {
   validUserId,
-  validToken, 
-  checkUserIdtoChannel, 
+  validToken,
+  checkUserIdtoChannel,
   removePassword,
   getUserIdFromToken,
 } from './helper';
@@ -88,7 +88,6 @@ function channelsListV1(authUserId: number): Channels | Error {
   * @returns {Object} {error: 'Channel name must be between 1-20 characters.'} - If channel name is too long/short
 */
 function channelsCreateV2(token: string, name: string, isPublic: boolean): ChannelId | Error {
-  
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
   if (name.length < 1 || name.length > 20) return { error: 'Channel name must be between 1-20 characters.' };
 

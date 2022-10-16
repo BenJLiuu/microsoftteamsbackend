@@ -14,7 +14,7 @@ export function validUserId(authUserId : number) : boolean {
 
 /**
  * Gets the value of a uId (not an object) from a given token.
- * @param {string} token - token to get authUserId from 
+ * @param {string} token - token to get authUserId from
  * @returns {number} authUserId - not an object.
  */
 export function getUserIdFromToken(token: string): number {
