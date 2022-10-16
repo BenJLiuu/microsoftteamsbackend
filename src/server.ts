@@ -4,7 +4,7 @@ import config from './config.json';
 import cors from 'cors';
 
 import { echo } from './echo';
-import { authRegisterV1, authLoginV1 } from './auth';
+import { authLoginV2, authRegisterV1 } from './auth';
 import { channelsCreateV1, channelsListV1, channelsListAllV1 } from './channels';
 import { channelDetailsV1, channelJoinV1, channelInviteV1, channelMessagesV1 } from './channel';
 import { clearV1 } from './other';
@@ -35,7 +35,7 @@ app.use(morgan('dev'));
 
 app.post('/auth/login/v2', (req: Request, res: Response) => {
   const { email, password } = req.body;
-  res.json(authLoginV1(email, password));
+  res.json(authLoginV2(email, password));
 });
 
 app.post('/auth/register/v2', (req: Request, res: Response) => {
