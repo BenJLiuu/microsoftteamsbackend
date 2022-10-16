@@ -48,7 +48,7 @@ function authRegisterV2(email: string, password: string, nameFirst: string, name
   const data = getData();
 
   if (validator.isEmail(email) === false) return { error: 'Invalid Email Address.' };
-  if (data.users.some(user => user.email === email)) return { error: 'Email Already in Use.'}
+  if (data.users.some(user => user.email === email)) return { error: 'Email Already in Use.' };
 
   if (password.length < 6) return { error: 'Password too Short.' };
 
@@ -58,7 +58,7 @@ function authRegisterV2(email: string, password: string, nameFirst: string, name
   if (/[^a-zA-Z]/.test(nameFirst)) return { error: 'Invalid First Name.' };
   if (/[^a-zA-Z]/.test(nameLast)) return { error: 'Invalid Last Name.' };
 
-  let newUId = 0
+  let newUId = 0;
   while (data.users.some(user => user.uId === newUId)) newUId++;
 
   let handleString = nameFirst + nameLast;
@@ -94,7 +94,7 @@ function authRegisterV2(email: string, password: string, nameFirst: string, name
   });
 
   const newSession = generateSession(newUId);
-  data.sessions.push(newSession)
+  data.sessions.push(newSession);
 
   setData(data);
 
@@ -128,4 +128,3 @@ function isNumber(char: string): boolean {
 }
 
 export { authLoginV2, authRegisterV2, authLogoutV1 };
-

@@ -83,9 +83,9 @@ describe('Test authRegister ', () => {
 
   test('Successful Registration', () => {
     expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate')).toEqual(
-      { 
+      {
         token: expect.any(String),
-        authUserId: expect.any(Number) 
+        authUserId: expect.any(Number)
       }
     );
   });
