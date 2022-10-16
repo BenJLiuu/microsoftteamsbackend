@@ -33,17 +33,16 @@ function requestChannelDetails(authUserId: number, channelId: number) {
 }
 
 function requestChannelMessages(authUserId: number, channelId: number, start: number) {
-  return requestHelper('GET', '/channel/messages/v2', { authUserId, channelId, start});
+  return requestHelper('GET', '/channel/messages/v2', { authUserId, channelId, start });
 }
 
 function requestChannelInvite(authUserId: number, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/invite/v2', { authUserId, channelId, uId});
+  return requestHelper('POST', '/channel/invite/v2', { authUserId, channelId, uId });
 }
 
 function requestChannelJoin(authUserId: number, channelId: number) {
   return requestHelper('POST', '/channel/join/v2', { authUserId, channelId });
 }
-
 
 describe('ChannelMessages', () => {
   beforeEach(() => {
