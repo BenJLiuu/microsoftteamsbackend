@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { AuthUserId, Error } from './objects';
+import { LoginData, Error } from './objects';
 import validator from 'validator';
 
 /**
@@ -13,21 +13,13 @@ import validator from 'validator';
   * @returns {error : 'Incorrect Password.'} - If email is found, but password is incorrect
   * @returns {error : 'Email Not Found.'} - If email was not found.
 */
-function authLoginV1(email: string, password: string): AuthUserId | Error {
+function authLoginV1(email: string, password: string): LoginData | Error {
   const data = getData();
   for (const user of data.users) {
     if (user.email === email) {
       // Found an email match
-      if (user.passwordHash === password) {
-        return {
-          authUserId: user.uId,
-        };
-      } else {
-        // Email found, but password was incorrect
-        return {
-          error: 'Incorrect Password.'
-        };
-      }
+      if (user.passwordHash === password) return { authUserId: user.uId };
+      else return { error: 'Incorrect Password.' };
     }
   }
   // If nothing has been returned, user has not been found.
@@ -36,10 +28,39 @@ function authLoginV1(email: string, password: string): AuthUserId | Error {
   };
 }
 
-// Returns true if a character in a string is a number
-function isNumber(char: string): boolean {
-  return /^\d$/.test(char);
+/**
+ * Generates a token for a user and assigns it to one of their sessions.
+ * 
+ * @param uId - the user to log the session to
+ * @return the token for that user in an object.
+ */
+function generateToken(uId: number): {token: string} {
+  const tokenLength = 32;
+
+  let token = {
+    token: genRandomString(tokenLength),
+  };
+
+  const data = getData();
+  const userIndex = data.users.findIndex(user => user.uId === uId);
+  data.users[userIndex].sessions.push(token);
+
+  setData(data);
+  return token;
 }
+
+// Random string function from https://tecadmin.net/generate-random-string-in-javascript/
+function genRandomString(length: number): string {
+  var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
+  var charLength = chars.length;
+  var result = '';
+  for (var i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * charLength));
+  }
+  return result;
+}
+
+
 
 /**
   * Registers a user and returns their new user Id.
@@ -58,7 +79,7 @@ function isNumber(char: string): boolean {
   * @returns {error: Invalid Last Name.'} - if last name is too short/long
 */
 
-function authRegisterV1(email: string, password: string, nameFirst: string, nameLast: string): AuthUserId | Error {
+function authRegisterV1(email: string, password: string, nameFirst: string, nameLast: string): LoginData | Error {
   const data = getData();
 
   if (validator.isEmail(email) === false) {
@@ -141,6 +162,11 @@ function authRegisterV1(email: string, password: string, nameFirst: string, name
   return {
     authUserId: data.users[data.users.length - 1].uId
   };
+}
+
+// Returns true if a character in a string is a number
+function isNumber(char: string): boolean {
+  return /^\d$/.test(char);
 }
 
 export { authLoginV1, authRegisterV1 };

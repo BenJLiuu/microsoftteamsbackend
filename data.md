@@ -8,6 +8,11 @@ let data = {
       email: 'mitchellemail@gmail.com',
       handleStr: 'mitchellgayfer',
       passwordHash: 0x5AF3d6,
+      sessions: [
+        {token: 'oeP*Q9wAskbA5%yx&leXsgP@!*PBLe47'},
+        {token: 'UofECtlERom5iLAdcb3!eMe!XZ1tYrHg'},
+        {token: '$9SLGlSQE*kZLC2*pmG8wo8SrBnpS24G'},
+      ]
     }
   ],
 

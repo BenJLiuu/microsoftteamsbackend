@@ -7,10 +7,12 @@ export type User = {
   email: string,
   handleStr: string,
   passwordHash: string,
+  sessions?: {token: string}[];
 };
 
-export type AuthUserId = {
+export type LoginData = {
   authUserId: number;
+  token?: string;
 }
 
 export type PrivateUser = Omit<User, 'passwordHash'>;
