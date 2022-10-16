@@ -13,6 +13,16 @@ export function validUserId(authUserId : number) : boolean {
 }
 
 /**
+ * Gets the value of a uId (not an object) from a given token.
+ * @param {string} token - token to get authUserId from 
+ * @returns {number} authUserId - not an object.
+ */
+export function getUserIdFromToken(token: string): number {
+  const data = getData();
+  return data.sessions.find(s => s.token === token).authUserId;
+}
+
+/**
  * Checks whether a token is valid (whether it exists in the sessions)
  *
  * @param {string} token - Token to check
@@ -86,7 +96,6 @@ export function generateSession(uId: number): string {
   const data = getData();
 
   data.sessions.push(session);
-
   setData(data);
   return session;
 }

@@ -94,7 +94,7 @@ describe('Test channelsCreateV1', () => {
     requestClear();
     const channel1 = requestChannelsCreate(user1.token, 'General', false);
     expect(channel1).toStrictEqual({
-      error: 'Invalid user permissions.',
+      error: 'Invalid Session Id.',
     });
   });
 

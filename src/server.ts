@@ -44,8 +44,8 @@ app.post('/auth/register/v2', (req: Request, res: Response) => {
 });
 
 app.post('/channels/create/v2', (req: Request, res: Response) => {
-  const { authUserId, name, isPublic } = req.body;
-  res.json(channelsCreateV2(authUserId, name, isPublic));
+  const { token, name, isPublic } = req.body;
+  res.json(channelsCreateV2(token, name, isPublic));
 });
 
 app.get('/channels/list/v2', (req: Request, res: Response) => {
