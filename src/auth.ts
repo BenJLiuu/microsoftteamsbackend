@@ -143,4 +143,7 @@ function authRegisterV1(email: string, password: string, nameFirst: string, name
   };
 }
 
+export function authLogoutV1(token: string): Record<string, never> {
+}
+
 export { authLoginV1, authRegisterV1 };

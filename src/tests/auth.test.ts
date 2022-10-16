@@ -32,7 +32,11 @@ function requestUserProfile(authUserId: number, uId: number) {
   return requestHelper('GET', '/user/profile/v2', { authUserId, uId });
 }
 
-describe('Test requestAuthRegister ', () => {
+function requestAuthLogout(token: string) {
+  return requestHelper('POST', '/auth/logout/v1', { token });
+}
+
+describe('Test authRegister ', () => {
   beforeEach(() => {
     requestClear();
   });
@@ -97,8 +101,7 @@ describe('Test requestAuthRegister ', () => {
   });
 });
 
-// requestAuthLogin tests
-describe('Test requestAuthLogin ', () => {
+describe('Test authLogin ', () => {
   beforeEach(() => {
     requestClear();
   });
@@ -134,5 +137,33 @@ describe('Test requestAuthLogin ', () => {
 
   test('Empty string login', () => {
     expect(requestAuthLogin('', '')).toStrictEqual({ error: 'Email Not Found.' });
+  });
+});
+
+describe('Test authLogout', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('Invalid token', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user1login = requestAuthLogin('johnS@email.com', 'pasJohn');
+    expect(requestAuthLogout(user1login.token)).toStrictEqual({ error: 'Invalid token' });
+  });
+
+  test('Successfully login', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user1login = requestAuthLogin('johnS@email.com', 'passJohn');
+    expect(requestAuthLogout(user1login.token)).toStrictEqual({});
+  });
+
+  test('Log off only one token', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user1login1 = requestAuthLogin('johnS@email.com', 'passJohn');
+    const user1login2 = requestAuthLogin('johnS@email.com', 'passJohn');
+    expect(requestAuthLogout(user1login1.token)).toStrictEqual({});
+    expect(requestAuthLogout(user1login1.token)).toStrictEqual({ error: 'Invalid token' });
+    expect(requestAuthLogout(user1login2.token)).toStrictEqual({});
+    expect(requestAuthLogout(user1login2.token)).toStrictEqual({ error: 'Invalid token' });
   });
 });

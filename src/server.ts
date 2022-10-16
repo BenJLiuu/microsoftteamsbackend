@@ -87,6 +87,11 @@ app.get('/user/profile/v2', (req: Request, res: Response) => {
   res.json(userProfileV1(authUserId ? parseInt(authUserId) : undefined, uId ? parseInt(uId) : undefined));
 });
 
+app.post('/auth/logout/v1', (req: Request, res: Response) => {
+  const { token } = req.body;
+  res.json(authLogoutV1(token));
+});
+
 app.delete('/clear/v2', (req: Request, res: Response) => {
   res.json(clearV1());
 });
