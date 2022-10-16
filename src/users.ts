@@ -21,11 +21,11 @@ import { removePassword } from './helper';
 export function userProfileV1 (authUserId: number, uId: number): UserOmitPassword | Error {
   const data = getData();
 
-  if (Boolean(data.users.find(user => user.uId === authUserId)) === false) {
+  if (!(data.users.some(user => user.uId === authUserId))) {
     return { error: 'authUserId is invalid.' };
   }
 
-  if (Boolean(data.users.find(user => user.uId === uId)) === false) {
+  if (!(data.users.find(user => user.uId === uId))) {
     return { error: 'uId does not refer to a valid user.' };
   }
 
