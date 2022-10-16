@@ -73,15 +73,15 @@ function channelsListV1(authUserId: number): Channels | Error {
   * Assigns the user that created the channel as the owner of that channel,
   * as well as making them a normal member.
   *
-  * @param {integer} authUserId - the channel creator's user ID
+  * @param {string} token - the channel creator's user ID
   * @param {string} name - the new channel's name
   * @param {boolean} isPublic - whether the new channel should be public or private
   *
-  * @returns {channelId: integer} - if channel creation is successfull
-  * @returns {error: 'Invalid user permissions.'} - If user is not a valid user
-  * @returns {error: 'Channel name must be between 1-20 characters.'} - If channel name is too long/short
+  * @returns {Object} {channelId: integer} - if channel creation is successfull
+  * @returns {Object} {error: 'Invalid user permissions.'} - If user is not a valid user
+  * @returns {Object} {error: 'Channel name must be between 1-20 characters.'} - If channel name is too long/short
 */
-function channelsCreateV1(authUserId: number, name: string, isPublic: boolean): ChannelId | Error {
+function channelsCreateV2(token: string, name: string, isPublic: boolean): ChannelId | Error {
   if (!validUserId(authUserId)) {
     return {
       error: 'Invalid user permissions.',
@@ -117,4 +117,4 @@ function channelsCreateV1(authUserId: number, name: string, isPublic: boolean): 
   return { channelId: newChannel.channelId };
 }
 
-export { channelsCreateV1, channelsListAllV1, channelsListV1 };
+export { channelsCreateV2, channelsListAllV1, channelsListV1 };

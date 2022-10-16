@@ -24,8 +24,8 @@ function requestClear() {
   return requestHelper('DELETE', '/clear/v2', {});
 }
 
-function requestChannelsCreate(authUserId: number, name: string, isPublic: boolean) {
-  return requestHelper('POST', '/channels/create/v2', { authUserId, name, isPublic });
+function requestChannelsCreate(token: string, name: string, isPublic: boolean) {
+  return requestHelper('POST', '/channels/create/v2', { token, name, isPublic });
 }
 
 function requestChannelsList(authUserId: number) {
