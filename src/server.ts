@@ -4,7 +4,7 @@ import config from './config.json';
 import cors from 'cors';
 
 import { echo } from './echo';
-import { authLoginV2, authRegisterV1 } from './auth';
+import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelsCreateV1, channelsListV1, channelsListAllV1 } from './channels';
 import { channelDetailsV1, channelJoinV1, channelInviteV1, channelMessagesV1 } from './channel';
 import { clearV1 } from './other';
@@ -40,7 +40,7 @@ app.post('/auth/login/v2', (req: Request, res: Response) => {
 
 app.post('/auth/register/v2', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
-  res.json(authRegisterV1(email, password, nameFirst, nameLast));
+  res.json(authRegisterV2(email, password, nameFirst, nameLast));
 });
 
 app.post('/channels/create/v2', (req: Request, res: Response) => {
@@ -85,6 +85,11 @@ app.get('/user/profile/v2', (req: Request, res: Response) => {
   const authUserId = req.query.authUserId as string;
   const uId = req.query.uId as string;
   res.json(userProfileV1(authUserId ? parseInt(authUserId) : undefined, uId ? parseInt(uId) : undefined));
+});
+
+app.post('/auth/logout/v1', (req: Request, res: Response) => {
+  const { token } = req.body;
+  res.json(authLogoutV1(token));
 });
 
 app.delete('/clear/v2', (req: Request, res: Response) => {

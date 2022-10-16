@@ -44,50 +44,22 @@ function authLoginV2(email: string, password: string): LoginData | Error {
   * @returns {Object} {error: Invalid Last Name.'} - if last name is too short/long
 */
 
-function authRegisterV1(email: string, password: string, nameFirst: string, nameLast: string): AuthUserId | Error {
+function authRegisterV2(email: string, password: string, nameFirst: string, nameLast: string): AuthUserId | Error {
   const data = getData();
 
-  if (validator.isEmail(email) === false) {
-    return {
-      error: 'Invalid Email Address.'
-    };
-  }
+  if (validator.isEmail(email) === false) return { error: 'Invalid Email Address.' };
+  if (data.users.some(user => user.email === email)) return { error: 'Email Already in Use.' };
 
-  for (const user of data.users) {
-    if (user.email === email) {
-      return {
-        error: 'Email Already in Use.'
-      };
-    }
-  }
+  if (password.length < 6) return { error: 'Password too Short.' };
 
-  if (password.length < 6) {
-    return {
-      error: 'Password too Short.'
-    };
-  }
-
-  if (nameFirst.length < 1 || nameFirst.length > 50) {
-    return {
-      error: 'Invalid First Name.'
-    };
-  }
-
-  if (nameLast.length < 1 || nameLast.length > 50) {
-    return {
-      error: 'Invalid Last Name.'
-    };
-  }
+  if (nameFirst.length < 1 || nameFirst.length > 50) return { error: 'Invalid First Name.' };
+  if (nameLast.length < 1 || nameLast.length > 50) return { error: 'Invalid Last Name.' };
 
   if (/[^a-zA-Z]/.test(nameFirst)) return { error: 'Invalid First Name.' };
   if (/[^a-zA-Z]/.test(nameLast)) return { error: 'Invalid Last Name.' };
 
-  let newUId = Math.floor(Math.random() * (100000 - 1 + 1)) + 1;
-  for (const user of data.users) {
-    if (newUId === user.uId) {
-      newUId = newUId + Math.floor(Math.random() * (1000 - 1 + 1)) + 1;
-    }
-  }
+  let newUId = 0;
+  while (data.users.some(user => user.uId === newUId)) newUId++;
 
   let handleString = nameFirst + nameLast;
   handleString = handleString.toLowerCase();
@@ -120,11 +92,34 @@ function authRegisterV1(email: string, password: string, nameFirst: string, name
     handleStr: handleString,
     passwordHash: password,
   });
+
+  const newSession = generateSession(newUId);
+  data.sessions.push(newSession);
+
   setData(data);
 
   return {
-    authUserId: data.users[data.users.length - 1].uId
+    token: newSession.token,
+    authUserId: newUId
   };
+}
+
+/**
+  * Given a session token for a user, closes that token thus logging out the user.
+  *
+  * @param {string} token - the token representing the session.
+  *
+  * @returns {error: 'Invalid token'} - if token does not exist in dataStore.
+*/
+function authLogoutV1(token: string): Record<string, never> {
+  const data = getData();
+  if (!(data.sessions.some(session => session.token === token))) return { error: 'Invalid token' };
+
+  const sessionIndex = data.sessions.findIndex(session => session.token === token);
+  data.sessions.splice(sessionIndex, 1);
+
+  setData(data);
+  return {};
 }
 
 // Returns true if a character in a string is a number
@@ -132,4 +127,4 @@ function isNumber(char: string): boolean {
   return /^\d$/.test(char);
 }
 
-export { authLoginV2, authRegisterV1 };
+export { authLoginV2, authRegisterV2, authLogoutV1 };
