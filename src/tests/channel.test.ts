@@ -222,7 +222,6 @@ describe('Test requestChannelDetails', () => {
   });
 
   // Error tests
-
   test('Test only invalid channel Id', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     expect(requestChannelDetails(user1.authUserId, 0)).toStrictEqual({ error: 'Invalid Channel Id.' });
