@@ -113,7 +113,6 @@ describe('Test requestAuthLogin ', () => {
       token: expect.any(String),
     });
     const user3 = requestAuthRegister('jamieS@later.co', '&##@PA', 'Jamie', 'Son');
-    console.log(user3);
     const user3login = requestAuthLogin('jamieS@later.co', '&##@PA');
     expect(user2login).toStrictEqual({
       authUserId: user2.authUserId,

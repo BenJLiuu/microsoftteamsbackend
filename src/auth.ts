@@ -1,6 +1,7 @@
 import { getData, setData } from './dataStore';
 import { AuthUserId, LoginData, Error } from './objects';
 import validator from 'validator';
+import { generateSession } from './helper';
 
 /**
   * Logs in a user and returns their user Id.
@@ -24,43 +25,6 @@ function authLoginV2(email: string, password: string): LoginData | Error {
   }
   // If nothing has been returned, user has not been found.
   return { error: 'Email Not Found.' };
-}
-
-/**
- * Creates a session token for a user.
- *
- * @param {integer} uId - the user to assign the token to
- * @returns {LoginData} {token : string, authUserId: number} - the session object that was created.
- */
-function generateSession(uId: number): string {
-  const tokenLength = 32;
-  const session = {
-    token: genRandomString(tokenLength),
-    authUserId: uId,
-  };
-
-  const data = getData();
-
-  data.sessions.push(session);
-
-  setData(data);
-  return session;
-}
-
-/**
- * Generates a random string.
- * From https://tecadmin.net/generate-random-string-in-javascript/
- * @param {integer} length - how long of a string to generate.
- * @returns {string} string - random string
- */
-function genRandomString(length: number): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
-  const charLength = chars.length;
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * charLength));
-  }
-  return result;
 }
 
 /**
