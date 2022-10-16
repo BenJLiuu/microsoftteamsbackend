@@ -1,1 +1,1 @@
-{"users":[],"channels":[]}
+{"users":[{"uId":4931,"nameFirst":"John","nameLast":"Smith","email":"johnS@email.com","handleStr":"johnsmith","passwordHash":"passJohn"}],"channels":[{"channelId":549003,"name":"general","isPublic":true,"ownerMembers":[{"uId":4931,"email":"johnS@email.com","nameFirst":"John","nameLast":"Smith","handleStr":"johnsmith"}],"allMembers":[{"uId":4931,"email":"johnS@email.com","nameFirst":"John","nameLast":"Smith","handleStr":"johnsmith"}],"messages":[]}]}

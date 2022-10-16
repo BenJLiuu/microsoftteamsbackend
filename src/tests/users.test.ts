@@ -1,28 +1,40 @@
-import { clearV1 } from './../other';
-import { authRegisterV1 } from './../auth';
-import { userProfileV1 } from './../users';
-import { AuthUserId } from './../objects';
+import request from 'sync-request';
+import { HttpVerb } from 'sync-request';
+import { port, url } from './../config.json';
+const SERVER_URL = `${url}:${port}`;
 
-describe('userProfileV1', () => {
+function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
+  return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
+}
+
+function requestUserProfile(authUserId: number, uId: number) {
+  return requestHelper('GET', '/user/profile/v2', { authUserId, uId });
+}
+
+function requestClear() {
+  return requestHelper('DELETE', '/clear/v2', {});
+}
+
+describe('requestUserProfile', () => {
   beforeEach(() => {
-    clearV1();
+    requestClear();
   });
 
   test('authUserId is invalid', () => {
-    const user2 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person') as AuthUserId;
-    expect(userProfileV1(0, user2.authUserId)).toStrictEqual({ error: 'authUserId is invalid.' });
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUserProfile(0, user2.authUserId)).toStrictEqual({ error: 'authUserId is invalid.' });
   });
 
   test('uId does not refer to a valid user', () => {
-    const user1 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person') as AuthUserId;
-    expect(userProfileV1(user1.authUserId, 0)).toStrictEqual({ error: 'uId does not refer to a valid user.' });
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUserProfile(user1.authUserId, 0)).toStrictEqual({ error: 'uId does not refer to a valid user.' });
   });
 
   test('Returns user object for a valid user', () => {
-    clearV1();
-    const user1 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person') as AuthUserId;
-    const user2 = authRegisterV1('johnmate@gmail.com', 'password123', 'John', 'Mate') as AuthUserId;
-    expect(userProfileV1(user2.authUserId, user1.authUserId)).toStrictEqual({
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    expect(requestUserProfile(user2.authUserId, user1.authUserId)).toStrictEqual({
       user: {
         uId: user1.authUserId,
         nameFirst: 'Alice',
@@ -34,10 +46,10 @@ describe('userProfileV1', () => {
   });
 
   test('Returns user object for multiple valid users', () => {
-    clearV1();
-    const user1 = authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person') as AuthUserId;
-    const user2 = authRegisterV1('johnmate@gmail.com', 'password123', 'John', 'Mate') as AuthUserId;
-    expect(userProfileV1(user1.authUserId, user2.authUserId)).toStrictEqual({
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    expect(requestUserProfile(user1.authUserId, user2.authUserId)).toStrictEqual({
       user: {
         uId: user2.authUserId,
         nameFirst: 'John',
@@ -46,7 +58,7 @@ describe('userProfileV1', () => {
         handleStr: 'johnmate',
       },
     });
-    expect(userProfileV1(user2.authUserId, user1.authUserId)).toStrictEqual({
+    expect(requestUserProfile(user2.authUserId, user1.authUserId)).toStrictEqual({
       user: {
         uId: user1.authUserId,
         nameFirst: 'Alice',

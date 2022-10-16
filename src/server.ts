@@ -65,7 +65,7 @@ app.post('/channel/invite/v2', (req: Request, res: Response) => {
 
 app.get('/channel/details/v2', (req: Request, res: Response) => {
   const authUserId = req.query.authUserId;
-  const channelId = req.query.authUserId;
+  const channelId = req.query.channelId;
   res.json(channelDetailsV1(authUserId ? parseInt(authUserId) : undefined, channelId ? parseInt(channelId) : undefined));
 });
 

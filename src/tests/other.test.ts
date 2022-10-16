@@ -1,20 +1,42 @@
-import { clearV1 } from './../other';
-import { authRegisterV1, authLoginV1 } from './../auth';
-import { AuthUserId } from './../objects';
+import request from 'sync-request';
+import { HttpVerb } from 'sync-request';
+import { port, url } from './../config.json';
+const SERVER_URL = `${url}:${port}`;
+
+function requestHelper(method: HttpVerb, path: string, payload: object) {
+  let qs = {};
+  let json = {};
+  if (['GET', 'DELETE'].includes(method)) {
+    qs = payload;
+  } else {
+    // PUT/POST
+    json = payload;
+  }
+  const res = request(method, SERVER_URL + path, { qs, json });
+  return JSON.parse(res.getBody('utf-8'));
+}
+
+function requestClear() {
+  return requestHelper('DELETE', '/clear/v2', {});
+}
+
+function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
+  return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
+}
 
 describe('Test clearV1 ', () => {
   beforeEach(() => {
-    clearV1();
+    requestClear();
   });
 
   test('authLogin error, user data cleared', () => {
-    authRegisterV1('johnS@email.com', 'passJohn', 'John', 'Smith') as AuthUserId;
-    authRegisterV1('aliceP@fmail.au', 'alice123', 'Alice', 'Person') as AuthUserId;
-    authRegisterV1('jamieS@later.co', '&##@P', 'Jamie', 'Son') as AuthUserId;
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    requestAuthRegister('jamieS@later.co', '&##@P', 'Jamie', 'Son');
     clearV1();
-    expect(authLoginV1('johnS@email.com', 'passJohn')).toStrictEqual({ error: 'Email Not Found.' });
-    expect(authLoginV1('aliceP@fmail.au', 'alice123')).toStrictEqual({ error: 'Email Not Found.' });
-    expect(authLoginV1('jamieS@later.co', '&##@P')).toStrictEqual({ error: 'Email Not Found.' });
+    expect(requestAuthLogin('johnS@email.com', 'passJohn')).toStrictEqual({ error: 'Email Not Found.' });
+    expect(requestAuthLogin('aliceP@fmail.au', 'alice123')).toStrictEqual({ error: 'Email Not Found.' });
+    expect(requestAuthLogin('jamieS@later.co', '&##@P')).toStrictEqual({ error: 'Email Not Found.' });
   });
 
   /* test('channelListAll error, channel data cleared', () => {
