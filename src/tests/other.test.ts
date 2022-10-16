@@ -24,10 +24,6 @@ function requestAuthRegister(email: string, password: string, nameFirst: string,
   return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
 }
 
-function requestAuthLogin(email: string, password: string) {
-  return requestHelper('POST', '/auth/login/v2', { email, password });
-}
-
 describe('Test clearV1 ', () => {
   beforeEach(() => {
     requestClear();
@@ -48,7 +44,7 @@ describe('Test clearV1 ', () => {
     const channel2 = channelsCreateV1(user2, 'channel2', false);
     const channel3 = channelsCreateV1(user2, 'channel3', true);
     const channel4 = channelsCreateV1(user3, 'channel%$#', true);
-    clearV1();
+    requestClear();
     expect(channelsListAllV1(user1)).toStrictEqual('uId not found.');
     expect(channelsListAllV1(user2)).toStrictEqual('uId not found.');
     expect(channelsListAllV1(user3)).toStrictEqual('uId not found.');
@@ -58,7 +54,7 @@ describe('Test clearV1 ', () => {
     const channel3 = channelsCreateV1(user3, 'channel3', true);
     channelJoinV1(user1, channel3);
     channelJoinV1(user2, channel3);
-    clearV1();
+    requestClear();
     expect(channelMessagesV1(user1, channel3, 0).toStrictEqual('uId not found.'));
     expect(channelMessagesV1(user2, channel3, 0).toStrictEqual('uId not found.'));
     expect(channelMessagesV1(user3, channel3, 0).toStrictEqual('uId not found.'));
