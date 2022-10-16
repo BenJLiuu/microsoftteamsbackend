@@ -24,6 +24,10 @@ function requestAuthRegister(email: string, password: string, nameFirst: string,
   return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
 }
 
+function requestAuthLogin(email: string, password: string) {
+  return requestHelper('POST', '/auth/login/v2', { email, password });
+}
+
 describe('Test clearV1 ', () => {
   beforeEach(() => {
     requestClear();
@@ -33,7 +37,7 @@ describe('Test clearV1 ', () => {
     requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     requestAuthRegister('jamieS@later.co', '&##@P', 'Jamie', 'Son');
-    clearV1();
+    requestClear();
     expect(requestAuthLogin('johnS@email.com', 'passJohn')).toStrictEqual({ error: 'Email Not Found.' });
     expect(requestAuthLogin('aliceP@fmail.au', 'alice123')).toStrictEqual({ error: 'Email Not Found.' });
     expect(requestAuthLogin('jamieS@later.co', '&##@P')).toStrictEqual({ error: 'Email Not Found.' });

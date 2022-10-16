@@ -75,9 +75,10 @@ app.post('/channel/join/v2', (req: Request, res: Response) => {
 });
 
 app.get('/channel/messages/v2', (req: Request, res: Response) => {
+  const authUserId = req.query.authUserId as string;
   const channelId = req.query.channelId as string;
   const start = req.query.start as string;
-  res.json(channelMessagesV1(channelId ? parseInt(channelId) : undefined, start ? parseInt(start) : undefined));
+  res.json(channelMessagesV1(authUserId ? parseInt(authUserId) : undefined, channelId ? parseInt(channelId) : undefined, start ? parseInt(start) : undefined));
 });
 
 app.get('/user/profile/v2', (req: Request, res: Response) => {
