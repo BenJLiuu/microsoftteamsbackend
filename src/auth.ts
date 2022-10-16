@@ -148,7 +148,7 @@ export function authLogoutV1(token: string): Record<string, never> {
   if (!(data.sessions.some(session => session.token === token))) return { error: 'Invalid token' };
 
   const sessionIndex = data.sessions.findIndex(session => session.token === token)
-  data.sessions.splice(tokenIndex, 1);
+  data.sessions.splice(sessionIndex, 1);
 
   setData(data);
   return {};

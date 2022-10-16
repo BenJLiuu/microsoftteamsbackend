@@ -24,6 +24,10 @@ function requestAuthRegister(email: string, password: string, nameFirst: string,
   return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
 }
 
+function requestAuthLogin(email: string, password: string) {
+  return requestHelper('POST', '/auth/login/v2', { email, password });
+}
+
 describe('Test clearV1 ', () => {
   beforeEach(() => {
     requestClear();
