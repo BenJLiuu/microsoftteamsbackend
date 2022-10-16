@@ -143,6 +143,13 @@ function authRegisterV1(email: string, password: string, nameFirst: string, name
   };
 }
 
+/**
+  * Given a session token for a user, closes that token thus logging out the user.
+  *
+  * @param {string} token - the token representing the session.
+  *
+  * @returns {error: 'Invalid token'} - if token does not exist in dataStore.
+*/
 export function authLogoutV1(token: string): Record<string, never> {
   const data = getData();
   if (!(data.sessions.some(session => session.token === token))) return { error: 'Invalid token' };
