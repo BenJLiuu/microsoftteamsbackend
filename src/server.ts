@@ -4,7 +4,7 @@ import config from './config.json';
 import cors from 'cors';
 
 import { echo } from './echo';
-import { authRegisterV1, authLoginV1 } from './auth';
+import { authLoginV2, authRegisterV1 } from './auth';
 import { channelsCreateV1, channelsListV1, channelsListAllV1 } from './channels';
 import { channelDetailsV1, channelJoinV1, channelInviteV1, channelMessagesV1 } from './channel';
 import { clearV1 } from './other';

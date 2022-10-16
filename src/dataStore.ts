@@ -4,6 +4,7 @@ import fs from 'fs';
 let data = {
   users: [],
   channels: [],
+  sessions: [],
 };
 
 function setData(newData: Data) {

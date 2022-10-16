@@ -54,11 +54,7 @@ export function checkUserIdtoChannel(authUserId : number, channelId : number) : 
  * } - a user but without the password key
  */
 export function removePassword(user : User) : PrivateUser {
-  return {
-    uId: user.uId,
-    email: user.email,
-    nameFirst: user.nameFirst,
-    nameLast: user.nameLast,
-    handleStr: user.handleStr,
-  };
+  let copy = {...user};
+  delete copy.passwordHash;
+  return copy;
 }
