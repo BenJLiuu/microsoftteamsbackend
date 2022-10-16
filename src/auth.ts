@@ -28,7 +28,7 @@ function authLoginV2(email: string, password: string): LoginData | Error {
 
 /**
  * Creates a session token for a user.
- * 
+ *
  * @param {integer} uId - the user to assign the token to
  * @returns {LoginData} {token : string, authUserId: number} - the session object that was created.
  */
@@ -42,7 +42,7 @@ function generateSession(uId: number): string {
   const data = getData();
 
   data.sessions.push(session);
-  
+
   setData(data);
   return session;
 }
@@ -50,15 +50,15 @@ function generateSession(uId: number): string {
 /**
  * Generates a random string.
  * From https://tecadmin.net/generate-random-string-in-javascript/
- * @param {integer} length - how long of a string to generate. 
+ * @param {integer} length - how long of a string to generate.
  * @returns {string} string - random string
  */
 function genRandomString(length: number): string {
-  var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
-  var charLength = chars.length;
-  var result = '';
-  for ( var i = 0; i < length; i++ ) {
-     result += chars.charAt(Math.floor(Math.random() * charLength));
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
+  const charLength = chars.length;
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * charLength));
   }
   return result;
 }
@@ -162,7 +162,6 @@ function authRegisterV1(email: string, password: string, nameFirst: string, name
     authUserId: data.users[data.users.length - 1].uId
   };
 }
-
 
 // Returns true if a character in a string is a number
 function isNumber(char: string): boolean {

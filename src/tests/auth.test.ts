@@ -126,7 +126,7 @@ describe('Test requestAuthLogin ', () => {
   });
 
   test('Login Sessions', () => {
-    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const login1 = requestAuthLogin('johnS@email.com', 'passJohn');
     const login2 = requestAuthLogin('johnS@email.com', 'passJohn');
     const login3 = requestAuthLogin('johnS@email.com', 'passJohn');
