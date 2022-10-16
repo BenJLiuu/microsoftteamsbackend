@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { AuthUserId, Error } from './objects';
+import { AuthUserId, LoginData, Error } from './objects';
 import validator from 'validator';
 
 /**
@@ -9,36 +9,58 @@ import validator from 'validator';
   * @param {string} password - the users' password, unencrypted
   * ...
   *
-  * @returns {authUserId : integer} - If login is successful
-  * @returns {error : 'Incorrect Password.'} - If email is found, but password is incorrect
-  * @returns {error : 'Email Not Found.'} - If email was not found.
+  * @returns {Object} {authUserId, token} - If login is successful
+  * @returns {Object} {error : 'Incorrect Password.'} - If email is found, but password is incorrect
+  * @returns {Object} {error : 'Email Not Found.'} - If email was not found.
 */
-function authLoginV1(email: string, password: string): AuthUserId | Error {
+function authLoginV2(email: string, password: string): LoginData | Error {
   const data = getData();
   for (const user of data.users) {
     if (user.email === email) {
       // Found an email match
-      if (user.passwordHash === password) {
-        return {
-          authUserId: user.uId,
-        };
-      } else {
-        // Email found, but password was incorrect
-        return {
-          error: 'Incorrect Password.'
-        };
-      }
+      if (user.passwordHash === password) return generateSession(user.uId);
+      else return { error: 'Incorrect Password.' };
     }
   }
   // If nothing has been returned, user has not been found.
-  return {
-    error: 'Email Not Found.'
-  };
+  return { error: 'Email Not Found.' };
 }
 
-// Returns true if a character in a string is a number
-function isNumber(char: string): boolean {
-  return /^\d$/.test(char);
+/**
+ * Creates a session token for a user.
+ *
+ * @param {integer} uId - the user to assign the token to
+ * @returns {LoginData} {token : string, authUserId: number} - the session object that was created.
+ */
+function generateSession(uId: number): string {
+  const tokenLength = 32;
+  const session = {
+    token: genRandomString(tokenLength),
+    authUserId: uId,
+  };
+
+  const data = getData();
+
+  data.sessions.push(session);
+
+  setData(data);
+  return session;
+}
+
+/**
+ * Generates a random string.
+ * From https://tecadmin.net/generate-random-string-in-javascript/
+ * @param {integer} length - how long of a string to generate.
+ * @returns {string} string - random string
+ */
+function genRandomString(length: number): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
+  const charLength = chars.length;
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * charLength));
+  }
+  return result;
 }
 
 /**
@@ -50,12 +72,12 @@ function isNumber(char: string): boolean {
   * @param {string} nameFirst - the user's first name
   * @param {string} nameLast - the user's last name
   *
-  * @returns {authUserId: integer} - if registration is successfull
-  * @returns {error: 'Invalid Email Address.'} - if email is invalid (fails validator.isEmail)
-  * @returns {error: 'Email Already in Use.'} - if email is already in data
-  * @returns {error: 'Password too Short.'} - if password is <6 characters
-  * @returns {error: Invalid First Name.'} - if first name is too short/long
-  * @returns {error: Invalid Last Name.'} - if last name is too short/long
+  * @returns {Object} {authUserId: integer} - if registration is successfull
+  * @returns {Object} {error: 'Invalid Email Address.'} - if email is invalid (fails validator.isEmail)
+  * @returns {Object} {error: 'Email Already in Use.'} - if email is already in data
+  * @returns {Object} {error: 'Password too Short.'} - if password is <6 characters
+  * @returns {Object} {error: Invalid First Name.'} - if first name is too short/long
+  * @returns {Object} {error: Invalid Last Name.'} - if last name is too short/long
 */
 
 function authRegisterV1(email: string, password: string, nameFirst: string, nameLast: string): AuthUserId | Error {
@@ -126,16 +148,14 @@ function authRegisterV1(email: string, password: string, nameFirst: string, name
     handleString += i;
   }
 
-  const newUser = {
+  data.users.push({
     uId: newUId,
     nameFirst: nameFirst,
     nameLast: nameLast,
     email: email,
     handleStr: handleString,
-    passwordHash: password
-  };
-
-  data.users.push(newUser);
+    passwordHash: password,
+  });
   setData(data);
 
   return {
@@ -150,7 +170,7 @@ function authRegisterV1(email: string, password: string, nameFirst: string, name
   *
   * @returns {error: 'Invalid token'} - if token does not exist in dataStore.
 */
-export function authLogoutV1(token: string): Record<string, never> {
+function authLogoutV1(token: string): Record<string, never> {
   const data = getData();
   if (!(data.sessions.some(session => session.token === token))) return { error: 'Invalid token' };
 
@@ -161,4 +181,10 @@ export function authLogoutV1(token: string): Record<string, never> {
   return {};
 }
 
-export { authLoginV1, authRegisterV1 };
+// Returns true if a character in a string is a number
+function isNumber(char: string): boolean {
+  return /^\d$/.test(char);
+}
+
+export { authLoginV2, authRegisterV1, authLogoutV1 };
+

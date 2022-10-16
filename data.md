@@ -8,6 +8,7 @@ let data = {
       email: 'mitchellemail@gmail.com',
       handleStr: 'mitchellgayfer',
       passwordHash: 0x5AF3d6,
+
     }
   ],
 
@@ -27,6 +28,13 @@ let data = {
         }
       ],
     }
+  ],
+
+  sessions: [
+    {
+      token: 'c$jDgeUCeV%kY$fo9%xxwlkvyzFSZ(M^',
+      authUserId: '1'
+    },
   ],
 };
 ```

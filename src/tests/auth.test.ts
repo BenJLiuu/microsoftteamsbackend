@@ -111,11 +111,30 @@ describe('Test authLogin ', () => {
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user1login = requestAuthLogin('johnS@email.com', 'passJohn');
     const user2login = requestAuthLogin('aliceP@fmail.au', 'alice123');
-    expect(user1login.authUserId).toStrictEqual(user1.authUserId);
-    const user3 = requestAuthRegister('jamieS@later.co', '&##@P', 'Jamie', 'Son');
-    const user3login = requestAuthLogin('jamieS@later.co', '&##@P');
-    expect(user2login.authUserId).toStrictEqual(user2.authUserId);
-    expect(user3login.authUserId).toStrictEqual(user3.authUserId);
+    expect(user1login).toStrictEqual({
+      authUserId: user1.authUserId,
+      token: expect.any(String),
+    });
+    const user3 = requestAuthRegister('jamieS@later.co', '&##@PA', 'Jamie', 'Son');
+    console.log(user3);
+    const user3login = requestAuthLogin('jamieS@later.co', '&##@PA');
+    expect(user2login).toStrictEqual({
+      authUserId: user2.authUserId,
+      token: expect.any(String),
+    });
+    expect(user3login).toStrictEqual({
+      authUserId: user3.authUserId,
+      token: expect.any(String),
+    });
+  });
+
+  test('Login Sessions', () => {
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const login1 = requestAuthLogin('johnS@email.com', 'passJohn');
+    const login2 = requestAuthLogin('johnS@email.com', 'passJohn');
+    const login3 = requestAuthLogin('johnS@email.com', 'passJohn');
+    expect(login1.token).not.toBe(login2.token);
+    expect(login2.token).not.toBe(login3.token);
   });
 
   test('Invalid password', () => {
