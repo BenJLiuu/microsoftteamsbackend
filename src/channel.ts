@@ -11,10 +11,10 @@ import { Error, MessageList, ChannelDetails } from './objects';
   * @param {integer} start - The number of messages from the most recent to begin returning messages.
   *
   * @returns MessageList - Object containing start offset, end offset, and array of message objects.
-  * @returns {error : 'Not valid channelId'} - If channelId was not found.
-  * @returns {error : 'Invalid Authorised User Id'} - If authUserId was not found.
-  * @returns {error : 'Start is greater than total messages'} - If start offset is greater than total messages in channel.
-  * @returns {error : 'Authorised user is not a channel member'} - authUserId is not in channel allMembers array.
+  * @returns {Error} {error : 'Not valid channelId'} - If channelId was not found.
+  * @returns {Error} {error : 'Invalid Authorised User Id'} - If authUserId was not found.
+  * @returns {Error} {error : 'Start is greater than total messages'} - If start offset is greater than total messages in channel.
+  * @returns {Error} {error : 'Authorised user is not a channel member'} - authUserId is not in channel allMembers array.
 */
 export function channelMessagesV1(authUserId: number, channelId: number, start: number): MessageList | Error {
   if (!validChannelId(channelId)) return { error: 'Not valid channelId' };

@@ -93,15 +93,8 @@ function authRegisterV2(email: string, password: string, nameFirst: string, name
     passwordHash: password,
   });
 
-  const newSession = generateSession(newUId);
-  data.sessions.push(newSession);
-
   setData(data);
-
-  return {
-    token: newSession.token,
-    authUserId: newUId
-  };
+  return generateSession(newUId);
 }
 
 /**
