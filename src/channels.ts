@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { validUserId, checkUserIdtoChannel, removePassword } from './helper';
+import { validUserId, validToken, checkUserIdtoChannel, removePassword } from './helper';
 import { Channels, ChannelId, Error } from './objects';
 
 /**
@@ -82,19 +82,12 @@ function channelsListV1(authUserId: number): Channels | Error {
   * @returns {Object} {error: 'Channel name must be between 1-20 characters.'} - If channel name is too long/short
 */
 function channelsCreateV2(token: string, name: string, isPublic: boolean): ChannelId | Error {
-  if (!validUserId(authUserId)) {
-    return {
-      error: 'Invalid user permissions.',
-    };
-  }
-  if (name.length < 1 || name.length > 20) {
-    return {
-      error: 'Channel name must be between 1-20 characters.',
-    };
-  }
+  if (!validToken(token)) return { error: 'Invalid Session Id.' };
+  if (name.length < 1 || name.length > 20) return { error: 'Channel name must be between 1-20 characters.' };
 
   const data = getData();
-  const newChannelId = Math.floor(Math.random() * 899999 + 100000);
+  let newChannelId = 0;
+  while (data.channels.some(c => c.channelId === newChannelId)) newChannelId++;
   const newChannel = {
     channelId: newChannelId,
     name: name,

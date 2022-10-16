@@ -50,7 +50,7 @@ describe('Test channelsCreateV1', () => {
   });
   test('public channel creation', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = requestChannelsCreate(user1.authUserId, 'General', true);
+    const channel1 = requestChannelsCreate(user1.token, 'General', true);
     expect(requestChannelDetails(user1.authUserId, channel1.channelId)).toStrictEqual({
       name: 'General',
       isPublic: true,
@@ -61,7 +61,7 @@ describe('Test channelsCreateV1', () => {
 
   test('private channel creation', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = requestChannelsCreate(user1.authUserId, 'General', false);
+    const channel1 = requestChannelsCreate(user1.token, 'General', false);
     expect(requestChannelDetails(user1.authUserId, channel1.channelId)).toStrictEqual({
       name: 'General',
       isPublic: false,
@@ -72,8 +72,8 @@ describe('Test channelsCreateV1', () => {
 
   test('multiple channel creation', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = requestChannelsCreate(user1.authUserId, 'General', false);
-    const channel2 = requestChannelsCreate(user1.authUserId, 'Homework', true);
+    const channel1 = requestChannelsCreate(user1.token, 'General', false);
+    const channel2 = requestChannelsCreate(user1.token, 'Homework', true);
     expect(requestChannelDetails(user1.authUserId, channel1.channelId)).toStrictEqual({
       name: 'General',
       isPublic: false,
@@ -92,7 +92,7 @@ describe('Test channelsCreateV1', () => {
   test('invalid user permissions', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     requestClear();
-    const channel1 = requestChannelsCreate(user1.authUserId, 'General', false);
+    const channel1 = requestChannelsCreate(user1.token, 'General', false);
     expect(channel1).toStrictEqual({
       error: 'Invalid user permissions.',
     });
@@ -100,9 +100,9 @@ describe('Test channelsCreateV1', () => {
 
   test('channel name too short/long', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = requestChannelsCreate(user1.authUserId, '', true);
-    const channel2 = requestChannelsCreate(user1.authUserId, 'ABCDEFGHIJKLMNOPQRSTU', true);
-    const channel3 = requestChannelsCreate(user1.authUserId, 'ABCDEFGHIJKLMNOPQRST', true);
+    const channel1 = requestChannelsCreate(user1.token, '', true);
+    const channel2 = requestChannelsCreate(user1.token, 'ABCDEFGHIJKLMNOPQRSTU', true);
+    const channel3 = requestChannelsCreate(user1.token, 'ABCDEFGHIJKLMNOPQRST', true);
     expect(channel1).toStrictEqual({
       error: 'Channel name must be between 1-20 characters.',
     });
@@ -123,7 +123,7 @@ describe('Test channelsListAllv1 ', () => {
 
   test('one public channel list', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = requestChannelsCreate(user1.authUserId, 'general', true);
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
     const allDetails = requestChannelsListAll(user1.authUserId);
     expect(allDetails).toStrictEqual({
       channels: [{
@@ -135,7 +135,7 @@ describe('Test channelsListAllv1 ', () => {
 
   test('one private channel list', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = requestChannelsCreate(user1.authUserId, 'private', false);
+    const channel1 = requestChannelsCreate(user1.token, 'private', false);
     const allDetails = requestChannelsListAll(user1.authUserId);
     expect(allDetails).toStrictEqual({
       channels: [{
@@ -147,9 +147,9 @@ describe('Test channelsListAllv1 ', () => {
 
   test('three channel list', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = requestChannelsCreate(user1.authUserId, 'general', true);
-    const channel2 = requestChannelsCreate(user1.authUserId, 'private', false);
-    const channel3 = requestChannelsCreate(user1.authUserId, 'Lounge', true);
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
+    const channel2 = requestChannelsCreate(user1.token, 'private', false);
+    const channel3 = requestChannelsCreate(user1.token, 'Lounge', true);
     const allDetails = requestChannelsListAll(user1.authUserId);
     expect(allDetails).toStrictEqual({
       channels: [{
@@ -173,7 +173,7 @@ describe('Test channelsListAllv1 ', () => {
 
   test('invalid authuserid', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    requestChannelsCreate(user1.authUserId, 'general', true);
+    requestChannelsCreate(user1.token, 'general', true);
     expect(requestChannelsListAll(user1.authUserId + 1)).toStrictEqual({
       error: 'Invalid Authorised User Id.'
     });
@@ -189,8 +189,8 @@ describe('Test channelsListAllv1 ', () => {
   test('one joined public channel list', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = requestAuthRegister('aliceP@email.com', 'alice123', 'Alice', 'Person');
-    const channel1 = requestChannelsCreate(user1.authUserId, 'general', true);
-    requestChannelsCreate(user2.authUserId, 'private', false);
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
+    requestChannelsCreate(user2.token, 'private', false);
     const user1Channel = requestChannelsList(user1.authUserId);
     expect(user1Channel).toStrictEqual({
       channels: [{
@@ -203,8 +203,8 @@ describe('Test channelsListAllv1 ', () => {
   test('one joined private channel list', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = requestAuthRegister('aliceP@email.com', 'alice123', 'Alice', 'Person');
-    requestChannelsCreate(user2.authUserId, 'secret', false);
-    const channel2 = requestChannelsCreate(user1.authUserId, 'private', false);
+    requestChannelsCreate(user2.token, 'secret', false);
+    const channel2 = requestChannelsCreate(user1.token, 'private', false);
     const user1Channel = requestChannelsList(user1.authUserId);
     expect(user1Channel).toStrictEqual({
       channels: [{
@@ -217,14 +217,14 @@ describe('Test channelsListAllv1 ', () => {
   test('listing no channels', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = requestAuthRegister('aliceP@email.com', 'alice123', 'Alice', 'Person');
-    requestChannelsCreate(user2.authUserId, 'lounge', true);
+    requestChannelsCreate(user2.token, 'lounge', true);
     const user1Channel = requestChannelsList(user1.authUserId);
     expect(user1Channel).toStrictEqual({ channels: [] });
   });
 
   test('invalid authuserid', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = requestChannelsCreate(user1.authUserId, 'general', true);
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
     requestChannelJoin(user1.authUserId, channel1.channelId);
     expect(requestChannelsList(user1.authUserId + 1)).toStrictEqual({ error: 'Invalid Authorised User Id.' });
   });
