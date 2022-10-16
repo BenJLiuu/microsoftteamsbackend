@@ -146,19 +146,19 @@ describe('Test authLogout', () => {
   });
 
   test('Invalid token', () => {
-    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user1login = requestAuthLogin('johnS@email.com', 'pasJohn');
     expect(requestAuthLogout(user1login.token)).toStrictEqual({ error: 'Invalid token' });
   });
 
   test('Successfully login', () => {
-    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user1login = requestAuthLogin('johnS@email.com', 'passJohn');
     expect(requestAuthLogout(user1login.token)).toStrictEqual({});
   });
 
   test('Log off only one token', () => {
-    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+   requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user1login1 = requestAuthLogin('johnS@email.com', 'passJohn');
     const user1login2 = requestAuthLogin('johnS@email.com', 'passJohn');
     expect(requestAuthLogout(user1login1.token)).toStrictEqual({});
