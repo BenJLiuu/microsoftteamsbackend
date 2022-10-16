@@ -35,12 +35,12 @@ describe('requestUserProfile', () => {
 
   test('authUserId is invalid', () => {
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfile(0, user2.authUserId)).toStrictEqual({ error: 'authUserId is invalid.' });
+    expect(requestUserProfile(-1, user2.authUserId)).toStrictEqual({ error: 'authUserId is invalid.' });
   });
 
   test('uId does not refer to a valid user', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfile(user1.authUserId, 0)).toStrictEqual({ error: 'uId does not refer to a valid user.' });
+    expect(requestUserProfile(user1.authUserId, -1)).toStrictEqual({ error: 'uId does not refer to a valid user.' });
   });
 
   test('Returns user object for a valid user', () => {

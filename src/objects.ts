@@ -75,3 +75,8 @@ export type Data = {
 export type Error = {
   error: string;
 }
+
+export type Token = {
+  authUserId: number,
+  token: string,
+}
