@@ -35,7 +35,7 @@ app.use(morgan('dev'));
 
 app.post('/auth/login/v2', (req: Request, res: Response) => {
   const { email, password } = req.body;
-  res.json(authLoginV1(email, password));
+  res.json(authLoginV2(email, password));
 });
 
 app.post('/auth/register/v2', (req: Request, res: Response) => {
