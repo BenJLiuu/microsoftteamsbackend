@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { validUserId, validChannelId, checkUserIdtoChannel, removePassword } from './helper';
+import { validUserId, validChannelId, checkUserIdtoChannel, removePassword, validToken, getUserIdFromToken } from './helper';
 import { Error, MessageList, ChannelDetails } from './objects';
 
 /**
@@ -101,7 +101,7 @@ export function channelInviteV2(token: string, channelId: number, uId: number): 
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
   if (checkUserIdtoChannel(uId, channelId)) return { error: 'User is already a member.' };
-  if (!checkUserIdtoChannel(authUserId, channelId)) return { error: 'Authorised User is not a member.' };
+  if (!checkUserIdtoChannel(getUserIdFromToken(token), channelId)) return { error: 'Authorised User is not a member.' };
 
   const data = getData();
 
