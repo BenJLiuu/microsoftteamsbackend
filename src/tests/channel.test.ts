@@ -67,9 +67,9 @@ function requestChannelMessages(authUserId: number, channelId: number, start: nu
 }
 
 
-function requestChannelInvite(authUserId: number, channelId: number, uId: number) {
+function requestChannelInvite(token: string, channelId: number, uId: number) {
 
-  return requestHelper('POST', '/channel/invite/v2', { authUserId, channelId, uId });
+  return requestHelper('POST', '/channel/invite/v2', { token, channelId, uId });
 
 }
 
@@ -279,7 +279,7 @@ describe('requestChannelInvite', () => {
 
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
 
-    expect(requestChannelInvite(user1.authUserId, 0, user2.authUserId)).toStrictEqual({ error: 'Invalid Channel Id.' });
+    expect(requestChannelInvite(user1.token, 0, user2.authUserId)).toStrictEqual({ error: expect.any(String) });
 
   });
 
@@ -290,7 +290,7 @@ describe('requestChannelInvite', () => {
 
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelInvite(user1.authUserId, channel1.channelId, user1.authUserId + 1)).toStrictEqual({ error: 'Invalid User Id.' });
+    expect(requestChannelInvite(user1.token, channel1.channelId, user1.authUserId + 1)).toStrictEqual({ error: expect.any(String) });
 
   });
 
@@ -303,12 +303,12 @@ describe('requestChannelInvite', () => {
 
     const channel1 = requestChannelsCreate(user2.token, 'channel1', true);
 
-    expect(requestChannelInvite(user1.authUserId, channel1.channelId, user2.authUserId)).toStrictEqual({ error: 'User is already a member.' });
+    expect(requestChannelInvite(user1.token, channel1.channelId, user2.authUserId)).toStrictEqual({ error: expect.any(String) });
 
   });
 
 
-  test('Test only authorised user Id is not a member', () => {
+  test('Test only authorised user is not a member', () => {
 
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
 
@@ -318,12 +318,12 @@ describe('requestChannelInvite', () => {
 
     const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
 
-    expect(requestChannelInvite(user2.authUserId, channel1.channelId, user3.authUserId)).toStrictEqual({ error: 'Authorised User is not a member.' });
+    expect(requestChannelInvite(user2.token, channel1.channelId, user3.authUserId)).toStrictEqual({ error: expect.any(String) });
 
   });
 
 
-  test('Test only invalid authorised user Id', () => {
+  test('Test only invalid token', () => {
 
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
 
@@ -331,7 +331,7 @@ describe('requestChannelInvite', () => {
 
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelInvite(user2.authUserId + user1.authUserId + 1, channel1.channelId, user2.authUserId)).toStrictEqual({ error: 'Invalid Authorised User Id.' });
+    expect(requestChannelInvite('test', channel1.channelId, user2.authUserId)).toStrictEqual({ error: expect.any(String) });
 
   });
 
@@ -347,9 +347,9 @@ describe('requestChannelInvite', () => {
 
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    requestChannelInvite(user1.authUserId, channel1.channelId, user2.authUserId);
+    requestChannelInvite(user1.token, channel1.channelId, user2.authUserId);
 
-    expect(requestChannelDetails(user2.authUserId, channel1.channelId)).toStrictEqual(
+    expect(requestChannelDetails(user2.token, channel1.channelId)).toStrictEqual(
 
       {
 
