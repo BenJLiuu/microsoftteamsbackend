@@ -146,31 +146,31 @@ export function channelDetailsV1(authUserId: number, channelId: number): Channel
 /**
   * Allows a user to attempt to join a channel.
   *
-  * @param {integer} authUserId - Id of user sending the invite.
+  * @param {string} token - Token of user sending the invite.
   * @param {integer} channelId - Id of channel user is being invited to.
   *
   * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
-  * @returns {error: 'Invalid User Id.'} - authUserId does not correspond to an existing user.
+  * @returns {error: 'Invalid Token.'} - Token does not correspond to an existing user.
   * @returns {error: 'You are already a member.'} - authUserId corresponds to user already in channel.
   * @returns {error: 'You do not have access to this channel.'} - Channel is private.
   * @returns {} - authUserId successfully joins the specified channel.
   *
 */
-export function channelJoinV1(authUserId: number, channelId: number): Record<string, never> | Error {
+export function channelJoinV2(token: string, channelId: number): Record<string, never> | Error {
   const data = getData();
 
   if (!data.channels.some(channel => channel.channelId === channelId)) return { error: 'Invalid Channel Id.' };
-  if (!validUserId(authUserId)) return { error: 'Invalid User Id.' };
+  if (!validToken(token)) return { error: 'Invalid Token.' };
 
   const channelIndex = data.channels.map(object => object.channelId).indexOf(channelId);
-  const userIndex = data.users.findIndex(user => user.uId === authUserId);
+  const userIndex = data.users.findIndex(user => user.uId === getUserIdFromToken(token));
   const privateUser = removePassword(data.users[userIndex]);
 
-  if (data.channels[channelIndex].allMembers.some(user => user.uId === authUserId)) return { error: 'You are already a member.' };
+  if (data.channels[channelIndex].allMembers.some(user => user.uId === getUserIdFromToken(token))) return { error: 'You are already a member.' };
 
   if (data.channels[channelIndex].isPublic === false &&
       data.channels[channelIndex].allMembers.includes(privateUser) === false &&
-      data.users[0].uId !== authUserId) {
+      data.users[0].uId !== getUserIdFromToken(token)) {
     return { error: 'You do not have access to this channel.' };
   }
 
