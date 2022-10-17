@@ -59,8 +59,8 @@ app.get('/channels/listAll/v2', (req: Request, res: Response) => {
 });
 
 app.post('/channel/invite/v2', (req: Request, res: Response) => {
-  const { authUserId, channelId, uId } = req.body;
-  res.json(channelInviteV1(authUserId, channelId, uId));
+  const { token, channelId, uId } = req.body;
+  res.json(channelInviteV2(token, channelId, uId));
 });
 
 app.get('/channel/details/v2', (req: Request, res: Response) => {

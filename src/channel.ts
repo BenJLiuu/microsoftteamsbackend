@@ -85,18 +85,18 @@ export function channelSendMessageV1 (authUserId, channelId, message) {
 /**
   * Sends a user specific invite to a given channel
   *
-  * @param {integer} authUserId - Id of user sending the invite.
+  * @param {string} token - Token of user sending the invite.
   * @param {integer} channelId - Id of channel user is being invited to.
   * @param {integer} uId - Id of user to be invited.
   *
   * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
   * @returns {error: 'Invalid User Id.'}  - uId does not correspond to an existing user.
-  * @returns {error: 'Invalid Authorised User Id.'} - authUserId does not correspond to an existing user.
+  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {error: 'User is already a member.'} - uId corresponds to user already in channel.
   * @returns {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
   * @returns {} - uId has been succesfully invited to corresponding channel.
 */
-export function channelInviteV1(token: string, channelId: number, uId: number): Record<string, never> | Error {
+export function channelInviteV2(token: string, channelId: number, uId: number): Record<string, never> | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
