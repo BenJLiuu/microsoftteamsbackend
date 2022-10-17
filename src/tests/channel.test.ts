@@ -633,7 +633,5 @@ describe('requestChannelJoin', () => {
         ],
 
       });
-
   });
-
 });
