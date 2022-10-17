@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { validUserId, validChannelId, checkUserIdtoChannel, removePassword } from './helper';
+import { validUserId, validChannelId, checkUserIdtoChannel, removePassword, validToken, getUserIdFromToken } from './helper';
 import { Error, MessageList, ChannelDetails } from './objects';
 
 /**
@@ -85,23 +85,23 @@ export function channelSendMessageV1 (authUserId, channelId, message) {
 /**
   * Sends a user specific invite to a given channel
   *
-  * @param {integer} authUserId - Id of user sending the invite.
+  * @param {string} token - Token of user sending the invite.
   * @param {integer} channelId - Id of channel user is being invited to.
   * @param {integer} uId - Id of user to be invited.
   *
   * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
   * @returns {error: 'Invalid User Id.'}  - uId does not correspond to an existing user.
-  * @returns {error: 'Invalid Authorised User Id.'} - authUserId does not correspond to an existing user.
+  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {error: 'User is already a member.'} - uId corresponds to user already in channel.
   * @returns {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
   * @returns {} - uId has been succesfully invited to corresponding channel.
 */
-export function channelInviteV1(authUserId: number, channelId: number, uId: number): Record<string, never> | Error {
+export function channelInviteV2(token: string, channelId: number, uId: number): Record<string, never> | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
-  if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
+  if (!validToken(token)) return { error: 'Invalid Token.' };
   if (checkUserIdtoChannel(uId, channelId)) return { error: 'User is already a member.' };
-  if (!checkUserIdtoChannel(authUserId, channelId)) return { error: 'Authorised User is not a member.' };
+  if (!checkUserIdtoChannel(getUserIdFromToken(token), channelId)) return { error: 'Authorised User is not a member.' };
 
   const data = getData();
 
@@ -146,31 +146,31 @@ export function channelDetailsV1(authUserId: number, channelId: number): Channel
 /**
   * Allows a user to attempt to join a channel.
   *
-  * @param {integer} authUserId - Id of user sending the invite.
+  * @param {string} token - Token of user sending the invite.
   * @param {integer} channelId - Id of channel user is being invited to.
   *
   * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
-  * @returns {error: 'Invalid User Id.'} - authUserId does not correspond to an existing user.
+  * @returns {error: 'Invalid Token.'} - Token does not correspond to an existing user.
   * @returns {error: 'You are already a member.'} - authUserId corresponds to user already in channel.
   * @returns {error: 'You do not have access to this channel.'} - Channel is private.
   * @returns {} - authUserId successfully joins the specified channel.
   *
 */
-export function channelJoinV1(authUserId: number, channelId: number): Record<string, never> | Error {
+export function channelJoinV2(token: string, channelId: number): Record<string, never> | Error {
   const data = getData();
 
   if (!data.channels.some(channel => channel.channelId === channelId)) return { error: 'Invalid Channel Id.' };
-  if (!validUserId(authUserId)) return { error: 'Invalid User Id.' };
+  if (!validToken(token)) return { error: 'Invalid Token.' };
 
   const channelIndex = data.channels.map(object => object.channelId).indexOf(channelId);
-  const userIndex = data.users.findIndex(user => user.uId === authUserId);
+  const userIndex = data.users.findIndex(user => user.uId === getUserIdFromToken(token));
   const privateUser = removePassword(data.users[userIndex]);
 
-  if (data.channels[channelIndex].allMembers.some(user => user.uId === authUserId)) return { error: 'You are already a member.' };
+  if (data.channels[channelIndex].allMembers.some(user => user.uId === getUserIdFromToken(token))) return { error: 'You are already a member.' };
 
   if (data.channels[channelIndex].isPublic === false &&
       data.channels[channelIndex].allMembers.includes(privateUser) === false &&
-      data.users[0].uId !== authUserId) {
+      data.users[0].uId !== getUserIdFromToken(token)) {
     return { error: 'You do not have access to this channel.' };
   }
 
