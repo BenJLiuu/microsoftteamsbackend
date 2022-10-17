@@ -4,8 +4,8 @@ import config from './config.json';
 import cors from 'cors';
 
 import { echo } from './echo';
+import { channelsCreateV2, channelsListV1, channelsListAllV1 } from './channels';
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
-import { channelsCreateV1, channelsListV1, channelsListAllV1 } from './channels';
 import { channelDetailsV1, channelJoinV1, channelInviteV1, channelMessagesV1 } from './channel';
 import { clearV1 } from './other';
 import { userProfileV1 } from './users';
@@ -44,8 +44,8 @@ app.post('/auth/register/v2', (req: Request, res: Response) => {
 });
 
 app.post('/channels/create/v2', (req: Request, res: Response) => {
-  const { authUserId, name, isPublic } = req.body;
-  res.json(channelsCreateV1(authUserId, name, isPublic));
+  const { token, name, isPublic } = req.body;
+  res.json(channelsCreateV2(token, name, isPublic));
 });
 
 app.get('/channels/list/v2', (req: Request, res: Response) => {
