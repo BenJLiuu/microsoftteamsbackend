@@ -48,8 +48,8 @@ function requestChannelInvite(token: string, channelId: number, uId: number) {
   return requestHelper('POST', '/channel/invite/v2', { token, channelId, uId });
 }
 
-function requestChannelJoin(authUserId: number, channelId: number) {
-  return requestHelper('POST', '/channel/join/v2', { authUserId, channelId });
+function requestChannelJoin(token: string, channelId: number) {
+  return requestHelper('POST', '/channel/join/v2', { token, channelId });
 }
 
 describe('ChannelMessages', () => {
@@ -418,7 +418,7 @@ describe('requestChannelJoin', () => {
   test('Invalid channel id', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
 
-    expect(requestChannelJoin(user1.authUserId, 30)).toStrictEqual({ error: 'Invalid Channel Id.' });
+    expect(requestChannelJoin(user1.token, 0)).toStrictEqual({ error: expect.any(String) });
   });
 
   test('Authorised user is already a member of the channel', () => {
@@ -428,9 +428,9 @@ describe('requestChannelJoin', () => {
 
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
 
-    requestChannelJoin(user2.authUserId, channel1.channelId);
+    requestChannelJoin(user2.token, channel1.channelId);
 
-    expect(requestChannelJoin(user2.authUserId, channel1.channelId)).toStrictEqual({ error: 'You are already a member.' });
+    expect(requestChannelJoin(user2.token, channel1.channelId)).toStrictEqual({ error: expect.any(String) });
   });
 
   test('Channel is private and user is not member or global owner', () => {
@@ -440,15 +440,15 @@ describe('requestChannelJoin', () => {
 
     const channel1 = requestChannelsCreate(user1.token, 'example', false);
 
-    expect(requestChannelJoin(user2.authUserId, channel1.channelId)).toStrictEqual({ error: 'You do not have access to this channel.' });
+    expect(requestChannelJoin(user2.token, channel1.channelId)).toStrictEqual({ error: expect.any(String) });
   });
 
-  test('Invalid authorised user Id', () => {
+  test('Invalid Token', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
 
     const channel1 = requestChannelsCreate(user1.token, 'example', true);
 
-    expect(requestChannelJoin(user1.authUserId + 1, channel1.channelId)).toStrictEqual({ error: 'Invalid User Id.' });
+    expect(requestChannelJoin('test', channel1.channelId)).toStrictEqual({ error: expect.any(String) });
   });
 
   // test('Successful join', () => {
