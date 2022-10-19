@@ -80,3 +80,12 @@ export type Token = {
   authUserId: number,
   token: string,
 }
+
+export type dmId = {
+  dmId: number,
+}
+
+export type dms = {
+  dmId: number,
+  name: string,
+};
