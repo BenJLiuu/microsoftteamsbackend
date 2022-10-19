@@ -5,6 +5,7 @@ let data = {
   users: [],
   channels: [],
   sessions: [],
+  dms: [],
 };
 
 function setData(newData: Data) {
