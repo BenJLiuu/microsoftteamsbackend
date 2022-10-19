@@ -12,20 +12,20 @@ import { Error, MessageList, ChannelDetails } from './objects';
   *
   * @returns MessageList - Object containing start offset, end offset, and array of message objects.
   * @returns {Error} {error : 'Not valid channelId'} - If channelId was not found.
-  * @returns {Error} {error : 'Invalid Authorised User Id'} - If authUserId was not found.
+  * @returns {Error} {error : 'Invalid Session'} - If token does not correspond to an existing session.
   * @returns {Error} {error : 'Start is greater than total messages'} - If start offset is greater than total messages in channel.
   * @returns {Error} {error : 'Authorised user is not a channel member'} - authUserId is not in channel allMembers array.
 */
-export function channelMessagesV1(authUserId: number, channelId: number, start: number): MessageList | Error {
+export function channelMessagesV2(token: string, channelId: number, start: number): MessageList | Error {
   if (!validChannelId(channelId)) return { error: 'Not valid channelId' };
-  if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
+  if (!validToken(Token)) return { error: 'Invalid Session.' };
 
   const data = getData();
   const index = data.channels.findIndex(channel => channel.channelId === channelId);
   if (start > data.channels[index].messages.length) return { error: 'Start is greater than total messages' };
 
-  const isChannelMember = data.channels[index].allMembers.some(users => users.uId === authUserId);
-  if (!isChannelMember) return { error: 'Authorised user is not a channel member' };
+  const authUser = getUserIdFromToken(token);
+  if (!checkUserIdtoChannel(authUser, channelId)) return { error: 'Authorised User is not a member.' };
 
   let end = 0;
   if (data.channels[index].messages.length + start > 50) {
