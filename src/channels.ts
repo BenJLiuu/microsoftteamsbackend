@@ -23,12 +23,11 @@ import {
   *
 */
 function channelsListAllV1 (authUserId: number): Channels | Error {
-  /*if (!validUserId(authUserId)) {
+  if (!validUserId(authUserId)) {
     return {
       error: 'Invalid Authorised User Id.'
     };
   }
-  */
   const data = getData();
   const channelList = [];
   for (const i of data.channels) {
@@ -56,7 +55,6 @@ function channelsListAllV1 (authUserId: number): Channels | Error {
 */
 
 function channelsListV2(token: string): Channels | Error {
-
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
   const data = getData();
   const channelList = [];
