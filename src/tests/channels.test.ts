@@ -31,11 +31,11 @@ function requestChannelsCreate(token: string, name: string, isPublic: boolean) {
 function requestChannelsList(token: string) {
   return requestHelper('GET', '/channels/list/v2', { token });
 }
-
+/*
 function requestChannelsListAll(token: string) {
   return requestHelper('GET', '/channels/listAll/v2', { token });
 }
-
+*/
 function requestChannelDetails(authUserId: number, channelId: number) {
   return requestHelper('GET', '/channel/details/v2', { authUserId, channelId });
 }
@@ -171,7 +171,6 @@ describe('Test channelsListAllv1 ', () => {
     const allDetails = requestChannelsListAll(user1.authUserId);
     expect(allDetails).toStrictEqual({ channels: [] });
   });
-
 
   test('invalid authuserid', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
