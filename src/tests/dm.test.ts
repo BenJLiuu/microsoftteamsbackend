@@ -41,7 +41,7 @@ function requestDmLeave(token: string, dmId: number) {
 }
 
 function requestClear() {
-  return requestHelper('DELETE', '/clear/v2', {});
+  return requestHelper('DELETE', '/clear/v1', {});
 }
 
 // DmCreate V1 Testing
