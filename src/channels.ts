@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { Channels, ChannelId, Error } from './objects';
+import { Channel, Channels, ChannelId, Error } from './objects';
 
 import {
   validUserId,
@@ -91,7 +91,7 @@ function channelsCreateV2(token: string, name: string, isPublic: boolean): Chann
   const authUserId = getUserIdFromToken(token);
   let newChannelId = 0;
   while (data.channels.some(c => c.channelId === newChannelId)) newChannelId++;
-  const newChannel = {
+  const newChannel: Channel = {
     channelId: newChannelId,
     name: name,
     isPublic: isPublic,

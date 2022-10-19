@@ -7,8 +7,12 @@ export type User = {
   email: string,
   handleStr: string,
   passwordHash: string,
-  sessions: {token: string}[],
 };
+
+export type Session = {
+  authUserId: number,
+  token: string,
+}
 
 export type AuthUserId = {
   authUserId: number,
@@ -70,13 +74,9 @@ export type ChannelId = {
 export type Data = {
   users: User[],
   channels: Channel[],
+  sessions: Session[],
 };
 
 export type Error = {
   error: string;
-}
-
-export type Token = {
-  authUserId: number,
-  token: string,
 }

@@ -21,7 +21,7 @@ function requestAuthRegister(email: string, password: string, nameFirst: string,
 }
 
 function requestClear() {
-  return requestHelper('DELETE', '/clear/v2', {});
+  return requestHelper('DELETE', '/clear/v1', {});
 }
 
 function requestChannelsCreate(token: string, name: string, isPublic: boolean) {
@@ -31,13 +31,15 @@ function requestChannelsCreate(token: string, name: string, isPublic: boolean) {
 function requestChannelsList(token: string) {
   return requestHelper('GET', '/channels/list/v2', { token });
 }
+
 /*
 function requestChannelsListAll(token: string) {
   return requestHelper('GET', '/channels/listAll/v2', { token });
 }
 */
-function requestChannelDetails(authUserId: number, channelId: number) {
-  return requestHelper('GET', '/channel/details/v2', { authUserId, channelId });
+
+function requestChannelDetails(token: string, channelId: number) {
+  return requestHelper('GET', '/channel/details/v2', { token, channelId });
 }
 
 function requestChannelJoin(token: string, channelId: number) {
@@ -51,7 +53,7 @@ describe('Test channelsCreateV1', () => {
   test('public channel creation', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'General', true);
-    expect(requestChannelDetails(user1.authUserId, channel1.channelId)).toStrictEqual({
+    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual({
       name: 'General',
       isPublic: true,
       ownerMembers: expect.any(Array),
@@ -62,7 +64,7 @@ describe('Test channelsCreateV1', () => {
   test('private channel creation', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'General', false);
-    expect(requestChannelDetails(user1.authUserId, channel1.channelId)).toStrictEqual({
+    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual({
       name: 'General',
       isPublic: false,
       ownerMembers: expect.any(Array),
@@ -74,14 +76,14 @@ describe('Test channelsCreateV1', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'General', false);
     const channel2 = requestChannelsCreate(user1.token, 'Homework', true);
-    expect(requestChannelDetails(user1.authUserId, channel1.channelId)).toStrictEqual({
+    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual({
       name: 'General',
       isPublic: false,
       ownerMembers: expect.any(Array),
       allMembers: expect.any(Array),
     });
 
-    expect(requestChannelDetails(user1.authUserId, channel2.channelId)).toStrictEqual({
+    expect(requestChannelDetails(user1.token, channel2.channelId)).toStrictEqual({
       name: 'Homework',
       isPublic: true,
       ownerMembers: expect.any(Array),
