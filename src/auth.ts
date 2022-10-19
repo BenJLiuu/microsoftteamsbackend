@@ -104,7 +104,7 @@ function authRegisterV2(email: string, password: string, nameFirst: string, name
   *
   * @returns {error: 'Invalid token'} - if token does not exist in dataStore.
 */
-function authLogoutV1(token: string): Record<string, never> {
+function authLogoutV1(token: string): Record<string, never> | Error {
   const data = getData();
   if (!(data.sessions.some(session => session.token === token))) return { error: 'Invalid token' };
 

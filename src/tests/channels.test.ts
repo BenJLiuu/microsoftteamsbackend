@@ -38,8 +38,8 @@ function requestChannelsListAll(token: string) {
 }
 */
 
-function requestChannelDetails(authUserId: number, channelId: number) {
-  return requestHelper('GET', '/channel/details/v2', { authUserId, channelId });
+function requestChannelDetails(token: string, channelId: number) {
+  return requestHelper('GET', '/channel/details/v2', { token, channelId });
 }
 
 function requestChannelJoin(token: string, channelId: number) {
