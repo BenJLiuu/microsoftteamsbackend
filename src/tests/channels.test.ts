@@ -224,8 +224,9 @@ describe('Test channelsListV2 ', () => {
 
   test('invalid user permissions', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = requestAuthRegister('aliceP@email.com', 'alice123', 'Alice', 'Person');
     const channel1 = requestChannelsCreate(user1.token, 'general', true);
+    requestChannelJoin(user2.token, channel1.channelId);
     expect(requestChannelsList('example')).toStrictEqual({ error: 'Invalid Session Id.' });
   });
 });
-    
