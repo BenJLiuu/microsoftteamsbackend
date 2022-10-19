@@ -80,24 +80,24 @@ describe('requestDmCreate', () => {
     expect(requestDmCreate('test', [user1.authUserId])).toStrictEqual({ error: expect.any(String) });
   });
 
-  // test('Successful create', () => {
-  //   const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
-  //   const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-  //   const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+  test('Successful create', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
 
-  //   const dm1 = requestDmCreate(user1.token, [user2.authUserId, user3.authUserId]);
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId, user3.authUserId]);
 
-  //   expect(requestDmList(user1.token)).toStrictEqual(
-  //     {
-  //       dms: [
-  //         {
-  //           dmId: dm1.dmId,
+    expect(requestDmList(user1.token)).toStrictEqual(
+      {
+        dms: [
+          {
+            dmId: dm1.dmId,
 
-  //           name: 'aliceperson, johnnylawrence, johnnymate',
-  //         }
-  //       ],
-  //     });
-  // });
+            name: 'aliceperson, johnnylawrence, johnnymate',
+          }
+        ],
+      });
+  });
 });
 
 // DmList V1 Testing
@@ -126,9 +126,9 @@ describe('requestDmList', () => {
       {
         dms: [
           {
-            dmId: dm3.dmId,
+            dmId: dm1.dmId,
 
-            name: 'johnnylawrence',
+            name: 'aliceperson, johnnylawrence',
           },
           {
             dmId: dm2.dmId,
@@ -136,9 +136,9 @@ describe('requestDmList', () => {
             name: 'johnnylawrence, johnnymate',
           },
           {
-            dmId: dm1.dmId,
+            dmId: dm3.dmId,
 
-            name: 'aliceperson, johnnylawrence',
+            name: 'johnnylawrence',
           }
         ],
       });

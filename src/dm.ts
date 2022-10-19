@@ -34,7 +34,7 @@ export function DmCreateV1(token: string, uIds: number[]): dmId | Error {
     }
   }
   names.sort(function(a, b) {
-    return a.name.localeCompare(b.name);
+    return a.localeCompare(b);
   });
 
   let name = names.join(', ');
@@ -52,8 +52,30 @@ export function DmCreateV1(token: string, uIds: number[]): dmId | Error {
   return { dmId: newDm.dmId };
 }
 
-export function DmListV1() {
-  return{};
+/**
+  * Lists all DMs that the user is a member of.
+  *
+  * @param {string} token - Token of user checking each dm.
+  *
+  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {array} dms - array of objects containing information about each dm.
+*/
+export function DmListV1(token: string): dms | Error {
+  if (!validToken(token)) return { error: 'Invalid Token.' };
+
+  const data = getData();
+  const dmList = [];
+  const authUserId = getUserIdFromToken(token);
+  for (const i of data.dms) {
+    if (checkUserIdtoDm(authUserId, i.dmId)) {
+      dmList.push({
+        dmId: i.dmId,
+        name: i.name
+      });
+    }
+  }
+
+  return { dms: dmList };
 }
 
 export function DmLeaveV1() {
