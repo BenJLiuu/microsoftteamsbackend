@@ -115,3 +115,42 @@ function genRandomString(length: number): string {
   }
   return result;
 }
+
+/**
+ * Gets the handle string of a user from a given user id.
+ * @param {number} uId - id of the the required user.
+ * @returns {string} handleStr - users handle string.
+ */
+ export function gethandleStrFromId(uId: number): string {
+  const data = getData();
+  return data.users.find(s => s.uId === uId).handleStr;
+}
+
+/**
+ * Checks whether a dm id is valid (whether it exists in the database)
+ *
+ * @param dmId - Id of dm
+ * @returns boolean - whether dm id is valid
+ */
+ export function validDmId(dmId : number) : boolean {
+  const data = getData();
+  return data.dms.some(dm => dm.dmId === dmId);
+}
+
+/**
+ * Checks whether a user is in a dm
+ *
+ * @param authUserId - the user to check
+ * @param dmId - the dm the user may be contained in
+ * @returns boolean - whether the user is in the dm
+ */
+ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
+  const data = getData();
+  let position = 0;
+  for (let i = 0; i < data.dms.length; i++) {
+    if (data.dms[i].dmId === dmId) {
+      position = i;
+    }
+  }
+  return data.dms[position].members.some(user => user === authUserId);
+}
