@@ -12,6 +12,7 @@ function clearV1 (): Record<string, never> {
     users: [],
     channels: [],
     sessions: [],
+    dms: [],
   });
   return {};
 }

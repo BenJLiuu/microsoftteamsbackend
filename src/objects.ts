@@ -12,16 +12,16 @@ export type User = {
 export type Session = {
   authUserId: number,
   token: string,
-}
+};
 
 export type AuthUserId = {
   authUserId: number,
-}
+};
 
 export type LoginData = {
   authUserId: number,
   token: string,
-}
+};
 
 export type PrivateUser = Omit<User, 'passwordHash'>;
 
@@ -40,7 +40,7 @@ export type MessageList = {
   messages: Message[],
   start: number,
   end: number,
-}
+};
 
 export type Channel = {
   channelId: number,
@@ -79,4 +79,18 @@ export type Data = {
 
 export type Error = {
   error: string;
-}
+};
+
+export type Token = {
+  authUserId: number,
+  token: string,
+};
+
+export type dmId = {
+  dmId: number,
+};
+
+export type dms = {
+  dmId: number,
+  name: string,
+};
