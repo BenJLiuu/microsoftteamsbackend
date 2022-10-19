@@ -36,8 +36,8 @@ function requestChannelsListAll(authUserId: number) {
   return requestHelper('GET', '/channels/listAll/v2', { authUserId });
 }
 
-function requestChannelDetails(authUserId: number, channelId: number) {
-  return requestHelper('GET', '/channel/details/v2', { authUserId, channelId });
+function requestChannelDetails(token: string, channelId: number) {
+  return requestHelper('GET', '/channel/details/v2', { token, channelId });
 }
 
 function requestChannelJoin(authUserId: number, channelId: number) {
@@ -51,7 +51,7 @@ describe('Test channelsCreateV1', () => {
   test('public channel creation', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'General', true);
-    expect(requestChannelDetails(user1.authUserId, channel1.channelId)).toStrictEqual({
+    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual({
       name: 'General',
       isPublic: true,
       ownerMembers: expect.any(Array),
@@ -62,7 +62,7 @@ describe('Test channelsCreateV1', () => {
   test('private channel creation', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'General', false);
-    expect(requestChannelDetails(user1.authUserId, channel1.channelId)).toStrictEqual({
+    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual({
       name: 'General',
       isPublic: false,
       ownerMembers: expect.any(Array),
@@ -74,14 +74,14 @@ describe('Test channelsCreateV1', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'General', false);
     const channel2 = requestChannelsCreate(user1.token, 'Homework', true);
-    expect(requestChannelDetails(user1.authUserId, channel1.channelId)).toStrictEqual({
+    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual({
       name: 'General',
       isPublic: false,
       ownerMembers: expect.any(Array),
       allMembers: expect.any(Array),
     });
 
-    expect(requestChannelDetails(user1.authUserId, channel2.channelId)).toStrictEqual({
+    expect(requestChannelDetails(user1.token, channel2.channelId)).toStrictEqual({
       name: 'Homework',
       isPublic: true,
       ownerMembers: expect.any(Array),

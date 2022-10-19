@@ -36,8 +36,8 @@ function requestChannelsCreate(token: string, name: string, isPublic: boolean) {
   return requestHelper('POST', '/channels/create/v2', { token, name, isPublic });
 }
 
-function requestChannelDetails(authUserId: number, channelId: number) {
-  return requestHelper('GET', '/channel/details/v2', { authUserId, channelId });
+function requestChannelDetails(token: string, channelId: number) {
+  return requestHelper('GET', '/channel/details/v2', { token, channelId });
 }
 
 function requestChannelMessages(authUserId: number, channelId: number, start: number) {
@@ -50,10 +50,6 @@ function requestChannelInvite(token: string, channelId: number, uId: number) {
 
 function requestChannelJoin(token: string, channelId: number) {
   return requestHelper('POST', '/channel/join/v2', { token, channelId });
-}
-
-function requestChannelDetails(token: string, channelId: number) {
-  return requestHelper('GET', '/channel/details/v2', { token, channelId });
 }
 
 describe('ChannelMessages', () => {
@@ -358,12 +354,12 @@ describe('Test requestChannelDetails', () => {
     expect(requestChannelDetails(user2.token, channel1.channelId)).toStrictEqual({ error: 'Authorised User is not a member.' });
   });
 
-  test('Test only invalid authorised user Id', () => {
+  test('Test only invalid token', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
 
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelDetails(-1, channel1.channelId)).toStrictEqual({ error: 'Invalid Session.' });
+    expect(requestChannelDetails(user1.token + 'a', channel1.channelId)).toStrictEqual({ error: 'Invalid Session.' });
   });
 
   // Successful Registration tests
