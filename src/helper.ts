@@ -121,7 +121,7 @@ function genRandomString(length: number): string {
  * @param {number} uId - id of the the required user.
  * @returns {string} handleStr - users handle string.
  */
- export function gethandleStrFromId(uId: number): string {
+export function gethandleStrFromId(uId: number): string {
   const data = getData();
   return data.users.find(s => s.uId === uId).handleStr;
 }
@@ -132,7 +132,7 @@ function genRandomString(length: number): string {
  * @param dmId - Id of dm
  * @returns boolean - whether dm id is valid
  */
- export function validDmId(dmId : number) : boolean {
+export function validDmId(dmId : number) : boolean {
   const data = getData();
   return data.dms.some(dm => dm.dmId === dmId);
 }
@@ -144,7 +144,7 @@ function genRandomString(length: number): string {
  * @param dmId - the dm the user may be contained in
  * @returns boolean - whether the user is in the dm
  */
- export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
+export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
   const data = getData();
   let position = 0;
   for (let i = 0; i < data.dms.length; i++) {

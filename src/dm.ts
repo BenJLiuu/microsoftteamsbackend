@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
-import { validUserId, validChannelId, checkUserIdtoChannel, removePassword, validToken, getUserIdFromToken, gethandleStrFromId, validDmId, checkUserIdtoDm } from './helper';
-import { Error, MessageList, ChannelDetails, dmId, dms } from './objects';
+import { validUserId, validToken, getUserIdFromToken, gethandleStrFromId, validDmId, checkUserIdtoDm } from './helper';
+import { Error, dmId, dms } from './objects';
 
 /**
   * Creates and stores a new DM.
@@ -18,12 +18,12 @@ export function DmCreateV1(token: string, uIds: Array<number>): dmId | Error {
   for (const i of uIds) {
     if (!validUserId(i)) return { error: 'Invalid User Id given.' };
   }
-  if(uIds.length !== Array.from(new Set(uIds)).length) return { error: 'Duplicate User Id found.' };
+  if (uIds.length !== Array.from(new Set(uIds)).length) return { error: 'Duplicate User Id found.' };
 
   const data = getData();
   const authUserId = getUserIdFromToken(token);
-  let names = [];
-  let members = [];
+  const names = [];
+  const members = [];
 
   names.push(gethandleStrFromId(authUserId));
   members.push(authUserId);
@@ -37,7 +37,7 @@ export function DmCreateV1(token: string, uIds: Array<number>): dmId | Error {
     return a.localeCompare(b);
   });
 
-  let name = names.join(', ');
+  const name = names.join(', ');
   let newdmId = 0;
   while (data.dms.some(c => c.dmId === newdmId)) newdmId++;
   const newDm = {
@@ -96,7 +96,7 @@ export function DmLeaveV1(token: string, dmId: number): Record<string, never> | 
   if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
 
   const data = getData();
-  let new_members = [];
+  const newMembers = [];
   let position = 0;
   for (let i = 0; i < data.dms.length; i++) {
     if (data.dms[i].dmId === dmId) {
@@ -105,16 +105,16 @@ export function DmLeaveV1(token: string, dmId: number): Record<string, never> | 
   }
   for (const i of data.dms[position].members) {
     if (i !== authUserId) {
-      new_members.push(i);
+      newMembers.push(i);
     }
   }
 
   data.dms[position] = {
     dmId: data.dms[position].dmId,
     name: data.dms[position].name,
-    members: new_members,
+    members: newMembers,
   };
   setData(data);
-  
+
   return {};
 }

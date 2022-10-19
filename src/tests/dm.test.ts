@@ -63,7 +63,7 @@ describe('requestDmCreate', () => {
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
 
-    expect(requestDmCreate(user1.token, [user2.authUserId, user2.authUserId+1, user3.authUserId])).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmCreate(user1.token, [user2.authUserId, user2.authUserId + 1, user3.authUserId])).toStrictEqual({ error: expect.any(String) });
   });
 
   test('Duplicate user id', () => {
