@@ -11,11 +11,7 @@ export type User = {
 
 export type Session = {
   authUserId: number,
-  token: string,
-}
-
-export type AuthUserId = {
-  authUserId: number,
+  token: string
 }
 
 export type LoginData = {
