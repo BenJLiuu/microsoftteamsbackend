@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { User, PrivateUser } from './objects';
+import { User, PrivateUser, Session } from './objects';
 
 /**
  * Checks whether a user is valid (whether they exist in the database)
@@ -86,7 +86,7 @@ export function removePassword(user : User) : PrivateUser {
  * @param {integer} uId - the user to assign the token to
  * @returns {LoginData} {token : string, authUserId: number} - the session object that was created.
  */
-export function generateSession(uId: number): string {
+export function generateSession(uId: number): Session {
   const tokenLength = 32;
   const session = {
     token: genRandomString(tokenLength),

@@ -1,7 +1,7 @@
 import { Data } from './objects';
 import fs from 'fs';
 
-let data = {
+let data: Data = {
   users: [],
   channels: [],
   sessions: [],

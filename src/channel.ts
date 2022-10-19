@@ -91,7 +91,7 @@ export function channelSendMessageV1 (authUserId, channelId, message) {
   *
   * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
   * @returns {error: 'Invalid User Id.'}  - uId does not correspond to an existing user.
-  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing session.
   * @returns {error: 'User is already a member.'} - uId corresponds to user already in channel.
   * @returns {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
   * @returns {} - uId has been succesfully invited to corresponding channel.
@@ -117,18 +117,20 @@ export function channelInviteV2(token: string, channelId: number, uId: number): 
 /**
   * Provides the details of the owners and members of a given channel.
   *
-  * @param {integer} authUserId - Id of user sending the invite.
+  * @param {string} token - Token of user sending the invite.
   * @param {integer} channelId - Id of channel user is being invited to.
   *
   * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
-  * @returns {error: 'Invalid Authorised User Id.'} - authUserId does not correspond to an existing user.
+  * @returns {error: 'Invalid Session.'} - token does not correspond to an existing session.
   * @returns {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
   * @returns ChannelDetails - Object containing channel successfully examined by authUserId.
 */
-export function channelDetailsV1(authUserId: number, channelId: number): ChannelDetails | Error {
+export function channelDetailsV2(token: string, channelId: number): ChannelDetails | Error {
+  console.log(token);
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
-  if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
-  if (!checkUserIdtoChannel(authUserId, channelId)) return { error: 'Authorised User is not a member.' };
+  if (!validToken(token)) return { error: 'Invalid Session.' };
+  const authUser = getUserIdFromToken(token);
+  if (!checkUserIdtoChannel(authUser, channelId)) return { error: 'Authorised User is not a member.' };
 
   const data = getData();
 

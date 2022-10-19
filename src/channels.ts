@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { Channels, ChannelId, Error } from './objects';
+import { Channel, Channels, ChannelId, Error } from './objects';
 
 import {
   validUserId,
@@ -14,7 +14,7 @@ import {
   *
   * @param {integer} authUserId - The user ID of the person calling the function
   *
-  * @returns {error: 'Invalid Authorised User Id.'} - If the person calling the function is not an authorised user
+  * @returns {Object} {error: 'Invalid Authorised User Id.'} - If the person calling the function is not an authorised user
   * @returns {
   *   channelId: integer,
   *   name: string
@@ -41,32 +41,28 @@ function channelsListAllV1 (authUserId: number): Channels | Error {
 }
 
 /**
-  * Lists the channels that given userId is a member of. Returns an error if authUserID isn't an authorised user
+  * Lists the channels that given user is a member of. Returns an error if the user is invalid.
   *
-  * @param {integer} authUserId - The user ID of the person calling the function
+  * @param {string} token - Token of the user who is using channels/list
   *
-  * @returns {error: 'Invalid Authorised User Id.'} - If the person calling the function is not an authorised user
-  * @returns {
+  * @returns {Object} {error: 'Invalid Session Id.'} - If the token is invalid.
+  * @returns {Object} {
  *   channelId: integer,
  *   name: string
  * } - If the user calling the function is authorised and has joined a channel/s
- * @returns {channels: []} - The user has not joined any channels
+ * @returns {Object} {channels: []} - If the user has not joined any channels
  *
 */
 
-function channelsListV1(authUserId: number): Channels | Error {
-  if (!validUserId(authUserId)) {
-    return {
-      error: 'Invalid Authorised User Id.'
-    };
-  }
+function channelsListV2(token: string): Channels | Error {
+  if (!validToken(token)) return { error: 'Invalid Session Id.' };
   const data = getData();
   const channelList = [];
-  for (const i of data.channels) {
-    if (checkUserIdtoChannel(authUserId, i.channelId)) {
+  for (const channel of data.channels) {
+    if (checkUserIdtoChannel(getUserIdFromToken(token), channel.channelId)) {
       channelList.push({
-        channelId: i.channelId,
-        name: i.name
+        channelId: channel.channelId,
+        name: channel.name
       });
     }
   }
@@ -95,7 +91,7 @@ function channelsCreateV2(token: string, name: string, isPublic: boolean): Chann
   const authUserId = getUserIdFromToken(token);
   let newChannelId = 0;
   while (data.channels.some(c => c.channelId === newChannelId)) newChannelId++;
-  const newChannel = {
+  const newChannel: Channel = {
     channelId: newChannelId,
     name: name,
     isPublic: isPublic,
@@ -117,4 +113,4 @@ function channelsCreateV2(token: string, name: string, isPublic: boolean): Chann
   return { channelId: newChannel.channelId };
 }
 
-export { channelsCreateV2, channelsListAllV1, channelsListV1 };
+export { channelsCreateV2, channelsListAllV1, channelsListV2 };
