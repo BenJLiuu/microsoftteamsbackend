@@ -21,7 +21,7 @@ function requestAuthRegister(email: string, password: string, nameFirst: string,
 }
 
 function requestClear() {
-  return requestHelper('DELETE', '/clear/v2', {});
+  return requestHelper('DELETE', '/clear/v1', {});
 }
 
 function requestChannelsCreate(token: string, name: string, isPublic: boolean) {

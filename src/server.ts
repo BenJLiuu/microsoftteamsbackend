@@ -92,7 +92,7 @@ app.post('/auth/logout/v1', (req: Request, res: Response) => {
   res.json(authLogoutV1(token));
 });
 
-app.delete('/clear/v2', (req: Request, res: Response) => {
+app.delete('/clear/v1', (req: Request, res: Response) => {
   res.json(clearV1());
 });
 
