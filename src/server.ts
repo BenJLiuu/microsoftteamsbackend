@@ -6,7 +6,7 @@ import cors from 'cors';
 import { echo } from './echo';
 import { channelsCreateV2, channelsListV1, channelsListAllV1 } from './channels';
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
-import { channelDetailsV1, channelJoinV2, channelInviteV2, channelMessagesV1 } from './channel';
+import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV1 } from './channel';
 import { clearV1 } from './other';
 import { userProfileV1 } from './users';
 
@@ -64,9 +64,9 @@ app.post('/channel/invite/v2', (req: Request, res: Response) => {
 });
 
 app.get('/channel/details/v2', (req: Request, res: Response) => {
-  const authUserId = req.query.authUserId as string;
+  const token = req.query.token as string;
   const channelId = req.query.channelId as string;
-  res.json(channelDetailsV1(authUserId ? parseInt(authUserId) : undefined, channelId ? parseInt(channelId) : undefined));
+  res.json(channelDetailsV2(token, channelId ? parseInt(channelId) : undefined));
 });
 
 app.post('/channel/join/v2', (req: Request, res: Response) => {

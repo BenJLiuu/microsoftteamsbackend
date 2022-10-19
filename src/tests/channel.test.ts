@@ -52,6 +52,10 @@ function requestChannelJoin(token: string, channelId: number) {
   return requestHelper('POST', '/channel/join/v2', { token, channelId });
 }
 
+function requestChannelDetails(token: string, channelId: number) {
+  return requestHelper('GET', '/channel/details/v2', { token, channelId });
+}
+
 describe('ChannelMessages', () => {
   beforeEach(() => {
     requestClear();
@@ -341,7 +345,7 @@ describe('Test requestChannelDetails', () => {
   test('Test only invalid channel Id', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
 
-    expect(requestChannelDetails(user1.authUserId, 0)).toStrictEqual({ error: 'Invalid Channel Id.' });
+    expect(requestChannelDetails(user1.token, -1)).toStrictEqual({ error: 'Invalid Channel Id.' });
   });
 
   test('Test only authorised user Id is not a member', () => {
@@ -351,7 +355,7 @@ describe('Test requestChannelDetails', () => {
 
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelDetails(user2.authUserId, channel1.channelId)).toStrictEqual({ error: 'Authorised User is not a member.' });
+    expect(requestChannelDetails(user2.token, channel1.channelId)).toStrictEqual({ error: 'Authorised User is not a member.' });
   });
 
   test('Test only invalid authorised user Id', () => {
@@ -359,7 +363,7 @@ describe('Test requestChannelDetails', () => {
 
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelDetails(user1.authUserId + 1, channel1.channelId)).toStrictEqual({ error: 'Invalid Authorised User Id.' });
+    expect(requestChannelDetails(-1, channel1.channelId)).toStrictEqual({ error: 'Invalid Session.' });
   });
 
   // Successful Registration tests
@@ -369,40 +373,23 @@ describe('Test requestChannelDetails', () => {
 
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelDetails(user1.authUserId, channel1.channelId)).toStrictEqual(
-
+    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual(
       {
-
         name: 'channel1',
-
         isPublic: true,
-
         ownerMembers: [{
-
           uId: user1.authUserId,
-
           nameFirst: 'John',
-
           nameLast: 'Smith',
-
           email: 'johnS@email.com',
-
           handleStr: 'johnsmith',
-
         }],
-
         allMembers: [{
-
           uId: user1.authUserId,
-
           nameFirst: 'John',
-
           nameLast: 'Smith',
-
           email: 'johnS@email.com',
-
           handleStr: 'johnsmith',
-
         }],
       });
   });

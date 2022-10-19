@@ -125,7 +125,7 @@ export function channelInviteV2(token: string, channelId: number, uId: number): 
   * @returns {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
   * @returns ChannelDetails - Object containing channel successfully examined by authUserId.
 */
-export function channelDetailsV1(authUserId: number, channelId: number): ChannelDetails | Error {
+export function channelDetailsV2(authUserId: number, channelId: number): ChannelDetails | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
   if (!checkUserIdtoChannel(authUserId, channelId)) return { error: 'Authorised User is not a member.' };
