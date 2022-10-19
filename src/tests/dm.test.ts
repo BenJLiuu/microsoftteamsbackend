@@ -99,3 +99,48 @@ describe('requestDmCreate', () => {
   //     });
   // });
 });
+
+// DmList V1 Testing
+
+describe('requestDmList', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('Invalid Token', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+
+    expect(requestDmList(user1.token + 1)).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test('Successful create with multiple dms', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
+    const dm2 = requestDmCreate(user1.token, [user3.authUserId]);
+    const dm3 = requestDmCreate(user1.token, []);
+
+    expect(requestDmList(user1.token)).toStrictEqual(
+      {
+        dms: [
+          {
+            dmId: dm3.dmId,
+
+            name: 'johnnylawrence',
+          },
+          {
+            dmId: dm2.dmId,
+
+            name: 'johnnylawrence, johnnymate',
+          },
+          {
+            dmId: dm1.dmId,
+
+            name: 'aliceperson, johnnylawrence',
+          }
+        ],
+      });
+  });
+});
