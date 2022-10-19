@@ -18,14 +18,14 @@ import { Error, MessageList, ChannelDetails } from './objects';
 */
 export function channelMessagesV2(token: string, channelId: number, start: number): MessageList | Error {
   if (!validChannelId(channelId)) return { error: 'Not valid channelId' };
-  if (!validToken(Token)) return { error: 'Invalid Session.' };
+  if (!validToken(token)) return { error: 'Invalid Session.' };
 
   const data = getData();
   const index = data.channels.findIndex(channel => channel.channelId === channelId);
   if (start > data.channels[index].messages.length) return { error: 'Start is greater than total messages' };
 
   const authUser = getUserIdFromToken(token);
-  if (!checkUserIdtoChannel(authUser, channelId)) return { error: 'Authorised User is not a member.' };
+  if (!checkUserIdtoChannel(authUser, channelId)) return { error: 'Authorised User is not a channel member' };
 
   let end = 0;
   if (data.channels[index].messages.length + start > 50) {
@@ -60,9 +60,10 @@ export function channelMessagesV2(token: string, channelId: number, start: numbe
   *
 */
 /*
-export function channelSendMessageV1 (authUserId, channelId, message) {
+export function messageSendV1 (token, channelId, message) {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' }
-  if (!validUserId(authUserId)) return { error: 'Invalid Authorised User Id.' };
+  if (!validToken(token)) return { error: 'Invalid Authorised User Id.' };
+  const authUserId = getUserIdFromToken(token);
 
   const data = getData();
   const index = data.channels.findIndex(channel => channel.channelId === channelId);
