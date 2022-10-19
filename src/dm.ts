@@ -13,7 +13,7 @@ import { Error, MessageList, ChannelDetails, dmId, dms } from './objects';
   * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {integer} dmId - if creation is successfull.
 */
-export function DmCreateV1(token: string, uIds: number[]): dmId | Error {
+export function DmCreateV1(token: string, uIds: Array<number>): dmId | Error {
   if (!validToken(token)) return { error: 'Invalid Token.' };
   for (const i of uIds) {
     if (!validUserId(i)) return { error: 'Invalid User Id given.' };
@@ -78,6 +78,43 @@ export function DmListV1(token: string): dms | Error {
   return { dms: dmList };
 }
 
-export function DmLeaveV1() {
-  return{};
+/**
+  * Removes the user from a chosen DM.
+  *
+  * @param {string} token - Token of user leaving the dm.
+  * @param {number} dmId - Id of the DM that the user wants to leave.
+  *
+  * @returns {error: 'Invalid DM Id.'}  - DM Id does not correspond to an existing DM.
+  * @returns {error: 'Authorised user is not a member of the DM.'} - The user is not a member of the DM.
+  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {} - DM has been succesfully left.
+*/
+export function DmLeaveV1(token: string, dmId: number): Record<string, never> | Error {
+  if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
+  if (!validToken(token)) return { error: 'Invalid Token.' };
+  const authUserId = getUserIdFromToken(token);
+  if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
+
+  const data = getData();
+  let new_members = [];
+  let position = 0;
+  for (let i = 0; i < data.dms.length; i++) {
+    if (data.dms[i].dmId === dmId) {
+      position = i;
+    }
+  }
+  for (const i of data.dms[position].members) {
+    if (i !== authUserId) {
+      new_members.push(i);
+    }
+  }
+
+  data.dms[position] = {
+    dmId: data.dms[position].dmId,
+    name: data.dms[position].name,
+    members: new_members,
+  };
+  setData(data);
+  
+  return {};
 }

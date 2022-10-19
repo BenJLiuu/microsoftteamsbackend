@@ -28,7 +28,7 @@ function requestAuthRegister(email: string, password: string, nameFirst: string,
   return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
 }
 
-function requestDmCreate(token: string, uIds: number[]) {
+function requestDmCreate(token: string, uIds: Array<number>) {
   return requestHelper('POST', '/dm/create/v1', { token, uIds });
 }
 
