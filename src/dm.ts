@@ -13,7 +13,7 @@ import { Error, dmId, dms } from './objects';
   * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {integer} dmId - if creation is successfull.
 */
-export function DmCreateV1(token: string, uIds: Array<number>): dmId | Error {
+export function dmCreateV1(token: string, uIds: Array<number>): dmId | Error {
   if (!validToken(token)) return { error: 'Invalid Token.' };
   for (const i of uIds) {
     if (!validUserId(i)) return { error: 'Invalid User Id given.' };
@@ -60,7 +60,7 @@ export function DmCreateV1(token: string, uIds: Array<number>): dmId | Error {
   * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {array} dms - array of objects containing information about each dm.
 */
-export function DmListV1(token: string): dms | Error {
+export function dmListV1(token: string): dms | Error {
   if (!validToken(token)) return { error: 'Invalid Token.' };
 
   const data = getData();
@@ -89,31 +89,17 @@ export function DmListV1(token: string): dms | Error {
   * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {} - DM has been succesfully left.
 */
-export function DmLeaveV1(token: string, dmId: number): Record<string, never> | Error {
+export function dmLeaveV1(token: string, dmId: number): Record<string, never> | Error {
   if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
 
   const data = getData();
-  const newMembers = [];
-  let position = 0;
-  for (let i = 0; i < data.dms.length; i++) {
-    if (data.dms[i].dmId === dmId) {
-      position = i;
-    }
-  }
-  for (const i of data.dms[position].members) {
-    if (i !== authUserId) {
-      newMembers.push(i);
-    }
-  }
+  const position = data.dms.findIndex(dm => dm.dmId === dmId);
+  const dmIndex = data.dms[position].members.findIndex(user => user === authUserId);
+  data.dms[position].members.splice(dmIndex, 1);
 
-  data.dms[position] = {
-    dmId: data.dms[position].dmId,
-    name: data.dms[position].name,
-    members: newMembers,
-  };
   setData(data);
 
   return {};

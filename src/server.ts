@@ -9,7 +9,7 @@ import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelDetailsV1, channelJoinV2, channelInviteV2, channelMessagesV1 } from './channel';
 import { clearV1 } from './other';
 import { userProfileV1 } from './users';
-import { DmCreateV1, DmListV1, DmLeaveV1 } from './dm';
+import { dmCreateV1, dmListV1, dmLeaveV1 } from './dm';
 
 // Set up web app
 const app = express();
@@ -95,17 +95,17 @@ app.post('/auth/logout/v1', (req: Request, res: Response) => {
 
 app.post('/dm/create/v1', (req: Request, res: Response) => {
   const { token, uIds } = req.body;
-  res.json(DmCreateV1(token, uIds));
+  res.json(dmCreateV1(token, uIds));
 });
 
 app.get('/dm/list/v1', (req: Request, res: Response) => {
   const token = req.query.token as string;
-  res.json(DmListV1(token));
+  res.json(dmListV1(token));
 });
 
 app.post('/dm/leave/v1', (req: Request, res: Response) => {
   const { token, dmId } = req.body;
-  res.json(DmLeaveV1(token, dmId));
+  res.json(dmLeaveV1(token, dmId));
 });
 
 app.delete('/clear/v2', (req: Request, res: Response) => {
