@@ -9,6 +9,7 @@ import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelDetailsV1, channelJoinV2, channelInviteV2, channelMessagesV1 } from './channel';
 import { clearV1 } from './other';
 import { userProfileV1 } from './users';
+import { DmCreateV1 } from './dm';
 
 // Set up web app
 const app = express();
@@ -90,6 +91,11 @@ app.get('/user/profile/v2', (req: Request, res: Response) => {
 app.post('/auth/logout/v1', (req: Request, res: Response) => {
   const { token } = req.body;
   res.json(authLogoutV1(token));
+});
+
+app.post('/dm/create/v1', (req: Request, res: Response) => {
+  const { token, uIds } = req.body;
+  res.json(DmCreateV1(token, uIds));
 });
 
 app.delete('/clear/v2', (req: Request, res: Response) => {
