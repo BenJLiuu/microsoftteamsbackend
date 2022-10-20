@@ -9,7 +9,7 @@ import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2 } from './channel';
 import { clearV1 } from './other';
 import { userProfileV1 } from './users';
-import { dmCreateV1, dmListV1, dmLeaveV1 } from './dm';
+import { dmCreateV1, dmListV1, dmLeaveV1, dmMessagesV1, dmDetailsV1, dmRemoveV1} from './dm';
 
 // Set up web app
 const app = express();
@@ -106,6 +106,25 @@ app.get('/dm/list/v1', (req: Request, res: Response) => {
 app.post('/dm/leave/v1', (req: Request, res: Response) => {
   const { token, dmId } = req.body;
   res.json(dmLeaveV1(token, dmId));
+});
+
+app.delete('/dm/remove/v1', (req: Request, res: Response) => {
+  const token = req.query.token as string;
+  const dmId = req.query.dmId as string;
+  res.json(dmRemoveV1(token, dmId ? parseInt(dmId) : undefined));
+});
+
+app.get('/dm/details/v1', (req: Request, res: Response) => {
+  const token = req.query.token as string;
+  const dmId = req.query.dmId as string;
+  res.json(dmDetailsV1(token, dmId ? parseInt(dmId) : undefined));
+});
+
+app.get('/dm/messages/v1', (req: Request, res: Response) => {
+  const token = req.query.token as string;
+  const dmId = req.query.dmId as string;
+  const start = req.query.start as string;
+  res.json(dmDetailsV1(token, dmId ? parseInt(dmId) : undefined, start ? parseInt(start) : undefined));
 });
 
 app.delete('/clear/v1', (req: Request, res: Response) => {

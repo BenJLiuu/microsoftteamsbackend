@@ -73,7 +73,8 @@ export type dmId = {
 export type dm = {
   dmId: number,
   name: string,
-  members: PrivateUser[]
+  members: PrivateUser[],
+  messages: Message[]
 };
 
 export type simpleDm = Omit<dm, 'members'>;

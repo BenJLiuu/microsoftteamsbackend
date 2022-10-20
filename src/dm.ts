@@ -45,6 +45,7 @@ export function dmCreateV1(token: string, uIds: Array<number>): dmId | Error {
     dmId: newdmId,
     name: name,
     members: members,
+    messages: []
   };
 
   data.dms.push(newDm);
