@@ -152,5 +152,5 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
       position = i;
     }
   }
-  return data.dms[position].members.some(user => user === authUserId);
+  return data.dms[position].members.some(user => user.uId === authUserId);
 }

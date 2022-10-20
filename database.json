@@ -1,1 +1,1 @@
-{"users":[{"uId":0,"nameFirst":"first","nameLast":"last","email":"email@email.com","handleStr":"firstlast","passwordHash":"password"}],"channels":[{"channelId":0,"name":"channel name","isPublic":true,"ownerMembers":[{"uId":0,"nameFirst":"first","nameLast":"last","email":"email@email.com","handleStr":"firstlast"}],"allMembers":[{"uId":0,"nameFirst":"first","nameLast":"last","email":"email@email.com","handleStr":"firstlast"}],"messages":[]}],"sessions":[{"token":"HVqAggoIMdOeSjErTB*t1S95tlQSIZgM","authUserId":0}],"dms":[]}
+{"users":[],"channels":[],"sessions":[],"dms":[]}
