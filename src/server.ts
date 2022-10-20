@@ -4,7 +4,7 @@ import config from './config.json';
 import cors from 'cors';
 
 import { echo } from './echo';
-import { channelsCreateV2, channelsListV2, channelsListAllV1 } from './channels';
+import { channelsCreateV2, channelsListV2, channelsListAllV2 } from './channels';
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV1 } from './channel';
 import { clearV1 } from './other';
@@ -55,8 +55,8 @@ app.get('/channels/list/v2', (req: Request, res: Response) => {
 });
 
 app.get('/channels/listAll/v2', (req: Request, res: Response) => {
-  const authUserId = req.query.authUserId as string;
-  res.json(channelsListAllV1(authUserId ? parseInt(authUserId) : undefined));
+  const token = req.query.token as string;
+  res.json(channelsListAllV2(token));
 });
 
 app.post('/channel/invite/v2', (req: Request, res: Response) => {
