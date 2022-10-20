@@ -75,24 +75,6 @@ describe('Test authRegister ', () => {
     expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'Joh%$y', 'Mate')).toEqual({ error: 'Invalid First Name.' });
   });
 
-  test('Test first name contains numbers', () => {
-    expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'J0hnny', 'Mate')).toEqual(
-      {
-        token: expect.any(String),
-        authUserId: expect.any(Number)
-      }
-    );
-  });
-
-  test('Test last name contains numbers', () => {
-    expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'M4te')).toEqual(
-      {
-        token: expect.any(String),
-        authUserId: expect.any(Number)
-      }
-    );
-  });
-
   // Successful Registration tests
 
   test('Successful Registration', () => {
@@ -117,6 +99,24 @@ describe('Test authRegister ', () => {
         handleStr: 'johnnymate0',
       }
     });
+  });
+
+  test('Test first name contains numbers', () => {
+    expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'J0hnny', 'Mate')).toEqual(
+      {
+        token: expect.any(String),
+        authUserId: expect.any(Number)
+      }
+    );
+  });
+
+  test('Test last name contains numbers', () => {
+    expect(user1).toEqual(
+      {
+        token: expect.any(String),
+        authUserId: expect.any(Number)
+      }
+    );
   });
 });
 
