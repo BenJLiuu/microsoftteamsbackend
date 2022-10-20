@@ -2,7 +2,6 @@ import { getData, setData } from './dataStore';
 import { Channel, Channels, ChannelId, Error } from './objects';
 
 import {
-  validUserId,
   validToken,
   checkUserIdtoChannel,
   removePassword,
