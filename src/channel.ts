@@ -25,7 +25,7 @@ export function channelMessagesV2(token: string, channelId: number, start: numbe
   if (start > data.channels[index].messages.length) return { error: 'Start is greater than total messages' };
 
   const authUser = getUserIdFromToken(token);
-  if (!checkUserIdtoChannel(authUser, channelId)) return { error: 'Authorised User is not a channel member' };
+  if (!checkUserIdtoChannel(authUser, channelId)) return { error: 'Authorised user is not a channel member' };
 
   let end = 0;
   if (data.channels[index].messages.length + start > 50) {

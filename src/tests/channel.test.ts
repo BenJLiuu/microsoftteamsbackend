@@ -209,66 +209,66 @@ describe('requestChannelInvite', () => {
 
   // Successful Registration tests
 
-  // test('Successful Registration', () => {
-  //   const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+  test('Successful Registration', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
 
-  //   const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
 
-  //   const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-  //   requestChannelInvite(user1.token, channel1.channelId, user2.authUserId);
+    requestChannelInvite(user1.token, channel1.channelId, user2.authUserId);
 
-  //   expect(requestChannelDetails(user2.token, channel1.channelId)).toStrictEqual(
+    expect(requestChannelDetails(user2.token, channel1.channelId)).toStrictEqual(
 
-  //     {
+      {
 
-  //       name: 'channel1',
+        name: 'channel1',
 
-  //       isPublic: true,
+        isPublic: true,
 
-  //       ownerMembers: [{
+        ownerMembers: [{
 
-  //         uId: user1.authUserId,
+          uId: user1.authUserId,
 
-  //         nameFirst: 'John',
+          nameFirst: 'John',
 
-  //         nameLast: 'Smith',
+          nameLast: 'Smith',
 
-  //         email: 'johnS@email.com',
+          email: 'johnS@email.com',
 
-  //         handleStr: 'johnsmith',
+          handleStr: 'johnsmith',
 
-  //       }],
+        }],
 
-  //       allMembers: [{
+        allMembers: [{
 
-  //         uId: user1.authUserId,
+          uId: user1.authUserId,
 
-  //         nameFirst: 'John',
+          nameFirst: 'John',
 
-  //         nameLast: 'Smith',
+          nameLast: 'Smith',
 
-  //         email: 'johnS@email.com',
+          email: 'johnS@email.com',
 
-  //         handleStr: 'johnsmith',
+          handleStr: 'johnsmith',
 
-  //       },
+        },
 
-  //       {
+        {
 
-  //         uId: user2.authUserId,
+          uId: user2.authUserId,
 
-  //         nameFirst: 'Alice',
+          nameFirst: 'Alice',
 
-  //         nameLast: 'Person',
+          nameLast: 'Person',
 
-  //         email: 'aliceP@fmail.au',
+          email: 'aliceP@fmail.au',
 
-  //         handleStr: 'aliceperson',
+          handleStr: 'aliceperson',
 
-  //       }],
-  //     });
-  // });
+        }],
+      });
+  });
 });
 
 // requestChannelDetails tests
@@ -376,73 +376,73 @@ describe('requestChannelJoin', () => {
     expect(requestChannelJoin('test', channel1.channelId)).toStrictEqual({ error: expect.any(String) });
   });
 
-  // test('Successful join', () => {
-  //   const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+  test('Successful join', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
 
-  //   const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-  //   const user2 = requestAuthRegister('walter@gmail.com', 'white123', 'Walt', 'White');
+    const user2 = requestAuthRegister('walter@gmail.com', 'white123', 'Walt', 'White');
 
-  //   expect(requestChannelJoin(user2.token, channel1.channelId)).toStrictEqual({});
+    expect(requestChannelJoin(user2.token, channel1.channelId)).toStrictEqual({});
 
-  //   expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual(
+    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual(
 
-  //     {
+      {
 
-  //       name: 'channel1',
+        name: 'channel1',
 
-  //       isPublic: true,
+        isPublic: true,
 
-  //       ownerMembers: [
+        ownerMembers: [
 
-  //         {
+          {
 
-  //           uId: user1.authUserId,
+            uId: user1.authUserId,
 
-  //           nameFirst: 'Johnny',
+            nameFirst: 'Johnny',
 
-  //           nameLast: 'Lawrence',
+            nameLast: 'Lawrence',
 
-  //           email: 'johnL@gmail.com',
+            email: 'johnL@gmail.com',
 
-  //           handleStr: 'johnnylawrence',
+            handleStr: 'johnnylawrence',
 
-  //         }
+          }
 
-  //       ],
+        ],
 
-  //       allMembers: [
+        allMembers: [
 
-  //         {
+          {
 
-  //           uId: user1.authUserId,
+            uId: user1.authUserId,
 
-  //           nameFirst: 'Johnny',
+            nameFirst: 'Johnny',
 
-  //           nameLast: 'Lawrence',
+            nameLast: 'Lawrence',
 
-  //           email: 'johnL@gmail.com',
+            email: 'johnL@gmail.com',
 
-  //           handleStr: 'johnnylawrence',
+            handleStr: 'johnnylawrence',
 
-  //         },
+          },
 
-  //         {
+          {
 
-  //           uId: user2.authUserId,
+            uId: user2.authUserId,
 
-  //           nameFirst: 'Walt',
+            nameFirst: 'Walt',
 
-  //           nameLast: 'White',
+            nameLast: 'White',
 
-  //           email: 'walter@gmail.com',
+            email: 'walter@gmail.com',
 
-  //           handleStr: 'waltwhite',
+            handleStr: 'waltwhite',
 
-  //         }
+          }
 
-  //       ],
+        ],
 
-  //     });
-  // });
+      });
+  });
 });
