@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { AuthUserId, LoginData, Error } from './objects';
+import { Session, Error } from './objects';
 import validator from 'validator';
 import { generateSession } from './helper';
 
@@ -14,7 +14,7 @@ import { generateSession } from './helper';
   * @returns {Object} {error : 'Incorrect Password.'} - If email is found, but password is incorrect
   * @returns {Object} {error : 'Email Not Found.'} - If email was not found.
 */
-function authLoginV2(email: string, password: string): LoginData | Error {
+function authLoginV2(email: string, password: string): Session | Error {
   const data = getData();
   for (const user of data.users) {
     if (user.email === email) {
@@ -44,7 +44,7 @@ function authLoginV2(email: string, password: string): LoginData | Error {
   * @returns {Object} {error: Invalid Last Name.'} - if last name is too short/long
 */
 
-function authRegisterV2(email: string, password: string, nameFirst: string, nameLast: string): AuthUserId | Error {
+function authRegisterV2(email: string, password: string, nameFirst: string, nameLast: string): Session | Error {
   const data = getData();
 
   if (validator.isEmail(email) === false) return { error: 'Invalid Email Address.' };

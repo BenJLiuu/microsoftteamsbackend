@@ -84,7 +84,7 @@ export function removePassword(user : User) : PrivateUser {
  * Creates a session token for a user.
  *
  * @param {integer} uId - the user to assign the token to
- * @returns {LoginData} {token : string, authUserId: number} - the session object that was created.
+ * @returns {Session} {token : string, authUserId: number} - the session object that was created.
  */
 export function generateSession(uId: number): Session {
   const tokenLength = 32;
@@ -152,5 +152,5 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
       position = i;
     }
   }
-  return data.dms[position].members.some(user => user === authUserId);
+  return data.dms[position].members.some(user => user.uId === authUserId);
 }

@@ -40,8 +40,8 @@ function requestChannelDetails(token: string, channelId: number) {
   return requestHelper('GET', '/channel/details/v2', { token, channelId });
 }
 
-function requestChannelMessages(authUserId: number, channelId: number, start: number) {
-  return requestHelper('GET', '/channel/messages/v2', { authUserId, channelId, start });
+function requestChannelMessages(token: string, channelId: number, start: number) {
+  return requestHelper('GET', '/channel/messages/v2', { token, channelId, start });
 }
 
 function requestChannelInvite(token: string, channelId: number, uId: number) {
@@ -59,152 +59,94 @@ describe('ChannelMessages', () => {
 
   test('Not valid channelId', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelMessages(user1.authUserId, channel1.channelId + 1, 0)).toStrictEqual({ error: 'Not valid channelId' });
+    expect(requestChannelMessages(user1.token, channel1.channelId + 1, 0)).toStrictEqual({ error: 'Not valid channelId' });
   });
 
   test('Start is greater than total messages', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelMessages(user1.authUserId, channel1.channelId, 2)).toStrictEqual({ error: 'Start is greater than total messages' });
+    expect(requestChannelMessages(user1.token, channel1.channelId, 2)).toStrictEqual({ error: 'Start is greater than total messages' });
   });
 
   test('Authorised user is not a channel member', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelMessages(user2.authUserId, channel1.channelId, 0)).toStrictEqual({ error: 'Authorised user is not a channel member' });
+    expect(requestChannelMessages(user2.token, channel1.channelId, 0)).toStrictEqual({ error: 'Authorised user is not a channel member' });
   });
 
   test('Empty channel', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelMessages(user1.authUserId, channel1.channelId, 0)).toStrictEqual({
-
+    expect(requestChannelMessages(user1.token, channel1.channelId, 0)).toStrictEqual({
       messages: [],
-
       start: 0,
-
       end: 0,
-
     });
   });
 
   /* These tests utilise the channelSendMessage helper function to test the
-
   /* functionality of requestChannelMessages. This is white-box testing, so it has
-
   /* been commented out, but if the helper function and these tests are uncommented
-
   /* they will pass.
 
   test('Authorised user is invalid', () => {
-
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-
     channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-
     expect(requestChannelMessages(user1.authUserId + 1, channel1.channelId, 0)).toStrictEqual({error: 'Invalid Authorised User Id.'});
-
   });
 
   test('Success, less than 50 messages.', () => {
-
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-
     const message1 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-
     const message2 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-
     const message3 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-
     expect(requestChannelMessages(user1.authUserId, channel1.channelId, 0)).toEqual({
-
       messages: [
-
         {
-
           messageId: expect.any(Number),
-
           uId: user1.authUserId,
-
           message: 'hello',
-
           timeSent: expect.any(Number),
-
         },
-
         {
-
           messageId: expect.any(Number),
-
           uId: user1.authUserId,
-
           message: 'hello',
-
           timeSent: expect.any(Number),
-
         },
-
         {
-
           messageId: expect.any(Number),
-
           uId: user1.authUserId,
-
           message: 'hello',
-
           timeSent: expect.any(Number),
-
         },
-
       ],
-
       start: 0,
-
       end: 2,
-
     });
-
   });
 
   test('Success, more than 50 messages', () => {
-
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-
     for (let i = 0; i < 60; i++) {
-
       const message = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-
     }
 
     expect(requestChannelMessages(user1.authUserId, channel1.channelId, 5)).toEqual({
-
       messages: expect.any(Array),
-
       start: 5,
-
       end: 55,
-
     });
-
   });
-
   */
 });
 

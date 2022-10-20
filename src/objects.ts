@@ -11,16 +11,11 @@ export type User = {
 
 export type Session = {
   authUserId: number,
-  token: string,
+  token: string
 };
 
 export type AuthUserId = {
   authUserId: number,
-};
-
-export type LoginData = {
-  authUserId: number,
-  token: string,
 };
 
 export type PrivateUser = Omit<User, 'passwordHash'>;
@@ -71,10 +66,27 @@ export type ChannelId = {
   channelId: number,
 };
 
+export type dmId = {
+  dmId: number,
+};
+
+export type dm = {
+  dmId: number,
+  name: string,
+  members: PrivateUser[]
+};
+
+export type simpleDm = Omit<dm, 'members'>;
+
+export type dmList = {
+  dms: simpleDm[]
+};
+
 export type Data = {
   users: User[],
   channels: Channel[],
   sessions: Session[],
+  dms: dm[]
 };
 
 export type Error = {
@@ -84,13 +96,4 @@ export type Error = {
 export type Token = {
   authUserId: number,
   token: string,
-};
-
-export type dmId = {
-  dmId: number,
-};
-
-export type dms = {
-  dmId: number,
-  name: string,
 };

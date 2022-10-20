@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
-import { validUserId, validToken, getUserIdFromToken, gethandleStrFromId, validDmId, checkUserIdtoDm } from './helper';
-import { Error, dmId, dms } from './objects';
+import { validUserId, validToken, getUserIdFromToken, gethandleStrFromId, validDmId, checkUserIdtoDm, removePassword } from './helper';
+import { Error, dmId, dmList } from './objects';
 
 /**
   * Creates and stores a new DM.
@@ -26,13 +26,14 @@ export function dmCreateV1(token: string, uIds: Array<number>): dmId | Error {
   const members = [];
 
   names.push(gethandleStrFromId(authUserId));
-  members.push(authUserId);
+  members.push(removePassword(data.users.find(user => user.uId === authUserId)));
   if (uIds.length !== 0) {
-    for (const i of uIds) {
-      names.push(gethandleStrFromId(i));
-      members.push(i);
+    for (const uId of uIds) {
+      members.push(removePassword(data.users.find(user => user.uId === uId)));
+      names.push(gethandleStrFromId(uId));
     }
   }
+
   names.sort(function(a, b) {
     return a.localeCompare(b);
   });
@@ -60,7 +61,7 @@ export function dmCreateV1(token: string, uIds: Array<number>): dmId | Error {
   * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {array} dms - array of objects containing information about each dm.
 */
-export function dmListV1(token: string): dms | Error {
+export function dmListV1(token: string): dmList | Error {
   if (!validToken(token)) return { error: 'Invalid Token.' };
 
   const data = getData();
@@ -97,7 +98,7 @@ export function dmLeaveV1(token: string, dmId: number): Record<string, never> | 
 
   const data = getData();
   const position = data.dms.findIndex(dm => dm.dmId === dmId);
-  const dmIndex = data.dms[position].members.findIndex(user => user === authUserId);
+  const dmIndex = data.dms[position].members.findIndex(user => user.uId === authUserId);
   data.dms[position].members.splice(dmIndex, 1);
 
   setData(data);
