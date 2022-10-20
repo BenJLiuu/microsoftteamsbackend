@@ -11,7 +11,7 @@ import {
 /**
   * Lists all channels that currently exists. Returns an error if authUserID isn't an authorised user
   *
-  * @param {object} token - The user ID of the person calling channelsListAll
+  * @param {string} token - The token of the person calling channelsListAll
   *
   * @returns {Object} {error: 'Invalid Session Id.'} - If the user token is invalid
   * @returns {Object} {
