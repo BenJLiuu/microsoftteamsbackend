@@ -36,6 +36,10 @@ function requestUserProfileSetEmail(token: string, email: string) {
   return requestHelper('PUT', '/user/profile/setemail/v1', { token, email });
 }
 
+function requestUserProfileSetHandle(token: string, handleStr: string) {
+  return requestHelper('PUT', '/user/profile/sethandle/v1', { token, handleStr });
+}
+
 function requestClear() {
   return requestHelper('DELETE', '/clear/v1', {});
 }
