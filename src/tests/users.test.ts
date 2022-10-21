@@ -233,30 +233,30 @@ describe('Test userProfileSetHandle', () => {
   beforeEach(() => {
     requestClear();
   });
-  
+
   test('invalid handle (too short/long)', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     expect(requestUserProfileSetHandle(user1.token, 'hi')).toStrictEqual({ error: 'Invalid Handle.' });
     expect(requestUserProfileSetHandle(user1.token, 'aliceeeeeeeeeeeeeeeeeeeeeeeee')).toStrictEqual({ error: 'Invalid Handle.' });
   });
-  
+
   test('invalid handle (contains non-alphanumeric)', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     expect(requestUserProfileSetHandle(user1.token, 'alice!@!')).toStrictEqual({ error: 'Invalid Handle.' });
   });
-  
+
   test('handle in use by another user', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    requestUserProfileSetHandle(user1.token, 'newname');
     const user2 = requestAuthRegister('michael@gmail.com', 'dm123', 'Michael', 'Scott');
-    expect(requestUserProfileSetHandle(user1.token, 'michaelscott')).toStrictEqual({ 'Handle Already in Use.' });
-    expect(requestUserProfileSetHandle(user2.token, 'aliceperson')).toStrictEqual({ 'Handle Already in Use.' });
+    expect(requestUserProfileSetHandle(user2.token, 'newname')).toStrictEqual({ error: 'Handle Already in Use.' });
   });
-  
+
   test('invalid session', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     expect(requestUserProfileSetHandle(user1.token + 's', 'kevin')).toStrictEqual({ error: 'Invalid Session Id.' });
   });
-  
+
   test('successful handle change', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     expect(requestUserProfileSetHandle(user1.token, 'dwight')).toStrictEqual({});
@@ -267,7 +267,7 @@ describe('Test userProfileSetHandle', () => {
           nameFirst: 'Alice',
           nameLast: 'Person',
           email: 'aliceP@fmail.au',
-          handleStr: 'aliceperson',
+          handleStr: 'dwight',
         }
       ]
     });
