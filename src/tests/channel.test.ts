@@ -301,7 +301,7 @@ describe('Test requestChannelDetails', () => {
 
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelDetails(user1.token + 'a', channel1.channelId)).toStrictEqual({ error: 'Invalid Session.' });
+    expect(requestChannelDetails(user1.token + 'a', channel1.channelId)).toStrictEqual({ error: 'Invalid Session Id.' });
   });
 
   // Successful Registration tests
