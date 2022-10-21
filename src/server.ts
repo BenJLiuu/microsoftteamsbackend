@@ -4,11 +4,12 @@ import config from './config.json';
 import cors from 'cors';
 
 import { echo } from './echo';
-import { channelsCreateV2, channelsListV1, channelsListAllV1 } from './channels';
+import { channelsCreateV2, channelsListV2, channelsListAllV2 } from './channels';
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
-import { channelDetailsV1, channelJoinV2, channelInviteV2, channelMessagesV1, channelLeaveV1, channelRemoveOwnerV1, channelAddOwnerV1 } from './channel';
+import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2, channelLeaveV1, channelRemoveOwnerV1, channelAddOwnerV1 } from './channel';
 import { clearV1 } from './other';
-import { userProfileV1 } from './users';
+import { userProfileV1, usersAllV1 } from './users';
+import { dmCreateV1, dmListV1, dmLeaveV1 } from './dm';
 
 // Set up web app
 const app = express();
@@ -49,13 +50,13 @@ app.post('/channels/create/v2', (req: Request, res: Response) => {
 });
 
 app.get('/channels/list/v2', (req: Request, res: Response) => {
-  const authUserId = req.query.authUserId as string;
-  res.json(channelsListV1(authUserId ? parseInt(authUserId) : undefined));
+  const token = req.query.token as string;
+  res.json(channelsListV2(token));
 });
 
 app.get('/channels/listAll/v2', (req: Request, res: Response) => {
-  const authUserId = req.query.authUserId as string;
-  res.json(channelsListAllV1(authUserId ? parseInt(authUserId) : undefined));
+  const token = req.query.token as string;
+  res.json(channelsListAllV2(token));
 });
 
 app.post('/channel/invite/v2', (req: Request, res: Response) => {
@@ -64,9 +65,9 @@ app.post('/channel/invite/v2', (req: Request, res: Response) => {
 });
 
 app.get('/channel/details/v2', (req: Request, res: Response) => {
-  const authUserId = req.query.authUserId as string;
+  const token = req.query.token as string;
   const channelId = req.query.channelId as string;
-  res.json(channelDetailsV1(authUserId ? parseInt(authUserId) : undefined, channelId ? parseInt(channelId) : undefined));
+  res.json(channelDetailsV2(token, channelId ? parseInt(channelId) : undefined));
 });
 
 app.post('/channel/join/v2', (req: Request, res: Response) => {
@@ -75,10 +76,10 @@ app.post('/channel/join/v2', (req: Request, res: Response) => {
 });
 
 app.get('/channel/messages/v2', (req: Request, res: Response) => {
-  const authUserId = req.query.authUserId as string;
+  const token = req.query.token as string;
   const channelId = req.query.channelId as string;
   const start = req.query.start as string;
-  res.json(channelMessagesV1(authUserId ? parseInt(authUserId) : undefined, channelId ? parseInt(channelId) : undefined, start ? parseInt(start) : undefined));
+  res.json(channelMessagesV2(token, channelId ? parseInt(channelId) : undefined, start ? parseInt(start) : undefined));
 });
 
 app.get('/user/profile/v2', (req: Request, res: Response) => {
@@ -87,12 +88,32 @@ app.get('/user/profile/v2', (req: Request, res: Response) => {
   res.json(userProfileV1(authUserId ? parseInt(authUserId) : undefined, uId ? parseInt(uId) : undefined));
 });
 
+app.get('/users/all/v1', (req: Request, res: Response) => {
+  const token = req.query.token as string;
+  res.json(usersAllV1(token || undefined));
+});
+
 app.post('/auth/logout/v1', (req: Request, res: Response) => {
   const { token } = req.body;
   res.json(authLogoutV1(token));
 });
 
-app.delete('/clear/v2', (req: Request, res: Response) => {
+app.post('/dm/create/v1', (req: Request, res: Response) => {
+  const { token, uIds } = req.body;
+  res.json(dmCreateV1(token, uIds));
+});
+
+app.get('/dm/list/v1', (req: Request, res: Response) => {
+  const token = req.query.token as string;
+  res.json(dmListV1(token));
+});
+
+app.post('/dm/leave/v1', (req: Request, res: Response) => {
+  const { token, dmId } = req.body;
+  res.json(dmLeaveV1(token, dmId));
+});
+
+app.delete('/clear/v1', (req: Request, res: Response) => {
   res.json(clearV1());
 });
 

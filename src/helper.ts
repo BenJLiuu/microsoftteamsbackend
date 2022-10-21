@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { User, PrivateUser } from './objects';
+import { User, PrivateUser, Session } from './objects';
 
 /**
  * Checks whether a user is valid (whether they exist in the database)
@@ -84,9 +84,9 @@ export function removePassword(user : User) : PrivateUser {
  * Creates a session token for a user.
  *
  * @param {integer} uId - the user to assign the token to
- * @returns {LoginData} {token : string, authUserId: number} - the session object that was created.
+ * @returns {Session} {token : string, authUserId: number} - the session object that was created.
  */
-export function generateSession(uId: number): string {
+export function generateSession(uId: number): Session {
   const tokenLength = 32;
   const session = {
     token: genRandomString(tokenLength),
@@ -114,4 +114,43 @@ function genRandomString(length: number): string {
     result += chars.charAt(Math.floor(Math.random() * charLength));
   }
   return result;
+}
+
+/**
+ * Gets the handle string of a user from a given user id.
+ * @param {number} uId - id of the the required user.
+ * @returns {string} handleStr - users handle string.
+ */
+export function gethandleStrFromId(uId: number): string {
+  const data = getData();
+  return data.users.find(s => s.uId === uId).handleStr;
+}
+
+/**
+ * Checks whether a dm id is valid (whether it exists in the database)
+ *
+ * @param dmId - Id of dm
+ * @returns boolean - whether dm id is valid
+ */
+export function validDmId(dmId : number) : boolean {
+  const data = getData();
+  return data.dms.some(dm => dm.dmId === dmId);
+}
+
+/**
+ * Checks whether a user is in a dm
+ *
+ * @param authUserId - the user to check
+ * @param dmId - the dm the user may be contained in
+ * @returns boolean - whether the user is in the dm
+ */
+export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
+  const data = getData();
+  let position = 0;
+  for (let i = 0; i < data.dms.length; i++) {
+    if (data.dms[i].dmId === dmId) {
+      position = i;
+    }
+  }
+  return data.dms[position].members.some(user => user.uId === authUserId);
 }

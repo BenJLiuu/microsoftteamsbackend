@@ -25,7 +25,7 @@ function requestAuthLogin(email: string, password: string) {
 }
 
 function requestClear() {
-  return requestHelper('DELETE', '/clear/v2', {});
+  return requestHelper('DELETE', '/clear/v1', {});
 }
 
 function requestUserProfile(authUserId: number, uId: number) {

@@ -24,18 +24,22 @@ function requestUserProfile(authUserId: number, uId: number) {
   return requestHelper('GET', '/user/profile/v2', { authUserId, uId });
 }
 
-function requestClear() {
-  return requestHelper('DELETE', '/clear/v2', {});
+function requestUsersAll(token: string) {
+  return requestHelper('GET', '/users/all/v1', { token });
 }
 
-describe('requestUserProfile', () => {
+function requestClear() {
+  return requestHelper('DELETE', '/clear/v1', {});
+}
+
+describe('Test userProfile', () => {
   beforeEach(() => {
     requestClear();
   });
 
   test('authUserId is invalid', () => {
-    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfile(-1, user2.authUserId)).toStrictEqual({ error: 'authUserId is invalid.' });
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUserProfile(-1, user1.authUserId)).toStrictEqual({ error: 'authUserId is invalid.' });
   });
 
   test('uId does not refer to a valid user', () => {
@@ -79,6 +83,55 @@ describe('requestUserProfile', () => {
         email: 'aliceP@fmail.au',
         handleStr: 'aliceperson',
       },
+    });
+  });
+});
+
+describe('Test userAll', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('session is invalid', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUsersAll(user1.token + '1')).toStrictEqual({ error: 'Invalid Session Id.' });
+  });
+
+  test('return one user', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUsersAll(user1.token)).toStrictEqual({
+      users: [
+        {
+          uId: user1.authUserId,
+          nameFirst: 'Alice',
+          nameLast: 'Person',
+          email: 'aliceP@fmail.au',
+          handleStr: expect.any(String),
+        }
+      ]
+    });
+  });
+
+  test('return array of users', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    expect(requestUsersAll(user1.token)).toStrictEqual({
+      users: [
+        {
+          uId: user1.authUserId,
+          nameFirst: 'Alice',
+          nameLast: 'Person',
+          email: 'aliceP@fmail.au',
+          handleStr: expect.any(String),
+        },
+        {
+          uId: user2.authUserId,
+          nameFirst: 'John',
+          nameLast: 'Mate',
+          email: 'johnmate@gmail.com',
+          handleStr: expect.any(String),
+        }
+      ]
     });
   });
 });
