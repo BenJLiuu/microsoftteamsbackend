@@ -8,7 +8,7 @@ import { channelsCreateV2, channelsListV2, channelsListAllV2 } from './channels'
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2 } from './channel';
 import { clearV1 } from './other';
-import { userProfileV1, usersAllV1 } from './users';
+import { userProfileV1, usersAllV1, userProfileSetNameV1 } from './users';
 import { dmCreateV1, dmListV1, dmLeaveV1 } from './dm';
 
 // Set up web app
@@ -111,6 +111,11 @@ app.get('/dm/list/v1', (req: Request, res: Response) => {
 app.post('/dm/leave/v1', (req: Request, res: Response) => {
   const { token, dmId } = req.body;
   res.json(dmLeaveV1(token, dmId));
+});
+
+app.put('/user/profile/setname/v1', (req: Request, res: Response) => {
+  const { token, nameFirst, nameLast } = req.body;
+  res.json(userProfileSetNameV1(token, nameFirst, nameLast));
 });
 
 app.delete('/clear/v1', (req: Request, res: Response) => {

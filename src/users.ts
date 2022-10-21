@@ -1,6 +1,6 @@
-import { getData } from './dataStore';
+import { getData, setData } from './dataStore';
 import { UserOmitPassword, UsersOmitPassword, Error } from './objects';
-import { validToken, removePassword } from './helper';
+import { validToken, removePassword, getUserIdFromToken } from './helper';
 
 /**
   * For a valid user, returns information about a requested valid user profile
@@ -46,4 +46,26 @@ export function usersAllV1 (token: string): UsersOmitPassword | Error {
   return {
     users: users,
   };
+}
+
+/**
+ * Allows a valid authorised user to update their first and last name.
+ *
+ * @param {string} token - Token of user wanting to change name.
+ * @param {string} nameFirst - First name that the user wants to change to.
+ * @param {string} nameLast - Last name that the user wants to change to.
+ *
+ * @returns {Object} {} - If user successfully updates first and last name.
+ */
+export function userProfileSetNameV1 (token: string, nameFirst: string, nameLast: string): Record<string, never> | Error {
+  if (nameFirst.length < 1 || nameFirst.length > 50) return { error: 'Invalid First Name.' };
+  if (nameLast.length < 1 || nameLast.length > 50) return { error: 'Invalid Last Name.' };
+  if (!validToken(token)) return { error: 'Invalid Session Id.' };
+  const data = getData();
+  const userId = Number(getUserIdFromToken(token));
+  data.users.find(user => user.uId === userId).nameFirst = nameFirst;
+  data.users.find(user => user.uId === userId).nameLast = nameLast;
+  setData(data);
+
+  return {};
 }
