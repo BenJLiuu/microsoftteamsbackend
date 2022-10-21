@@ -10,7 +10,7 @@ import { removePassword } from './helper';
   *
   * @returns {Object} {error: 'authUserId is invalid.'} - authUserId does not correspond to an existing user.
   * @returns {Object} {error: 'uId does not refer to a valid user.'}  - uId does not correspond to an existing user.
-  * @returns {UserOmitPassword} - User profile, without password key.
+  * @returns {UserOmitPassword} User profile, without password key.
 */
 export function userProfileV1 (authUserId: number, uId: number): UserOmitPassword | Error {
   const data = getData();
@@ -29,16 +29,21 @@ export function userProfileV1 (authUserId: number, uId: number): UserOmitPasswor
   return { user: privateUser };
 }
 
+/**
+ * Provides the array of all users within the dataStore.
+ * 
+ * @param {string} token - Token of user requesting the usersAll.
+ * @returns {PrivateUser[]} All users, with passwords removed.
+ */
 export function usersAllV1 (token: string): PrivateUser[] | Error {
+  if (!validToken(token)) return { error: 'Invalid Session Id.' };
+  const data = getData();
+  const users = [];
+  for (const user of data.users) {
+    users.push(removePassword(user));
+  };
+
   return {
-    users: [
-      {
-        uId: number,
-        nameFirst: string,
-        nameLast: string,
-        email: string,
-        handleStr: string,
-        passwordHash: string,
-      },
-  ]};
+    users: users,
+  };
 }
