@@ -127,7 +127,6 @@ export function channelInviteV2(token: string, channelId: number, uId: number): 
   * @returns ChannelDetails - Object containing channel successfully examined by authUserId.
 */
 export function channelDetailsV2(token: string, channelId: number): ChannelDetails | Error {
-  console.log(token);
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validToken(token)) return { error: 'Invalid Session.' };
   const authUser = getUserIdFromToken(token);
