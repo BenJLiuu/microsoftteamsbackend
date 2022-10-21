@@ -32,6 +32,10 @@ function requestUserProfileSetName(token: string, nameFirst: string, nameLast: s
   return requestHelper('PUT', '/user/profile/setname/v1', { token, nameFirst, nameLast });
 }
 
+function requestUserProfileSetEmail(token: string, email: string) {
+  return requestHelper('PUT', '/user/profile/setemail/v1', { token, email });
+}
+
 function requestClear() {
   return requestHelper('DELETE', '/clear/v1', {});
 }
@@ -140,8 +144,8 @@ describe('Test userAll', () => {
   });
 });
 
-// UserSetName tests
-describe('Test UserSetName', () => {
+// UserProfileSetName tests
+describe('Test UserProfileSetName', () => {
   beforeEach(() => {
     requestClear();
   });
@@ -158,7 +162,7 @@ describe('Test UserSetName', () => {
     expect(requestUserProfileSetName(user1.token, 'First', 'nameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')).toStrictEqual({ error: 'Invalid Last Name.' });
   });
 
-  test('invalid token', () => {
+  test('invalid session', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     expect(requestUserProfileSetName(user1.token + 'z', 'Jesse', 'Pinkman')).toStrictEqual({ error: 'Invalid Session Id.' });
   });
@@ -173,6 +177,46 @@ describe('Test UserSetName', () => {
           nameFirst: 'Jesse',
           nameLast: 'Pinkman',
           email: 'aliceP@fmail.au',
+          handleStr: expect.any(String),
+        }
+      ]
+    });
+  });
+});
+
+// UserProfileSetEmail tests
+describe('Test userProfileSetEmail', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('invalid email', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUserProfileSetEmail(user1.token, '.invalid@@..gmail.au.')).toStrictEqual({ error: 'Invalid Email Address.' });
+  });
+
+  test('email in use by another user', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('bcs@gmail.com', 'bcs123', 'Saul', 'Goodman');
+    expect(requestUserProfileSetEmail(user1.token, 'bcs@gmail.com')).toStrictEqual({ error: 'Email already in use.' });
+    expect(requestUserProfileSetEmail(user2.token, 'aliceP@fmail.com.au')).toStrictEqual({ error: 'Email already in use.' });
+  });
+
+  test('invalid session', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUserProfileSetEmail(user1.token + 'w', 'validemail@gmail.com')).toStrictEqual({ error: 'Invalid Session Id.' });
+  });
+
+  test('successful email change', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUserProfileSetEmail(user1.token, 'new1@gmail.com')).toStrictEqual({});
+    expect(requestUsersAll(user1.token)).toStrictEqual({
+      users: [
+        {
+          uId: user1.authUserId,
+          nameFirst: 'Alice',
+          nameLast: 'Person',
+          email: 'new1@gmail.com',
           handleStr: expect.any(String),
         }
       ]
