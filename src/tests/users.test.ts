@@ -24,17 +24,22 @@ function requestUserProfile(authUserId: number, uId: number) {
   return requestHelper('GET', '/user/profile/v2', { authUserId, uId });
 }
 
+function requestUsersAll(token: string) {
+  return requestHelper('GET', '/users/all/v1', { token });
+}
+
 function requestClear() {
   return requestHelper('DELETE', '/clear/v1', {});
 }
-describe('requestUserProfile', () => {
+
+describe('Test userProfile', () => {
   beforeEach(() => {
     requestClear();
   });
 
   test('authUserId is invalid', () => {
-    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfile(-1, user2.authUserId)).toStrictEqual({ error: 'authUserId is invalid.' });
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUserProfile(-1, user1.authUserId)).toStrictEqual({ error: 'authUserId is invalid.' });
   });
 
   test('uId does not refer to a valid user', () => {
@@ -80,4 +85,16 @@ describe('requestUserProfile', () => {
       },
     });
   });
+});
+
+describe('Test userAll', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('session is invalid', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUserProfile(-1, user1.authUserId)).toStrictEqual({ error: 'Invalid Session Id.' });
+  });
+
 });

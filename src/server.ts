@@ -8,7 +8,7 @@ import { channelsCreateV2, channelsListV2, channelsListAllV2 } from './channels'
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2 } from './channel';
 import { clearV1 } from './other';
-import { userProfileV1 } from './users';
+import { userProfileV1, usersAllV1 } from './users';
 import { dmCreateV1, dmListV1, dmLeaveV1 } from './dm';
 
 // Set up web app
@@ -86,6 +86,11 @@ app.get('/user/profile/v2', (req: Request, res: Response) => {
   const authUserId = req.query.authUserId as string;
   const uId = req.query.uId as string;
   res.json(userProfileV1(authUserId ? parseInt(authUserId) : undefined, uId ? parseInt(uId) : undefined));
+});
+
+app.get('/users/all/v1', (req: Request, res: Response) => {
+  const token = req.query.token as string;
+  res.json(usersAllV1(token? token : undefined));
 });
 
 app.post('/auth/logout/v1', (req: Request, res: Response) => {
