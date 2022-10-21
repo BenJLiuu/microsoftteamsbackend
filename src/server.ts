@@ -6,7 +6,7 @@ import cors from 'cors';
 import { echo } from './echo';
 import { channelsCreateV2, channelsListV1, channelsListAllV1 } from './channels';
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
-import { channelDetailsV1, channelJoinV2, channelInviteV2, channelMessagesV1 } from './channel';
+import { channelDetailsV1, channelJoinV2, channelInviteV2, channelMessagesV1, channelLeaveV1, channelRemoveOwnerV1, channelAddOwnerV1 } from './channel';
 import { clearV1 } from './other';
 import { userProfileV1 } from './users';
 
@@ -94,6 +94,20 @@ app.post('/auth/logout/v1', (req: Request, res: Response) => {
 
 app.delete('/clear/v2', (req: Request, res: Response) => {
   res.json(clearV1());
+});
+
+app.post('/channel/leave/v1', (req: Request, res: Response) => {
+  const { token, channelId } = req.body;
+  res.json(channelLeaveV1(token, channelId));
+});
+
+app.post('/channel/removeOwner/V1', (req: Request, res: Response) => {
+  const { token, channelId, uId } = req.body;
+  res.json(channelRemoveOwnerV1(token, channelId, uId));
+});
+app.post('/channel/addOwner/v1', (req: Request, res: Response) => {
+  const { token, channelId, uId } = req.body;
+  res.json(channelAddOwnerV1(token, channelId, uId));
 });
 
 // start server
