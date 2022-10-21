@@ -28,6 +28,10 @@ function requestUsersAll(token: string) {
   return requestHelper('GET', '/users/all/v1', { token });
 }
 
+function requestUserProfileSetName(token: string, nameFirst: string, nameLast: string) {
+  return requestHelper('PUT', '/user/profile/setname/v1', { token, nameFirst, nameLast });
+}
+
 function requestClear() {
   return requestHelper('DELETE', '/clear/v1', {});
 }
@@ -129,6 +133,46 @@ describe('Test userAll', () => {
           nameFirst: 'John',
           nameLast: 'Mate',
           email: 'johnmate@gmail.com',
+          handleStr: expect.any(String),
+        }
+      ]
+    });
+  });
+});
+
+// UserSetName tests
+describe('Test UserSetName', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('invalid first name', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUserProfileSetName(user1.token, '', 'Last')).toStrictEqual({ error: 'Invalid First Name.' });
+    expect(requestUserProfileSetName(user1.token, 'nameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', 'Last')).toStrictEqual({ error: 'Invalid First Name.' });
+  });
+
+  test('invalid last name', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUserProfileSetName(user1.token, 'First', '')).toStrictEqual({ error: 'Invalid Last Name.' });
+    expect(requestUserProfileSetName(user1.token, 'First', 'nameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')).toStrictEqual({ error: 'Invalid Last Name.' });
+  });
+
+  test('invalid token', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUserProfileSetName(user1.token + 'z', 'Jesse', 'Pinkman')).toStrictEqual({ error: 'Invalid Session Id.' });
+  });
+
+  test('successful name change', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUserProfileSetName(user1.token, 'Jesse', 'Pinkman')).toStrictEqual({});
+    expect(requestUsersAll(user1.token)).toStrictEqual({
+      users: [
+        {
+          uId: user1.authUserId,
+          nameFirst: 'Jesse',
+          nameLast: 'Pinkman',
+          email: 'aliceP@fmail.au',
           handleStr: expect.any(String),
         }
       ]
