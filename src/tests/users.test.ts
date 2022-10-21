@@ -198,8 +198,8 @@ describe('Test userProfileSetEmail', () => {
   test('email in use by another user', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user2 = requestAuthRegister('bcs@gmail.com', 'bcs123', 'Saul', 'Goodman');
-    expect(requestUserProfileSetEmail(user1.token, 'bcs@gmail.com')).toStrictEqual({ error: 'Email already in use.' });
-    expect(requestUserProfileSetEmail(user2.token, 'aliceP@fmail.com.au')).toStrictEqual({ error: 'Email already in use.' });
+    expect(requestUserProfileSetEmail(user1.token, 'bcs@gmail.com')).toStrictEqual({ error: 'Email Already in Use.' });
+    expect(requestUserProfileSetEmail(user2.token, 'aliceP@fmail.au')).toStrictEqual({ error: 'Email Already in Use.' });
   });
 
   test('invalid session', () => {
