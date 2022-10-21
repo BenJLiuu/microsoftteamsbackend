@@ -1,6 +1,6 @@
 import { getData } from './dataStore';
-import { UserOmitPassword, Error } from './objects';
-import { removePassword } from './helper';
+import { UserOmitPassword, UsersOmitPassword, Error } from './objects';
+import { validToken, removePassword } from './helper';
 
 /**
   * For a valid user, returns information about a requested valid user profile
@@ -31,17 +31,17 @@ export function userProfileV1 (authUserId: number, uId: number): UserOmitPasswor
 
 /**
  * Provides the array of all users within the dataStore.
- * 
+ *
  * @param {string} token - Token of user requesting the usersAll.
- * @returns {PrivateUser[]} All users, with passwords removed.
+ * @returns {UsersOmitPassword} All users, with passwords removed.
  */
-export function usersAllV1 (token: string): PrivateUser[] | Error {
+export function usersAllV1 (token: string): UsersOmitPassword | Error {
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
   const data = getData();
   const users = [];
   for (const user of data.users) {
     users.push(removePassword(user));
-  };
+  }
 
   return {
     users: users,

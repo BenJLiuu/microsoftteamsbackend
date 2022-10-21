@@ -90,7 +90,7 @@ app.get('/user/profile/v2', (req: Request, res: Response) => {
 
 app.get('/users/all/v1', (req: Request, res: Response) => {
   const token = req.query.token as string;
-  res.json(usersAllV1(token? token : undefined));
+  res.json(usersAllV1(token || undefined));
 });
 
 app.post('/auth/logout/v1', (req: Request, res: Response) => {
