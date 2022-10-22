@@ -83,7 +83,7 @@ export function userProfileSetNameV1 (token: string, nameFirst: string, nameLast
  * @returns {Object} {} - If user successfully updates emails.
  * @returns {Object} { error: 'Invalid Email Address.' } - If email is invalid.
  * @returns {Object} { error: 'Email Already in Use.' } - If email to be changed to is already in user by another user.
- * @ returns {Object} { error: 'Invalid Session Id.' } - If token is invalid.
+ * @returns {Object} { error: 'Invalid Session Id.' } - If token is invalid.
  */
 export function userProfileSetEmailV1 (token: string, email: string): Record<string, never> | Error {
   if (!validator.isEmail(email)) return { error: 'Invalid Email Address.' };

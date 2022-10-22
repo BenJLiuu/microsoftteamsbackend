@@ -51,19 +51,19 @@ describe('Test userProfile', () => {
 
   test('authUserId is invalid', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfile(-1, user1.authUserId)).toStrictEqual({ error: 'authUserId is invalid.' });
+    expect(requestUserProfile(user1.token + '1', user1.authUserId)).toStrictEqual({ error: 'authUserId is invalid.' });
   });
 
   test('uId does not refer to a valid user', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfile(user1.authUserId, -1)).toStrictEqual({ error: 'uId does not refer to a valid user.' });
+    expect(requestUserProfile(user1.token, user1.authUserId + 1)).toStrictEqual({ error: 'uId does not refer to a valid user.' });
   });
 
   test('Returns user object for a valid user', () => {
     requestClear();
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
-    expect(requestUserProfile(user2.authUserId, user1.authUserId)).toStrictEqual({
+    expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
       user: {
         uId: user1.authUserId,
         nameFirst: 'Alice',
@@ -78,7 +78,7 @@ describe('Test userProfile', () => {
     requestClear();
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
-    expect(requestUserProfile(user1.authUserId, user2.authUserId)).toStrictEqual({
+    expect(requestUserProfile(user1.token, user2.authUserId)).toStrictEqual({
       user: {
         uId: user2.authUserId,
         nameFirst: 'John',
@@ -87,7 +87,7 @@ describe('Test userProfile', () => {
         handleStr: 'johnmate',
       },
     });
-    expect(requestUserProfile(user2.authUserId, user1.authUserId)).toStrictEqual({
+    expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
       user: {
         uId: user1.authUserId,
         nameFirst: 'Alice',
