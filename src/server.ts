@@ -8,7 +8,7 @@ import { channelsCreateV2, channelsListV2, channelsListAllV2 } from './channels'
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2, channelLeaveV1, channelRemoveOwnerV1, channelAddOwnerV1 } from './channel';
 import { clearV1 } from './other';
-import { userProfileV1, usersAllV1, userProfileSetNameV1, userProfileSetEmailV1, userProfileSetHandleV1 } from './users';
+import { userProfileV2, usersAllV1, userProfileSetNameV1, userProfileSetEmailV1, userProfileSetHandleV1 } from './users';
 import { dmCreateV1, dmListV1, dmLeaveV1 } from './dm';
 
 // Set up web app
@@ -82,14 +82,29 @@ app.get('/channel/messages/v2', (req: Request, res: Response) => {
 });
 
 app.get('/user/profile/v2', (req: Request, res: Response) => {
-  const authUserId = req.query.authUserId as string;
+  const token = req.query.token as string;
   const uId = req.query.uId as string;
-  res.json(userProfileV1(authUserId ? parseInt(authUserId) : undefined, uId ? parseInt(uId) : undefined));
+  res.json(userProfileV2(token || undefined, uId ? parseInt(uId) : undefined));
 });
 
 app.get('/users/all/v1', (req: Request, res: Response) => {
   const token = req.query.token as string;
   res.json(usersAllV1(token || undefined));
+});
+
+app.put('/user/profile/setname/v1', (req: Request, res: Response) => {
+  const { token, nameFirst, nameLast } = req.body;
+  res.json(userProfileSetNameV1(token, nameFirst, nameLast));
+});
+
+app.put('/user/profile/setemail/v1', (req: Request, res: Response) => {
+  const { token, email } = req.body;
+  res.json(userProfileSetEmailV1(token, email));
+});
+
+app.put('/user/profile/sethandle/v1', (req: Request, res: Response) => {
+  const { token, handleStr } = req.body;
+  res.json(userProfileSetHandleV1(token, handleStr));
 });
 
 app.post('/auth/logout/v1', (req: Request, res: Response) => {
@@ -110,21 +125,6 @@ app.get('/dm/list/v1', (req: Request, res: Response) => {
 app.post('/dm/leave/v1', (req: Request, res: Response) => {
   const { token, dmId } = req.body;
   res.json(dmLeaveV1(token, dmId));
-});
-
-app.put('/user/profile/setname/v1', (req: Request, res: Response) => {
-  const { token, nameFirst, nameLast } = req.body;
-  res.json(userProfileSetNameV1(token, nameFirst, nameLast));
-});
-
-app.put('/user/profile/setemail/v1', (req: Request, res: Response) => {
-  const { token, email } = req.body;
-  res.json(userProfileSetEmailV1(token, email));
-});
-
-app.put('/user/profile/sethandle/v1', (req: Request, res: Response) => {
-  const { token, handleStr } = req.body;
-  res.json(userProfileSetHandleV1(token, handleStr));
 });
 
 app.delete('/clear/v1', (req: Request, res: Response) => {

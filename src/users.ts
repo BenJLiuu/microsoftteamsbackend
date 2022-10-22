@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import { UserOmitPassword, UsersOmitPassword, Error } from './objects';
-import { validToken, removePassword, getUserIdFromToken } from './helper';
+import { validToken, validUserId, removePassword, getUserIdFromToken } from './helper';
 import validator from 'validator';
 
 /**

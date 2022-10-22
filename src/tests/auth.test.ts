@@ -28,8 +28,8 @@ function requestClear() {
   return requestHelper('DELETE', '/clear/v1', {});
 }
 
-function requestUserProfile(authUserId: number, uId: number) {
-  return requestHelper('GET', '/user/profile/v2', { authUserId, uId });
+function requestUserProfile(token: string, uId: number) {
+  return requestHelper('GET', '/user/profile/v2', { token, uId });
 }
 
 function requestAuthLogout(token: string) {
@@ -93,7 +93,7 @@ describe('Test authRegister ', () => {
   test('Registration of existing handle', () => {
     const user1 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
     const user2 = requestAuthRegister('johnnymatey@gmail.com', 'password1234', 'Johnny', 'Mate');
-    const userConfirm = requestUserProfile(user1.authUserId, user2.authUserId);
+    const userConfirm = requestUserProfile(user1.token, user2.authUserId);
     expect(userConfirm).toStrictEqual({
       user: {
         uId: expect.any(Number),

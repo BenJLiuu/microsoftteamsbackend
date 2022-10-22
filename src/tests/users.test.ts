@@ -20,8 +20,8 @@ function requestAuthRegister(email: string, password: string, nameFirst: string,
   return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
 }
 
-function requestUserProfile(authUserId: number, uId: number) {
-  return requestHelper('GET', '/user/profile/v2', { authUserId, uId });
+function requestUserProfile(token: string, uId: number) {
+  return requestHelper('GET', '/user/profile/v2', { token, uId });
 }
 
 function requestUsersAll(token: string) {
@@ -51,12 +51,12 @@ describe('Test userProfile', () => {
 
   test('authUserId is invalid', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfile(user1.token + '1', user1.authUserId)).toStrictEqual({ error: 'authUserId is invalid.' });
+    expect(requestUserProfile(user1.token + '1', user1.authUserId)).toStrictEqual({ error: 'Invalid Session Id.' });
   });
 
   test('uId does not refer to a valid user', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfile(user1.token, user1.authUserId + 1)).toStrictEqual({ error: 'uId does not refer to a valid user.' });
+    expect(requestUserProfile(user1.token, user1.authUserId + 1)).toStrictEqual({ error: 'Invalid User Id.' });
   });
 
   test('Returns user object for a valid user', () => {
