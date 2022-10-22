@@ -82,7 +82,106 @@ export function messageSendV1 (token, channelId, message) {
   return { messageId: messageId };
 }
 */
+/**
+  * Removes the user from the channel member list.
+  *
+  * @param {string} token - Token of user sending the invite.
+  * @param {integer} channelId - Id of channel user is being invited to.
+  *
+  * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
+  * @returns {error: 'Invalid Token.'} - Token does not correspond to an existing user.
+  * @returns {error: 'You are already a member.'} - authUserId corresponds to user already in channel.
+  * @returns {error: 'You do not have access to this channel.'} - Channel is private.
+  * @returns {} - authUserId successfully leaves the specified channel.
+  *
+*/
+export function channelLeaveV1(token: string, channelId: number): Record<string, never> | Error {
+  if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
 
+  if (!validToken(token)) return { error: 'Invalid Token.' };
+  const UserId = getUserIdFromToken(token);
+  if (!checkUserIdtoChannel(UserId, channelId)) return { error: 'You are not a member of this channel.' };
+  const data = getData();
+  const userIndex = data.users.findIndex(user => user.uId === UserId);
+  const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  const privateUser = removePassword(data.users[userIndex]);
+  for (let i = 0; i < data.channels[channelIndex].allMembers.length; i++) {
+    const privateIndexAll = data.channels.findIndex(channel => channel.allMembers[i] === privateUser);
+    data.channels[channelIndex].allMembers.splice(privateIndexAll, 1);
+  }
+  for (let i = 0; i < data.channels[channelIndex].ownerMembers.length; i++) {
+    const privateIndexOwner = data.channels.findIndex(channel => channel.ownerMembers[i] === privateUser);
+    data.channels[channelIndex].ownerMembers.splice(privateIndexOwner, 1);
+  }
+
+  setData(data);
+  return {};
+}
+
+/**
+  * Adds a user to the owner channel member list, giving them owner permissions.
+  *
+  * @param {string} token - Token of user sending the invite.
+  * @param {integer} channelId - Id of channel user is being invited to.
+  * @param {integer} uId - The User Id of the specified user
+  *
+  * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
+  * @returns {error: 'Invalid User Id.'} - User Id does not exist.
+  * @returns {error: 'You are not a member of this channel.'} - The user is not a member of the channel.
+  * @returns {error: 'Invalid Token.'} - Token does not correspond to an existing user.
+  * @returns {} - authUserId successfully grants another member owner permissions.
+  *
+*/
+export function channelAddOwnerV1(token: string, channelId: number, uId: number): Record<string, never> | Error {
+  if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
+  if (!validUserId(uId)) return { error: 'Invalid User Id.' };
+  if (!checkUserIdtoChannel(uId, channelId)) return { error: 'You are not a member of this channel.' };
+  if (!validToken(token)) return { error: 'Invalid Token.' };
+
+  const data = getData();
+  const userIndex = data.users.findIndex(user => user.uId === uId);
+  const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  const privateUser = removePassword(data.users[userIndex]);
+
+  data.channels[channelIndex].ownerMembers.push(privateUser);
+
+  setData(data);
+  return {};
+}
+
+/**
+  * Removes a user to the owner channel member list, revoking their owner permissions.
+  *
+  * @param {string} token - Token of user sending the invite.
+  * @param {integer} channelId - Id of channel user is being invited to.
+  * @param {integer} uId - The User Id of the specified user
+  *
+  * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
+  * @returns {error: 'Invalid User Id.'} - User Id does not exist.
+  * @returns {error: 'You are not a member of this channel.'} - The user is not a member of the channel.
+  * @returns {error: 'Invalid Token.'} - Token does not correspond to an existing user.
+  * @returns {} - authUserId successfully grants another member owner permissions.
+  *
+*/
+export function channelRemoveOwnerV1(token: string, channelId: number, uId: number): Record<string, never> | Error {
+  if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
+  if (!validUserId(uId)) return { error: 'Invalid User Id.' };
+  if (!checkUserIdtoChannel(uId, channelId)) return { error: 'You are not a member of this channel.' };
+  if (!validToken(token)) return { error: 'Invalid Token.' };
+
+  const data = getData();
+  const userIndex = data.users.findIndex(user => user.uId === uId);
+  const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  const privateUser = removePassword(data.users[userIndex]);
+
+  for (let i = 0; i < data.channels[channelIndex].ownerMembers.length; i++) {
+    const privateIndexOwner = data.channels.findIndex(channel => channel.ownerMembers[i] === privateUser);
+    data.channels[channelIndex].ownerMembers.splice(privateIndexOwner, 1);
+  }
+
+  setData(data);
+  return {};
+}
 /**
   * Sends a user specific invite to a given channel
   *
