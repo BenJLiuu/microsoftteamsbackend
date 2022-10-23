@@ -2,7 +2,6 @@ import { getData, setData } from './dataStore';
 import { Channel, Channels, ChannelId, Error } from './objects';
 
 import {
-  validUserId,
   validToken,
   checkUserIdtoChannel,
   removePassword,
@@ -12,28 +11,24 @@ import {
 /**
   * Lists all channels that currently exists. Returns an error if authUserID isn't an authorised user
   *
-  * @param {integer} authUserId - The user ID of the person calling the function
+  * @param {string} token - The token of the person calling channelsListAll
   *
-  * @returns {Object} {error: 'Invalid Authorised User Id.'} - If the person calling the function is not an authorised user
-  * @returns {
+  * @returns {Object} {error: 'Invalid Session Id.'} - If the user token is invalid
+  * @returns {Object} {
   *   channelId: integer,
   *   name: string
   * } - If the user calling the function is authorised and if there are currently any existing channels
-  * @returns {channels: []} - No channels have been created
+  * @returns {Object} {channels: []} - If no channels have been created
   *
 */
-function channelsListAllV1 (authUserId: number): Channels | Error {
-  if (!validUserId(authUserId)) {
-    return {
-      error: 'Invalid Authorised User Id.'
-    };
-  }
+function channelsListAllV2 (token: string): Channels | Error {
+  if (!validToken(token)) return { error: 'Invalid Session Id.' };
   const data = getData();
   const channelList = [];
-  for (const i of data.channels) {
+  for (const channel of data.channels) {
     channelList.push({
-      channelId: i.channelId,
-      name: i.name
+      channelId: channel.channelId,
+      name: channel.name
     });
   }
 
@@ -113,4 +108,4 @@ function channelsCreateV2(token: string, name: string, isPublic: boolean): Chann
   return { channelId: newChannel.channelId };
 }
 
-export { channelsCreateV2, channelsListAllV1, channelsListV2 };
+export { channelsCreateV2, channelsListAllV2, channelsListV2 };

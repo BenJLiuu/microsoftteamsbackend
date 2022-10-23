@@ -24,6 +24,10 @@ export type UserOmitPassword = {
   user: PrivateUser,
 };
 
+export type UsersOmitPassword = {
+  users: PrivateUser[],
+};
+
 export type Message = {
   messageId: number,
   uId: number,

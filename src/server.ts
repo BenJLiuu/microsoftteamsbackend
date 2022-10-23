@@ -4,12 +4,12 @@ import config from './config.json';
 import cors from 'cors';
 
 import { echo } from './echo';
-import { channelsCreateV2, channelsListV2, channelsListAllV1 } from './channels';
+import { channelsCreateV2, channelsListV2, channelsListAllV2 } from './channels';
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
-import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2 } from './channel';
+import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2, channelLeaveV1, channelRemoveOwnerV1, channelAddOwnerV1 } from './channel';
 import { clearV1 } from './other';
-import { userProfileV1 } from './users';
 import { dmCreateV1, dmListV1, dmLeaveV1, dmMessagesV1, dmDetailsV1, dmRemoveV1 } from './dm';
+import { userProfileV1, usersAllV1, userProfileSetNameV1, userProfileSetEmailV1, userProfileSetHandleV1 } from './users';
 
 // Set up web app
 const app = express();
@@ -55,8 +55,8 @@ app.get('/channels/list/v2', (req: Request, res: Response) => {
 });
 
 app.get('/channels/listAll/v2', (req: Request, res: Response) => {
-  const authUserId = req.query.authUserId as string;
-  res.json(channelsListAllV1(authUserId ? parseInt(authUserId) : undefined));
+  const token = req.query.token as string;
+  res.json(channelsListAllV2(token));
 });
 
 app.post('/channel/invite/v2', (req: Request, res: Response) => {
@@ -86,6 +86,11 @@ app.get('/user/profile/v2', (req: Request, res: Response) => {
   const authUserId = req.query.authUserId as string;
   const uId = req.query.uId as string;
   res.json(userProfileV1(authUserId ? parseInt(authUserId) : undefined, uId ? parseInt(uId) : undefined));
+});
+
+app.get('/users/all/v1', (req: Request, res: Response) => {
+  const token = req.query.token as string;
+  res.json(usersAllV1(token || undefined));
 });
 
 app.post('/auth/logout/v1', (req: Request, res: Response) => {
@@ -127,8 +132,38 @@ app.get('/dm/messages/v1', (req: Request, res: Response) => {
   res.json(dmMessagesV1(token, dmId ? parseInt(dmId) : undefined, start ? parseInt(start) : undefined));
 });
 
+app.put('/user/profile/setname/v1', (req: Request, res: Response) => {
+  const { token, nameFirst, nameLast } = req.body;
+  res.json(userProfileSetNameV1(token, nameFirst, nameLast));
+});
+
+app.put('/user/profile/setemail/v1', (req: Request, res: Response) => {
+  const { token, email } = req.body;
+  res.json(userProfileSetEmailV1(token, email));
+});
+
+app.put('/user/profile/sethandle/v1', (req: Request, res: Response) => {
+  const { token, handleStr } = req.body;
+  res.json(userProfileSetHandleV1(token, handleStr));
+});
+
 app.delete('/clear/v1', (req: Request, res: Response) => {
   res.json(clearV1());
+});
+
+app.post('/channel/leave/v1', (req: Request, res: Response) => {
+  const { token, channelId } = req.body;
+  res.json(channelLeaveV1(token, channelId));
+});
+
+app.post('/channel/removeOwner/V1', (req: Request, res: Response) => {
+  const { token, channelId, uId } = req.body;
+  res.json(channelRemoveOwnerV1(token, channelId, uId));
+});
+
+app.post('/channel/addOwner/v1', (req: Request, res: Response) => {
+  const { token, channelId, uId } = req.body;
+  res.json(channelAddOwnerV1(token, channelId, uId));
 });
 
 // start server
