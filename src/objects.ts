@@ -66,28 +66,34 @@ export type ChannelId = {
   channelId: number,
 };
 
-export type dmId = {
+export type DmId = {
   dmId: number,
 };
 
-export type dm = {
+export type Dm = {
   dmId: number,
   name: string,
   members: PrivateUser[],
+  owner: PrivateUser,
   messages: Message[]
 };
 
-export type simpleDm = Omit<dm, 'members'>;
+export type SimpleDm = Omit<Dm, 'members' | 'owner'>;
 
-export type dmList = {
-  dms: simpleDm[]
+export type DmList = {
+  dms: SimpleDm[]
+};
+
+export type DmDetails = {
+  name: string,
+  members: PrivateUser[]
 };
 
 export type Data = {
   users: User[],
   channels: Channel[],
   sessions: Session[],
-  dms: dm[]
+  dms: Dm[]
 };
 
 export type Error = {

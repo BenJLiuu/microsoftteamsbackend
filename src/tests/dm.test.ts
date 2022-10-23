@@ -3,6 +3,7 @@ import request from 'sync-request';
 import { HttpVerb } from 'sync-request';
 
 import { port, url } from './../config.json';
+import { getData } from './../dataStore';
 
 const SERVER_URL = `${url}:${port}`;
 
@@ -15,7 +16,6 @@ function requestHelper(method: HttpVerb, path: string, payload: object) {
     qs = payload;
   } else {
     // PUT/POST
-
     json = payload;
   }
 
@@ -191,17 +191,20 @@ describe('requestDmLeave', () => {
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
 
     const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
-    const dm2 = requestDmCreate(user1.token, []);
-    expect(requestDmLeave(user1.token, dm1.dmId)).toStrictEqual({});
-    expect(requestDmList(user1.token)).toStrictEqual(
-      {
-        dms: [
-          {
-            dmId: dm2.dmId,
 
-            name: 'johnnylawrence',
+    requestDmLeave(user2.token, dm1.dmId);
+    expect(requestDmDetails(user1.token, dm1.dmId)).toStrictEqual(
+      {
+        name: 'aliceperson, johnnylawrence',
+        members: [
+          {
+            uId: 0,
+            nameFirst: 'Johnny',
+            nameLast: 'Lawrence',
+            email: 'johnL@gmail.com',
+            handleStr: 'johnnylawrence'
           }
-        ],
+        ]
       });
   });
 });
@@ -234,7 +237,8 @@ describe('requestDmDetails', () => {
 
   test('Successful details', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
-    const dm1 = requestDmCreate(user1.token, []);
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
     expect(requestDmDetails(user1.token, dm1.dmId)).toStrictEqual(
       { 
         name: expect.any(String),
@@ -242,7 +246,6 @@ describe('requestDmDetails', () => {
       }
     );
   });
-
 });
 
 // DmMessages V1 Testing
@@ -271,7 +274,7 @@ describe('requestDmMessages', () => {
     expect(requestDmMessages('test', dm1.dmId, 0)).toStrictEqual({ error: expect.any(String) });
   });
 
-  Text('Start is greater than total messages', () => {
+  test('Start is greater than total messages', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const dm1 = requestDmCreate(user1.token, []);
     expect(requestDmMessages(user1.token, dm1.dmId, 10)).toStrictEqual({ error: expect.any(String) })
@@ -284,7 +287,7 @@ describe('requestDmMessages', () => {
       { 
         messages: expect.any(Array),
         start: 0,
-        end: 50
+        end: 0
       }
     );
   });
@@ -329,7 +332,9 @@ describe('requestDmRemove', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
-    expect(requestDmRemove(user1.token, dm1.dmId)).toStrictEqual({});
-    expect(requestDmList(user1.token)).toStrictEqual({});
+    console.log(getData().dms);
+    requestDmRemove(user1.token, dm1.dmId);
+    console.log(getData().dms);
+    expect(requestDmList(user1.token)).toStrictEqual({ dms: [] });
   });
 });

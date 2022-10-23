@@ -111,7 +111,7 @@ describe('Test authRegister ', () => {
   });
 
   test('Test last name contains numbers', () => {
-    expect(user1).toEqual(
+    expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'J0hnny', 'Mate')).toEqual(
       {
         token: expect.any(String),
         authUserId: expect.any(Number)
