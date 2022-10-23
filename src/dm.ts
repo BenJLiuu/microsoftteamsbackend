@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import { validUserId, validToken, getUserIdFromToken, gethandleStrFromId, validDmId, checkUserIdtoDm, removePassword } from './helper';
-import { Error, DmId, DmList, DmDetails, MessageList } from './objects';
+import { Error, DmId, DmList, DmDetails, MessageList, Dm } from './objects';
 
 /**
   * Creates and stores a new DM.
@@ -42,7 +42,7 @@ export function dmCreateV1(token: string, uIds: Array<number>): DmId | Error {
   let newdmId = 0;
   while (data.dms.some(c => c.dmId === newdmId)) newdmId++;
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
-  const newDm = {
+  const newDm: Dm = {
     dmId: newdmId,
     name: name,
     members: members,
@@ -96,12 +96,11 @@ export function dmListV1(token: string): DmList | Error {
 export function dmLeaveV1(token: string, dmId: number): Record<string, never> | Error {
   if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
-  
+
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
 
   const data = getData();
-  const authUserId = getUserIdFromToken(token);
   const position = data.dms.findIndex(dm => dm.dmId === dmId);
   const dmIndex = data.dms[position].members.findIndex(user => user.uId === authUserId);
   data.dms[position].members.splice(dmIndex, 1);
@@ -110,7 +109,6 @@ export function dmLeaveV1(token: string, dmId: number): Record<string, never> | 
 
   return {};
 }
-
 
 /**
   * Deletes a DM entirely.
@@ -126,16 +124,15 @@ export function dmLeaveV1(token: string, dmId: number): Record<string, never> | 
 export function dmRemoveV1(token: string, dmId: number): Record<string, never> | Error {
   if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
-  
+
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
 
   const data = getData();
-  if (!data.dms[dmIndex].owner.uId !== authUserId) return { error: 'Authorised user is not creator of DM' };
-
   const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
-  data.dms.splice(dmIndex, 1);
+  if (authUserId !== data.dms[dmIndex].owner.uId) return { error: 'Authorised user is not creator of DM' };
 
+  data.dms.splice(dmIndex, 1);
   setData(data);
 
   return {};
@@ -155,7 +152,7 @@ export function dmRemoveV1(token: string, dmId: number): Record<string, never> |
 export function dmDetailsV1(token: string, dmId: number): DmDetails | Error {
   if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
-  
+
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
 
@@ -164,7 +161,7 @@ export function dmDetailsV1(token: string, dmId: number): DmDetails | Error {
   const dmInfo = {
     name: data.dms[dmIndex].name,
     members: data.dms[dmIndex].members
-  }
+  };
 
   return dmInfo;
 }
@@ -185,7 +182,7 @@ export function dmDetailsV1(token: string, dmId: number): DmDetails | Error {
 export function dmMessagesV1(token: string, dmId: number, start: number): MessageList | Error {
   if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
-  
+
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
 
@@ -217,5 +214,3 @@ export function dmMessagesV1(token: string, dmId: number, start: number): Messag
     end: end,
   };
 }
-
-

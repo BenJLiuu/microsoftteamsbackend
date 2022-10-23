@@ -78,7 +78,7 @@ export type Dm = {
   messages: Message[]
 };
 
-export type SimpleDm = Omit<Dm, 'members' | 'owner'>;
+export type SimpleDm = Omit<Dm, 'members' | 'owner' | 'messages'>;
 
 export type DmList = {
   dms: SimpleDm[]

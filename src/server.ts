@@ -9,7 +9,7 @@ import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2 } from './channel';
 import { clearV1 } from './other';
 import { userProfileV1 } from './users';
-import { dmCreateV1, dmListV1, dmLeaveV1, dmMessagesV1, dmDetailsV1, dmRemoveV1} from './dm';
+import { dmCreateV1, dmListV1, dmLeaveV1, dmMessagesV1, dmDetailsV1, dmRemoveV1 } from './dm';
 
 // Set up web app
 const app = express();
