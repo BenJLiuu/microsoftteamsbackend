@@ -55,8 +55,8 @@ function authRegisterV2(email: string, password: string, nameFirst: string, name
   if (nameFirst.length < 1 || nameFirst.length > 50) return { error: 'Invalid First Name.' };
   if (nameLast.length < 1 || nameLast.length > 50) return { error: 'Invalid Last Name.' };
 
-  if (/[^a-zA-Z]/.test(nameFirst)) return { error: 'Invalid First Name.' };
-  if (/[^a-zA-Z]/.test(nameLast)) return { error: 'Invalid Last Name.' };
+  if (/[^a-zA-Z0-9]/.test(nameFirst)) return { error: 'Invalid First Name.' };
+  if (/[^a-zA-Z0-9]/.test(nameLast)) return { error: 'Invalid Last Name.' };
 
   let newUId = 0;
   while (data.users.some(user => user.uId === newUId)) newUId++;
