@@ -53,12 +53,7 @@ export function validChannelId(channelId : number) : boolean {
  */
 export function checkUserIdtoChannel(authUserId : number, channelId : number) : boolean {
   const data = getData();
-  let position = 0;
-  for (let i = 0; i < data.channels.length; i++) {
-    if (data.channels[i].channelId === channelId) {
-      position = i;
-    }
-  }
+  const position = data.channels.findIndex(channel => channel.channelId === channelId);
   return data.channels[position].allMembers.some(user => user.uId === authUserId);
 }
 
@@ -146,11 +141,6 @@ export function validDmId(dmId : number) : boolean {
  */
 export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
   const data = getData();
-  let position = 0;
-  for (let i = 0; i < data.dms.length; i++) {
-    if (data.dms[i].dmId === dmId) {
-      position = i;
-    }
-  }
+  const position = data.dms.findIndex(dm => dm.dmId === dmId);
   return data.dms[position].members.some(user => user.uId === authUserId);
 }

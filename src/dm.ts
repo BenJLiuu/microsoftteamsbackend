@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import { validUserId, validToken, getUserIdFromToken, gethandleStrFromId, validDmId, checkUserIdtoDm, removePassword } from './helper';
-import { Error, dmId, dmList } from './objects';
+import { Error, DmId, DmList, DmDetails, MessageList, Dm } from './objects';
 
 /**
   * Creates and stores a new DM.
@@ -13,7 +13,7 @@ import { Error, dmId, dmList } from './objects';
   * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {integer} dmId - if creation is successfull.
 */
-export function dmCreateV1(token: string, uIds: Array<number>): dmId | Error {
+export function dmCreateV1(token: string, uIds: Array<number>): DmId | Error {
   if (!validToken(token)) return { error: 'Invalid Token.' };
   for (const i of uIds) {
     if (!validUserId(i)) return { error: 'Invalid User Id given.' };
@@ -24,7 +24,6 @@ export function dmCreateV1(token: string, uIds: Array<number>): dmId | Error {
   const authUserId = getUserIdFromToken(token);
   const names = [];
   const members = [];
-  const messageArray: {messageId: number, uId: number, message: string, timeSent: number}[] = [];
 
   names.push(gethandleStrFromId(authUserId));
   members.push(removePassword(data.users.find(user => user.uId === authUserId)));
@@ -42,11 +41,13 @@ export function dmCreateV1(token: string, uIds: Array<number>): dmId | Error {
   const name = names.join(', ');
   let newdmId = 0;
   while (data.dms.some(c => c.dmId === newdmId)) newdmId++;
-  const newDm = {
+  const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
+  const newDm: Dm = {
     dmId: newdmId,
     name: name,
-    messages: messageArray,
-    members: members
+    members: members,
+    owner: removePassword(data.users[ownerIndex]),
+    messages: []
   };
 
   data.dms.push(newDm);
@@ -63,7 +64,7 @@ export function dmCreateV1(token: string, uIds: Array<number>): dmId | Error {
   * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {array} dms - array of objects containing information about each dm.
 */
-export function dmListV1(token: string): dmList | Error {
+export function dmListV1(token: string): DmList | Error {
   if (!validToken(token)) return { error: 'Invalid Token.' };
 
   const data = getData();
@@ -95,6 +96,7 @@ export function dmListV1(token: string): dmList | Error {
 export function dmLeaveV1(token: string, dmId: number): Record<string, never> | Error {
   if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
+
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
 
@@ -106,4 +108,109 @@ export function dmLeaveV1(token: string, dmId: number): Record<string, never> | 
   setData(data);
 
   return {};
+}
+
+/**
+  * Deletes a DM entirely.
+  *
+  * @param {string} token - Token of user deleting the dm.
+  * @param {number} dmId - Id of the DM that the user wants to delete.
+  *
+  * @returns {error: 'Invalid DM Id.'}  - DM Id does not correspond to an existing DM.
+  * @returns {error: 'Authorised user is not a member of the DM.'} - The user is not a member of the DM.
+  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {} - DM has been succesfully left.
+*/
+export function dmRemoveV1(token: string, dmId: number): Record<string, never> | Error {
+  if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
+  if (!validToken(token)) return { error: 'Invalid Token.' };
+
+  const authUserId = getUserIdFromToken(token);
+  if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
+
+  const data = getData();
+  const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
+  if (authUserId !== data.dms[dmIndex].owner.uId) return { error: 'Authorised user is not creator of DM' };
+
+  data.dms.splice(dmIndex, 1);
+  setData(data);
+
+  return {};
+}
+
+/**
+  * Given a DM, returns its name and members.
+  *
+  * @param {string} token - Token of user deleting the dm.
+  * @param {number} dmId - Id of the DM that the user wants to delete.
+  *
+  * @returns {error: 'Invalid DM Id.'}  - DM Id does not correspond to an existing DM.
+  * @returns {error: 'Authorised user is not a member of the DM.'} - The user is not a member of the DM.
+  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns { DmDetails } - Dm exists and user is a valid candidate to view its details.
+*/
+export function dmDetailsV1(token: string, dmId: number): DmDetails | Error {
+  if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
+  if (!validToken(token)) return { error: 'Invalid Token.' };
+
+  const authUserId = getUserIdFromToken(token);
+  if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
+
+  const data = getData();
+  const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
+  const dmInfo = {
+    name: data.dms[dmIndex].name,
+    members: data.dms[dmIndex].members
+  };
+
+  return dmInfo;
+}
+
+/**
+  * Views 50 or less messages in a given Dm
+  *
+  * @param {string} token - Token of user deleting the dm.
+  * @param {number} dmId - Id of the DM that the user wants to delete.
+  * @param {number} start - offset of messages from the most recent to begin displaying from
+  *
+  * @returns {error: 'Invalid DM Id.'}  - DM Id does not correspond to an existing DM.
+  * @returns {error: 'Authorised user is not a member of the DM.'} - The user is not a member of the DM.
+  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {error: 'Start is greater than total messages'} - start offset is higher than total messages.
+  * @returns {MessageList} - DM messages are returned and valid.
+*/
+export function dmMessagesV1(token: string, dmId: number, start: number): MessageList | Error {
+  if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
+  if (!validToken(token)) return { error: 'Invalid Token.' };
+
+  const authUserId = getUserIdFromToken(token);
+  if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
+
+  const data = getData();
+  const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
+  if (start > data.dms[dmIndex].messages.length) return { error: 'Start is greater than total messages' };
+
+  let end = 0;
+  if (data.dms[dmIndex].messages.length + start > 50) {
+    end = start + 50;
+  } else {
+    if (data.dms[dmIndex].messages.length !== 0) {
+      end -= 1;
+    }
+  }
+
+  const messagesArray = [];
+  for (let i = start; i < end - start; i++) {
+    messagesArray.push(data.dms[dmIndex].messages[i]);
+  }
+
+  messagesArray.sort(function(a, b) {
+    return a.timeSent - b.timeSent;
+  });
+
+  return {
+    messages: messagesArray,
+    start: start,
+    end: end,
+  };
 }
