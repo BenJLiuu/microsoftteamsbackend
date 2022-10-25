@@ -15,7 +15,6 @@ function requestHelper(method: HttpVerb, path: string, payload: object) {
     qs = payload;
   } else {
     // PUT/POST
-
     json = payload;
   }
 
@@ -38,6 +37,18 @@ function requestDmList(token: string) {
 
 function requestDmLeave(token: string, dmId: number) {
   return requestHelper('POST', '/dm/leave/v1', { token, dmId });
+}
+
+function requestDmDetails(token: string, dmId: number) {
+  return requestHelper('GET', '/dm/details/v1', { token, dmId });
+}
+
+function requestDmMessages(token: string, dmId: number, start: number) {
+  return requestHelper('GET', '/dm/messages/v1', { token, dmId, start });
+}
+
+function requestDmRemove(token: string, dmId: number) {
+  return requestHelper('DELETE', '/dm/remove/v1', { token, dmId });
 }
 
 function requestClear() {
@@ -179,17 +190,146 @@ describe('requestDmLeave', () => {
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
 
     const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
-    const dm2 = requestDmCreate(user1.token, []);
-    expect(requestDmLeave(user1.token, dm1.dmId)).toStrictEqual({});
-    expect(requestDmList(user1.token)).toStrictEqual(
-      {
-        dms: [
-          {
-            dmId: dm2.dmId,
 
-            name: 'johnnylawrence',
+    requestDmLeave(user2.token, dm1.dmId);
+    expect(requestDmDetails(user1.token, dm1.dmId)).toStrictEqual(
+      {
+        name: 'aliceperson, johnnylawrence',
+        members: [
+          {
+            uId: 0,
+            nameFirst: 'Johnny',
+            nameLast: 'Lawrence',
+            email: 'johnL@gmail.com',
+            handleStr: 'johnnylawrence'
           }
-        ],
+        ]
       });
+  });
+});
+
+// DmDetails V1 Testing
+
+describe('requestDmDetails', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('Invalid DM id', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const dm1 = requestDmCreate(user1.token, []);
+    expect(requestDmDetails(user1.token, dm1.dmId + 1)).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test('Authorised user is not a member of the DM', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user1.token, []);
+    expect(requestDmDetails(user2.token, dm1.dmId)).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test('Invalid Token', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const dm1 = requestDmCreate(user1.token, []);
+    expect(requestDmDetails('test', dm1.dmId)).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test('Successful details', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
+    expect(requestDmDetails(user1.token, dm1.dmId)).toStrictEqual(
+      {
+        name: expect.any(String),
+        members: expect.any(Array)
+      }
+    );
+  });
+});
+
+// DmMessages V1 Testing
+
+describe('requestDmMessages', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('Invalid DM id', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const dm1 = requestDmCreate(user1.token, []);
+    expect(requestDmMessages(user1.token, dm1.dmId + 1, 0)).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test('Authorised user is not a member of the DM', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user1.token, []);
+    expect(requestDmMessages(user2.token, dm1.dmId, 0)).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test('Invalid Token', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const dm1 = requestDmCreate(user1.token, []);
+    expect(requestDmMessages('test', dm1.dmId, 0)).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test('Start is greater than total messages', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const dm1 = requestDmCreate(user1.token, []);
+    expect(requestDmMessages(user1.token, dm1.dmId, 10)).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test('Successful messages', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const dm1 = requestDmCreate(user1.token, []);
+    expect(requestDmMessages(user1.token, dm1.dmId, 0)).toStrictEqual(
+      {
+        messages: expect.any(Array),
+        start: 0,
+        end: 0
+      }
+    );
+  });
+});
+
+// DmRemove V1 Testing
+
+describe('requestDmRemove', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('Invalid DM id', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const dm1 = requestDmCreate(user1.token, []);
+    expect(requestDmRemove(user1.token, dm1.dmId + 1)).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test('Authorised user is not a member of the DM', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user1.token, []);
+    expect(requestDmRemove(user2.token, dm1.dmId)).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test('Authorised user is in the DM, but not the creator', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user1.token, [user2.token]);
+    expect(requestDmRemove(user2.token, dm1.dmId)).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test('Invalid Token', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const dm1 = requestDmCreate(user1.token, []);
+    expect(requestDmRemove('test', dm1.dmId)).toStrictEqual({ error: expect.any(String) });
+  });
+
+  test('Successful removal', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
+    requestDmRemove(user1.token, dm1.dmId);
+    expect(requestDmList(user1.token)).toStrictEqual({ dms: [] });
   });
 });
