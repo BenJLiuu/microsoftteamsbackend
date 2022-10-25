@@ -1,29 +1,57 @@
 import { getData, setData } from './dataStore';
-import { validUserId, validToken, getUserIdFromToken, validDmId} from './helper';
-import { Error  } from './objects';
+import { validChannelId, validToken, getUserIdFromToken, validDmId, checkUserIdtoDm, checkUserIdtoChannel } from './helper';
+import { Error, messageId } from './objects';
 
-export function messageSendDmV1(token: string, dmId: number, message: string):  Error {
-  if (!validDmId(dmId)) return { error: 'Invalid Dm Id.' };
-  const uId = getUserIdFromToken(token);
-  if (!validUserId(uId)) return { error: 'Invalid User Id.' };
+export function messageSendDmV1(token: string, dmId: number, message: string): messageId | Error {
+  if (!validDmId(dmId)) return { error: 'Not valid Dm Id' };
+  if (message.length < 1) return { error: 'Message contains too little characters.' };
+  if (message.length > 1000) return { error: 'Message contains too many characters.' };
+  if (!validToken(token)) return { error: 'Invalid Token' };
+  const authUserId = getUserIdFromToken(token);
+  if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the Dm' };
 
-  if (!validToken(token)) return { error: 'Invalid Token.' };
-  if (message.length < 1 || message.length > 1000) return { error: "excess characters"} 
   const data = getData();
   const index = data.dms.findIndex(dm => dm.dmId === dmId);
 
-    return { error: "invalid" }
+  const currentTime = new Date();
+  const time = currentTime.getHours() + currentTime.getMinutes() + currentTime.getSeconds();
+  const messageId = Math.floor(Math.random() * 899999 + 100000);
+
+  const newDmMessage = {
+    messageId: messageId,
+    uId: authUserId,
+    message: message,
+    timeSent: time,
+  };
+  data.dms[index].messages.push(newDmMessage);
+
+  setData(data);
+  return { messageId: messageId };
 }
 
-export function messageSendV1(token: string, channelId: number, message: string):  Error {
-  
-  const uId = getUserIdFromToken(token);
-  if (!validUserId(uId)) return { error: 'Invalid User Id.' };
+export function messageSendV1(token: string, channelId: number, message: string): messageId | Error {
+  if (!validChannelId(channelId)) return { error: 'Not valid channelId' };
+  if (message.length < 1) return { error: 'Message contains too little characters.' };
+  if (message.length > 1000) return { error: 'Message contains too many characters.' };
+  if (!validToken(token)) return { error: 'Invalid Session.' };
+  const authUserId = getUserIdFromToken(token);
+  if (!checkUserIdtoChannel(authUserId, channelId)) return { error: 'Authorised user is not a channel member' };
 
-  if (!validToken(token)) return { error: 'Invalid Token.' };
-  if (message.length < 1 || message.length > 1000) return { error: "excess characters"} 
   const data = getData();
+  const index = data.channels.findIndex(channel => channel.channelId === channelId);
 
+  const currentTime = new Date();
+  const time = currentTime.getHours() + currentTime.getMinutes() + currentTime.getSeconds();
+  const messageId = Math.floor(Math.random() * 899999 + 100000);
 
-    return { error: "invalid" }
+  const newMessage = {
+    messageId: messageId,
+    uId: authUserId,
+    message: message,
+    timeSent: time,
+  };
+  data.channels[index].messages.push(newMessage);
+
+  setData(data);
+  return { messageId: messageId };
 }

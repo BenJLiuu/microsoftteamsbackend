@@ -24,6 +24,7 @@ export function dmCreateV1(token: string, uIds: Array<number>): dmId | Error {
   const authUserId = getUserIdFromToken(token);
   const names = [];
   const members = [];
+  const messageArray: {messageId: number, uId: number, message: string, timeSent: number}[] = [];
 
   names.push(gethandleStrFromId(authUserId));
   members.push(removePassword(data.users.find(user => user.uId === authUserId)));
@@ -44,7 +45,8 @@ export function dmCreateV1(token: string, uIds: Array<number>): dmId | Error {
   const newDm = {
     dmId: newdmId,
     name: name,
-    members: members,
+    messages: messageArray,
+    members: members
   };
 
   data.dms.push(newDm);

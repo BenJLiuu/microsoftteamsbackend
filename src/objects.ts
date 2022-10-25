@@ -77,10 +77,11 @@ export type dmId = {
 export type dm = {
   dmId: number,
   name: string,
+  messages: Message[],
   members: PrivateUser[]
 };
 
-export type simpleDm = Omit<dm, 'members'>;
+export type simpleDm = Omit<dm, 'members' | 'messages'>;
 
 export type dmList = {
   dms: simpleDm[]
@@ -100,4 +101,8 @@ export type Error = {
 export type Token = {
   authUserId: number,
   token: string,
+};
+
+export type messageId = {
+  messageId: number;
 };
