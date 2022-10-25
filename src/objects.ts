@@ -108,3 +108,7 @@ export type Token = {
   authUserId: number,
   token: string,
 };
+
+export type messageId = {
+  messageId: number;
+};

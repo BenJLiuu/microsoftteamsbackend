@@ -10,6 +10,7 @@ import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2, ch
 import { clearV1 } from './other';
 import { dmCreateV1, dmListV1, dmLeaveV1, dmMessagesV1, dmDetailsV1, dmRemoveV1 } from './dm';
 import { userProfileV1, usersAllV1, userProfileSetNameV1, userProfileSetEmailV1, userProfileSetHandleV1 } from './users';
+import { messageSendDmV1, messageSendV1 } from './message';
 
 // Set up web app
 const app = express();
@@ -160,12 +161,18 @@ app.post('/channel/removeOwner/V1', (req: Request, res: Response) => {
   const { token, channelId, uId } = req.body;
   res.json(channelRemoveOwnerV1(token, channelId, uId));
 });
-
-app.post('/channel/addOwner/v1', (req: Request, res: Response) => {
+app.post('/channel/addOwner/V1', (req: Request, res: Response) => {
   const { token, channelId, uId } = req.body;
   res.json(channelAddOwnerV1(token, channelId, uId));
 });
-
+app.post('/message/sendDm/V1', (req: Request, res: Response) => {
+  const { token, dmId, message } = req.body;
+  res.json(messageSendDmV1(token, dmId, message));
+});
+app.post('/message/send/V1', (req: Request, res: Response) => {
+  const { token, channelId, message } = req.body;
+  res.json(messageSendV1(token, channelId, message));
+});
 // start server
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
