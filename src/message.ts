@@ -1,5 +1,6 @@
 import { getData, setData } from './dataStore';
-import { validChannelId, validToken, getUserIdFromToken, validDmId, checkUserIdtoDm, checkUserIdtoChannel } from './helper';
+import { validChannelId, validToken, getUserIdFromToken, validDmId, checkUserIdtoDm, checkUserIdtoChannel, 
+         checkMessageToChannel, checkMessageToDm, checkUserToMessage, validMessageId } from './helper';
 import { Error, messageId } from './objects';
 
 export function messageSendDmV1(token: string, dmId: number, message: string): messageId | Error {
@@ -54,4 +55,48 @@ export function messageSendV1(token: string, channelId: number, message: string)
 
   setData(data);
   return { messageId: messageId };
+}
+
+/**
+  * Edits the contents of an existing message.
+  *
+  * @param {string} token - Token of user editing the message.
+  * @param {number} messageId - Id of message to be edited.
+  * @param {string} message - New message to be stored.
+  *
+  * @returns {error: 'Invalid Message Id.'}  - Message Id does not correspond to an existing message.
+  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {error: 'Message  not sent by authorised user.'} - the message was not sent by the authorised user making this request.
+  * @returns {error: 'Message size exceeds limit.'} - message is over 1000 characters long.
+  * @returns {} - Message edited successfully.
+*/
+export function messageEditV1(token: string, messageId: number, message: string): Record<string, never> | Error {
+  if (!validToken(token)) return { error: 'Invalid Token.' };
+  const authUserId = getUserIdFromToken(token);
+  if (!validMessageId(messageId)) return { error: 'Invalid Message Id.' };
+  if (message.length > 1000) return { error: 'Message size exceeds limit.' };
+  if(!checkUserToMessage(authUserId, messageId)) return { error: 'Message  not sent by authorised user.' };
+
+  const data = getData();
+
+  const isChannel = checkMessageToChannel(messageId);
+  if (isChannel === false) {
+    const isDm = checkMessageToDm(messageId);
+    const dm_position = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
+    if (message === '') {
+      data.dms[isDm].messages.splice(dm_position, 1);
+    } else {
+      data.dms[isDm].messages[dm_position].message = message;
+    }
+  } else {
+    const position = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
+    if (message === '') {
+      data.channels[isChannel].messages.splice(position, 1);
+    } else {
+      data.channels[isChannel].messages[position].message = message;
+    }
+  }
+
+  setData(data);
+  return {};
 }
