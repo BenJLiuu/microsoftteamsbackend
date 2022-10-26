@@ -144,3 +144,15 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
   const position = data.dms.findIndex(dm => dm.dmId === dmId);
   return data.dms[position].members.some(user => user.uId === authUserId);
 }
+
+export function checkChannelOwner(authUserId: number, channelId: number){
+  const data = getData();
+  let ifOwner = false;
+  const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  for (let i = 0; i < data.channels[channelIndex].ownerMembers.length; i++) {
+    if (authUserId === data.channels[channelIndex].ownerMembers[i].uId) {
+      ifOwner = true;
+    }
+  }
+  return ifOwner;
+}

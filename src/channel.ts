@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { validUserId, validChannelId, checkUserIdtoChannel, removePassword, validToken, getUserIdFromToken } from './helper';
+import { validUserId, validChannelId, checkUserIdtoChannel, removePassword, validToken, getUserIdFromToken, checkChannelOwner } from './helper';
 import { Error, MessageList, ChannelDetails } from './objects';
 
 /**
@@ -102,25 +102,15 @@ export function channelLeaveV1(token: string, channelId: number): Record<string,
   const UserId = getUserIdFromToken(token);
   if (!checkUserIdtoChannel(UserId, channelId)) return { error: 'You are not a member of this channel.' };
   const data = getData();
-  const userIndex = data.users.findIndex(user => user.uId === UserId);
-  const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
-  const privateUser = removePassword(data.users[userIndex]);
-
-  let owner = false;
-  for (let i = 0; i < data.channels[channelIndex].ownerMembers.length; i++) {
-    if (UserId === data.channels[channelIndex].ownerMembers[i].uId) {
-      owner = true;
-    }
-  }
+  
+  const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId); 
   const privateIndexAll = data.channels[channelIndex].allMembers.findIndex(channel => channel.uId === UserId);
   data.channels[channelIndex].allMembers.splice(privateIndexAll, 1);
   
-  if (owner === true) {
+  if (checkChannelOwner(UserId, channelId) === true) {
     const privateIndexOwner = data.channels[channelIndex].ownerMembers.findIndex(channel => channel.uId === UserId);
     data.channels[channelIndex].ownerMembers.splice(privateIndexOwner, 1);
-  
   }
-   
 
   setData(data);
   return {};
