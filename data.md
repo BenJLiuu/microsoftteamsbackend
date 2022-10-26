@@ -33,7 +33,7 @@ let data = {
   sessions: [
     {
       token: 'c$jDgeUCeV%kY$fo9%xxwlkvyzFSZ(M^',
-      authUserId: '1'
+      authUserId: 1
     },
   ],
 };
