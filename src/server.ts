@@ -10,7 +10,7 @@ import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2, ch
 import { clearV1 } from './other';
 import { userProfileV2, usersAllV1, userProfileSetNameV1, userProfileSetEmailV1, userProfileSetHandleV1 } from './users';
 import { dmCreateV1, dmListV1, dmLeaveV1, dmMessagesV1, dmDetailsV1, dmRemoveV1 } from './dm';
-import { messageSendDmV1, messageSendV1, messageEditV1 } from './message';
+import { messageSendDmV1, messageSendV1, messageEditV1, messageRemoveV1 } from './message';
 
 // Set up web app
 const app = express();
@@ -190,6 +190,11 @@ app.post('/message/send/V1', (req: Request, res: Response) => {
 app.put('/message/edit/V1', (req: Request, res: Response) => {
   const { token, messageId, message } = req.body;
   res.json(messageEditV1(token, messageId, message));
+});
+app.delete('/message/remove/V1', (req: Request, res: Response) => {
+  const token = req.query.token as string;
+  const messageId = req.query.messageId as string;
+  res.json(messageRemoveV1(token, messageId ? parseInt(messageId) : undefined));
 });
 // start server
 const server = app.listen(PORT, HOST, () => {

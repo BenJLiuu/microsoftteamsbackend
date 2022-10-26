@@ -1,6 +1,8 @@
 import { getData, setData } from './dataStore';
-import { validChannelId, validToken, getUserIdFromToken, validDmId, checkUserIdtoDm, checkUserIdtoChannel, 
-         checkMessageToChannel, checkMessageToDm, checkUserToMessage, validMessageId } from './helper';
+import {
+  validChannelId, validToken, getUserIdFromToken, validDmId, checkUserIdtoDm, checkUserIdtoChannel,
+  checkMessageToChannel, checkMessageToDm, checkUserToMessage, validMessageId
+} from './helper';
 import { Error, messageId } from './objects';
 
 export function messageSendDmV1(token: string, dmId: number, message: string): messageId | Error {
@@ -75,18 +77,18 @@ export function messageEditV1(token: string, messageId: number, message: string)
   const authUserId = getUserIdFromToken(token);
   if (!validMessageId(messageId)) return { error: 'Invalid Message Id.' };
   if (message.length > 1000) return { error: 'Message size exceeds limit.' };
-  if(!checkUserToMessage(authUserId, messageId)) return { error: 'Message  not sent by authorised user.' };
+  if (!checkUserToMessage(authUserId, messageId)) return { error: 'Message  not sent by authorised user.' };
 
   const data = getData();
 
   const isChannel = checkMessageToChannel(messageId);
   if (isChannel === -1) {
     const isDm = checkMessageToDm(messageId);
-    const dm_position = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
+    const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
     if (message === '') {
-      data.dms[isDm].messages.splice(dm_position, 1);
+      data.dms[isDm].messages.splice(dmPosition, 1);
     } else {
-      data.dms[isDm].messages[dm_position].message = message;
+      data.dms[isDm].messages[dmPosition].message = message;
     }
   } else {
     const position = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
@@ -116,15 +118,15 @@ export function messageRemoveV1(token: string, messageId: number): Record<string
   if (!validToken(token)) return { error: 'Invalid Token.' };
   const authUserId = getUserIdFromToken(token);
   if (!validMessageId(messageId)) return { error: 'Invalid Message Id.' };
-  if(!checkUserToMessage(authUserId, messageId)) return { error: 'Message  not sent by authorised user.' };
+  if (!checkUserToMessage(authUserId, messageId)) return { error: 'Message  not sent by authorised user.' };
 
   const data = getData();
 
   const isChannel = checkMessageToChannel(messageId);
   if (isChannel === -1) {
     const isDm = checkMessageToDm(messageId);
-    const dm_position = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
-    data.dms[isDm].messages.splice(dm_position, 1);
+    const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
+    data.dms[isDm].messages.splice(dmPosition, 1);
   } else {
     const position = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
     data.channels[isChannel].messages.splice(position, 1);

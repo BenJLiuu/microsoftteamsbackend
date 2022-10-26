@@ -151,7 +151,7 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
  * @param messageId - the id of the message to be checked
  * @returns number - returns the index of the channel if present or -1 if not
  */
- export function checkMessageToChannel(messageId : number) : number {
+export function checkMessageToChannel(messageId : number) : number {
   const data = getData();
   for (let channel = 0; channel < data.channels.length; channel++) {
     for (const message of data.channels[channel].messages) {
@@ -169,7 +169,7 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
  * @param messageId - the id of the message to be checked
  * @returns number - returns the index of the dm if present or -1 if not
  */
- export function checkMessageToDm(messageId : number) : number {
+export function checkMessageToDm(messageId : number) : number {
   const data = getData();
   for (let dm = 0; dm < data.dms.length; dm++) {
     for (const message of data.dms[dm].messages) {
@@ -188,16 +188,16 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
  * @param messageId - the id of the message to be checked
  * @returns boolean - whether the user has access to change the message
  */
- export function checkUserToMessage(authUserId : number, messageId : number) : boolean {
+export function checkUserToMessage(authUserId : number, messageId : number) : boolean {
   const data = getData();
-  let checkChannel = checkMessageToChannel(messageId);
+  const checkChannel = checkMessageToChannel(messageId);
   if (checkChannel === -1) {
-    let checkDm = checkMessageToDm(messageId);
+    const checkDm = checkMessageToDm(messageId);
     if (checkDm === -1) {
       return false;
     } else {
-      const dm_position = data.dms[checkDm].messages.findIndex(message => message.messageId === messageId);
-      if (data.dms[checkDm].messages[dm_position].uId === authUserId) {
+      const dmPosition = data.dms[checkDm].messages.findIndex(message => message.messageId === messageId);
+      if (data.dms[checkDm].messages[dmPosition].uId === authUserId) {
         return true;
       } else {
         if (data.dms[checkDm].owner.uId === authUserId) {
@@ -228,8 +228,7 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
  * @param messageId - the id of the message to be checked
  * @returns boolean - whether the message id is valid or not
  */
- export function validMessageId(messageId : number) : boolean {
-  const data = getData();
+export function validMessageId(messageId : number) : boolean {
   if (!checkMessageToChannel(messageId) && !checkMessageToDm(messageId)) {
     return false;
   } else {
