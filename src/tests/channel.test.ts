@@ -4,8 +4,6 @@ import { HttpVerb } from 'sync-request';
 
 import { port, url } from './../config.json';
 
-import { getData } from './../dataStore';
-
 const SERVER_URL = `${url}:${port}`;
 
 function requestHelper(method: HttpVerb, path: string, payload: object) {
@@ -108,24 +106,24 @@ describe('ChannelMessages', () => {
     });
   });
 
-  /*These tests utilise the requestMessageSend helper function to test the
+  /* These tests utilise the requestMessageSend helper function to test the
    functionality of requestChannelMessages. This is white-box testing, so it has
    been commented out, but if the helper function and these tests are uncommented
-   they will pass.*/
+   they will pass. */
 
   test('Authorised user is invalid', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     requestMessageSend(user1.token, channel1.channelId, 'hello');
-    expect(requestChannelMessages(user1.token + 'a', channel1.channelId, 0)).toStrictEqual({error: 'Invalid Session.'});
+    expect(requestChannelMessages(user1.token + 'a', channel1.channelId, 0)).toStrictEqual({ error: 'Invalid Session.' });
   });
 
   test('Success, less than 50 messages.', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-    const message1 = requestMessageSend(user1.token, channel1.channelId, 'hello');
-    const message2 = requestMessageSend(user1.token, channel1.channelId, 'hello');
-    const message3 = requestMessageSend(user1.token, channel1.channelId, 'hello');
+    requestMessageSend(user1.token, channel1.channelId, 'hello');
+    requestMessageSend(user1.token, channel1.channelId, 'hello');
+    requestMessageSend(user1.token, channel1.channelId, 'hello');
     expect(requestChannelMessages(user1.token, channel1.channelId, 0)).toEqual({
       messages: [
         {
@@ -156,7 +154,7 @@ describe('ChannelMessages', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     for (let i = 0; i < 60; i++) {
-      const message = requestMessageSend(user1.token, channel1.channelId, 'hello');
+      requestMessageSend(user1.token, channel1.channelId, 'hello');
     }
 
     expect(requestChannelMessages(user1.token, channel1.channelId, 5)).toEqual({

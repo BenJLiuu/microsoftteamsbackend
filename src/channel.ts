@@ -35,7 +35,7 @@ export function channelMessagesV2(token: string, channelId: number, start: numbe
     end -= 1;
   }
 
-  let messagesArray = [];
+  const messagesArray = [];
   if (end !== 0) {
     for (let i = start; i <= end; i++) {
       messagesArray.push(data.channels[channelIndex].messages[i]);
