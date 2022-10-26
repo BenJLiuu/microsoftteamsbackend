@@ -8,8 +8,8 @@ import { channelsCreateV2, channelsListV2, channelsListAllV2 } from './channels'
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2, channelLeaveV1, channelRemoveOwnerV1, channelAddOwnerV1 } from './channel';
 import { clearV1 } from './other';
+import { userProfileV2, usersAllV1, userProfileSetNameV1, userProfileSetEmailV1, userProfileSetHandleV1 } from './users';
 import { dmCreateV1, dmListV1, dmLeaveV1, dmMessagesV1, dmDetailsV1, dmRemoveV1 } from './dm';
-import { userProfileV1, usersAllV1, userProfileSetNameV1, userProfileSetEmailV1, userProfileSetHandleV1 } from './users';
 import { messageSendDmV1, messageSendV1, messageEditV1 } from './message';
 
 // Set up web app
@@ -18,6 +18,8 @@ const app = express();
 app.use(json());
 // Use middleware that allows for access from other domains
 app.use(cors());
+// for logging errors (print to terminal)
+app.use(morgan('dev'));
 
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || 'localhost';
@@ -31,9 +33,6 @@ app.get('/echo', (req: Request, res: Response, next) => {
     next(err);
   }
 });
-
-// for logging errors (print to terminal)
-app.use(morgan('dev'));
 
 app.post('/auth/login/v2', (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -84,14 +83,29 @@ app.get('/channel/messages/v2', (req: Request, res: Response) => {
 });
 
 app.get('/user/profile/v2', (req: Request, res: Response) => {
-  const authUserId = req.query.authUserId as string;
+  const token = req.query.token as string;
   const uId = req.query.uId as string;
-  res.json(userProfileV1(authUserId ? parseInt(authUserId) : undefined, uId ? parseInt(uId) : undefined));
+  res.json(userProfileV2(token || undefined, uId ? parseInt(uId) : undefined));
 });
 
 app.get('/users/all/v1', (req: Request, res: Response) => {
   const token = req.query.token as string;
   res.json(usersAllV1(token || undefined));
+});
+
+app.put('/user/profile/setname/v1', (req: Request, res: Response) => {
+  const { token, nameFirst, nameLast } = req.body;
+  res.json(userProfileSetNameV1(token, nameFirst, nameLast));
+});
+
+app.put('/user/profile/setemail/v1', (req: Request, res: Response) => {
+  const { token, email } = req.body;
+  res.json(userProfileSetEmailV1(token, email));
+});
+
+app.put('/user/profile/sethandle/v1', (req: Request, res: Response) => {
+  const { token, handleStr } = req.body;
+  res.json(userProfileSetHandleV1(token, handleStr));
 });
 
 app.post('/auth/logout/v1', (req: Request, res: Response) => {

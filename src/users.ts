@@ -1,29 +1,23 @@
 import { getData, setData } from './dataStore';
 import { UserOmitPassword, UsersOmitPassword, Error } from './objects';
-import { validToken, removePassword, getUserIdFromToken } from './helper';
+import { validToken, validUserId, removePassword, getUserIdFromToken } from './helper';
 import validator from 'validator';
 
 /**
   * For a valid user, returns information about a requested valid user profile
   *
-  * @param {integer} authUserId - Id of user sending the request to view the profile.
-  * @param {integer} uId - Id of user, whose profile is to be viewed.
+  * @param {integer} token - Token of user requesting the profile.
+  * @param {integer} uId - Id of user whose profile is to be viewed.
   *
   * @returns {Object} {error: 'authUserId is invalid.'} - authUserId does not correspond to an existing user.
   * @returns {Object} {error: 'uId does not refer to a valid user.'}  - uId does not correspond to an existing user.
   * @returns {UserOmitPassword} User profile, without password key.
 */
-export function userProfileV1 (authUserId: number, uId: number): UserOmitPassword | Error {
+export function userProfileV2 (token: string, uId: number): UserOmitPassword | Error {
+  if (!validToken(token)) return { error: 'Invalid Session Id.' };
+  if (!validUserId(uId)) return { error: 'Invalid User Id.' };
+
   const data = getData();
-
-  if (!(data.users.some(user => user.uId === authUserId))) {
-    return { error: 'authUserId is invalid.' };
-  }
-
-  if (!(data.users.find(user => user.uId === uId))) {
-    return { error: 'uId does not refer to a valid user.' };
-  }
-
   const user = data.users.find(user => user.uId === uId);
   const privateUser = removePassword(user);
 
@@ -83,7 +77,7 @@ export function userProfileSetNameV1 (token: string, nameFirst: string, nameLast
  * @returns {Object} {} - If user successfully updates emails.
  * @returns {Object} { error: 'Invalid Email Address.' } - If email is invalid.
  * @returns {Object} { error: 'Email Already in Use.' } - If email to be changed to is already in user by another user.
- * @ returns {Object} { error: 'Invalid Session Id.' } - If token is invalid.
+ * @returns {Object} { error: 'Invalid Session Id.' } - If token is invalid.
  */
 export function userProfileSetEmailV1 (token: string, email: string): Record<string, never> | Error {
   if (!validator.isEmail(email)) return { error: 'Invalid Email Address.' };
