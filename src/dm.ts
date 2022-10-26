@@ -193,15 +193,16 @@ export function dmMessagesV1(token: string, dmId: number, start: number): Messag
   let end = 0;
   if (data.dms[dmIndex].messages.length + start > 50) {
     end = start + 50;
-  } else {
-    if (data.dms[dmIndex].messages.length !== 0) {
-      end -= 1;
-    }
+  } else if (data.dms[dmIndex].messages.length !== 0) {
+    end = data.dms[dmIndex].messages.length;
+    end -= 1;
   }
 
   const messagesArray = [];
-  for (let i = start; i < end - start; i++) {
-    messagesArray.push(data.dms[dmIndex].messages[i]);
+  if (end !== 0) {
+    for (let i = start; i <= end; i++) {
+      messagesArray.push(data.dms[dmIndex].messages[i]);
+    }
   }
 
   messagesArray.sort(function(a, b) {
