@@ -149,9 +149,9 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
  * Checks if a message is in a channel
  *
  * @param messageId - the id of the message to be checked
- * @returns boolean | number - returns the index of the channel if present or false if not
+ * @returns number - returns the index of the channel if present or -1 if not
  */
- export function checkMessageToChannel(messageId : number) : boolean | number {
+ export function checkMessageToChannel(messageId : number) : number {
   const data = getData();
   for (let channel = 0; channel < data.channels.length; channel++) {
     for (const message of data.channels[channel].messages) {
@@ -160,16 +160,16 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
       }
     }
   }
-  return false;
+  return -1;
 }
 
 /**
  * Checks if a message is in a dm
  *
  * @param messageId - the id of the message to be checked
- * @returns boolean | number - returns the index of the dm if present or false if not
+ * @returns number - returns the index of the dm if present or -1 if not
  */
- export function checkMessageToDm(messageId : number) : boolean | number {
+ export function checkMessageToDm(messageId : number) : number {
   const data = getData();
   for (let dm = 0; dm < data.dms.length; dm++) {
     for (const message of data.dms[dm].messages) {
@@ -178,7 +178,7 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
       }
     }
   }
-  return false;
+  return -1;
 }
 
 /**
@@ -191,16 +191,16 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
  export function checkUserToMessage(authUserId : number, messageId : number) : boolean {
   const data = getData();
   let checkChannel = checkMessageToChannel(messageId);
-  if (checkChannel === false) {
+  if (checkChannel === -1) {
     let checkDm = checkMessageToDm(messageId);
-    if (checkDm === false) {
+    if (checkDm === -1) {
       return false;
     } else {
       const dm_position = data.dms[checkDm].messages.findIndex(message => message.messageId === messageId);
       if (data.dms[checkDm].messages[dm_position].uId === authUserId) {
         return true;
       } else {
-        if (data.dms[checkDm].owner === authUserId) {
+        if (data.dms[checkDm].owner.uId === authUserId) {
           return true;
         } else {
           return false;
@@ -220,8 +220,6 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
       return false;
     }
   }
-  const position = data.dms.findIndex(dm => dm.dmId === dmId);
-  return data.dms[position].members.some(user => user.uId === authUserId);
 }
 
 /**

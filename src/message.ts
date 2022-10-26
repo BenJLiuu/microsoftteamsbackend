@@ -80,7 +80,7 @@ export function messageEditV1(token: string, messageId: number, message: string)
   const data = getData();
 
   const isChannel = checkMessageToChannel(messageId);
-  if (isChannel === false) {
+  if (isChannel === -1) {
     const isDm = checkMessageToDm(messageId);
     const dm_position = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
     if (message === '') {
@@ -121,7 +121,7 @@ export function messageRemoveV1(token: string, messageId: number): Record<string
   const data = getData();
 
   const isChannel = checkMessageToChannel(messageId);
-  if (isChannel === false) {
+  if (isChannel === -1) {
     const isDm = checkMessageToDm(messageId);
     const dm_position = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
     data.dms[isDm].messages.splice(dm_position, 1);
