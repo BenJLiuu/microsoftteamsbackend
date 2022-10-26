@@ -44,6 +44,10 @@ function requestChannelMessages(token: string, channelId: number, start: number)
   return requestHelper('GET', '/channel/messages/v2', { token, channelId, start });
 }
 
+function requestMessageSend(token: string, channelId: number, message: string) {
+  return requestHelper('POST', '/message/send/V1', { token, channelId, message });
+}
+
 function requestChannelInvite(token: string, channelId: number, uId: number) {
   return requestHelper('POST', '/channel/invite/v2', { token, channelId, uId });
 }
@@ -102,25 +106,25 @@ describe('ChannelMessages', () => {
     });
   });
 
-  /* These tests utilise the channelSendMessage helper function to test the
-  /* functionality of requestChannelMessages. This is white-box testing, so it has
-  /* been commented out, but if the helper function and these tests are uncommented
-  /* they will pass.
+  /* These tests utilise the requestMessageSend helper function to test the
+   functionality of requestChannelMessages. This is white-box testing, so it has
+   been commented out, but if the helper function and these tests are uncommented
+   they will pass. */
 
   test('Authorised user is invalid', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-    channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-    expect(requestChannelMessages(user1.authUserId + 1, channel1.channelId, 0)).toStrictEqual({error: 'Invalid Authorised User Id.'});
+    requestMessageSend(user1.token, channel1.channelId, 'hello');
+    expect(requestChannelMessages(user1.token + 'a', channel1.channelId, 0)).toStrictEqual({ error: 'Invalid Session.' });
   });
 
   test('Success, less than 50 messages.', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-    const message1 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-    const message2 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-    const message3 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-    expect(requestChannelMessages(user1.authUserId, channel1.channelId, 0)).toEqual({
+    requestMessageSend(user1.token, channel1.channelId, 'hello');
+    requestMessageSend(user1.token, channel1.channelId, 'hello');
+    requestMessageSend(user1.token, channel1.channelId, 'hello');
+    expect(requestChannelMessages(user1.token, channel1.channelId, 0)).toEqual({
       messages: [
         {
           messageId: expect.any(Number),
@@ -150,16 +154,15 @@ describe('ChannelMessages', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     for (let i = 0; i < 60; i++) {
-      const message = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
+      requestMessageSend(user1.token, channel1.channelId, 'hello');
     }
 
-    expect(requestChannelMessages(user1.authUserId, channel1.channelId, 5)).toEqual({
+    expect(requestChannelMessages(user1.token, channel1.channelId, 5)).toEqual({
       messages: expect.any(Array),
       start: 5,
       end: 55,
     });
   });
-  */
 });
 
 // requestChannelInvite tests

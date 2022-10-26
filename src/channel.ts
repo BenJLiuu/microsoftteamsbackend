@@ -21,24 +21,25 @@ export function channelMessagesV2(token: string, channelId: number, start: numbe
   if (!validToken(token)) return { error: 'Invalid Session.' };
 
   const data = getData();
-  const index = data.channels.findIndex(channel => channel.channelId === channelId);
-  if (start > data.channels[index].messages.length) return { error: 'Start is greater than total messages' };
+  const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  if (start > data.channels[channelIndex].messages.length) return { error: 'Start is greater than total messages' };
 
   const authUser = getUserIdFromToken(token);
   if (!checkUserIdtoChannel(authUser, channelId)) return { error: 'Authorised user is not a channel member' };
 
   let end = 0;
-  if (data.channels[index].messages.length + start > 50) {
+  if (data.channels[channelIndex].messages.length + start > 50) {
     end = start + 50;
-  } else {
-    if (data.channels[index].messages.length !== 0) {
-      end -= 1;
-    }
+  } else if (data.channels[channelIndex].messages.length !== 0) {
+    end = data.channels[channelIndex].messages.length;
+    end -= 1;
   }
 
   const messagesArray = [];
-  for (let i = start; i < end - start; i++) {
-    messagesArray.push(data.channels[index].messages[i]);
+  if (end !== 0) {
+    for (let i = start; i <= end; i++) {
+      messagesArray.push(data.channels[channelIndex].messages[i]);
+    }
   }
 
   messagesArray.sort(function(a, b) {
