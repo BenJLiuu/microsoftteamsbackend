@@ -105,14 +105,22 @@ export function channelLeaveV1(token: string, channelId: number): Record<string,
   const userIndex = data.users.findIndex(user => user.uId === UserId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
   const privateUser = removePassword(data.users[userIndex]);
-  for (let i = 0; i < data.channels[channelIndex].allMembers.length; i++) {
-    const privateIndexAll = data.channels.findIndex(channel => channel.allMembers[i] === privateUser);
-    data.channels[channelIndex].allMembers.splice(privateIndexAll, 1);
-  }
+
+  let owner = false;
   for (let i = 0; i < data.channels[channelIndex].ownerMembers.length; i++) {
-    const privateIndexOwner = data.channels.findIndex(channel => channel.ownerMembers[i] === privateUser);
-    data.channels[channelIndex].ownerMembers.splice(privateIndexOwner, 1);
+    if (UserId === data.channels[channelIndex].ownerMembers[i].uId) {
+      owner = true;
+    }
   }
+  const privateIndexAll = data.channels[channelIndex].allMembers.findIndex(channel => channel.uId === UserId);
+  data.channels[channelIndex].allMembers.splice(privateIndexAll, 1);
+  
+  if (owner === true) {
+    const privateIndexOwner = data.channels[channelIndex].ownerMembers.findIndex(channel => channel.uId === UserId);
+    data.channels[channelIndex].ownerMembers.splice(privateIndexOwner, 1);
+  
+  }
+   
 
   setData(data);
   return {};

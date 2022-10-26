@@ -627,5 +627,113 @@ describe('requestChannelJoin', () => {
 
       expect(requestChannelLeave('test', channel1.channelId)).toStrictEqual({ error: expect.any(String) });
     });
+
+  // Sucessful Tests
+    test('Successful Leave', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+
+    requestChannelJoin(user2.token, channel1.channelId);
+
+    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual(
+
+      {
+
+        name: 'channel1',
+
+        isPublic: true,
+
+        ownerMembers: [{
+
+          uId: user1.authUserId,
+
+          nameFirst: 'John',
+
+          nameLast: 'Smith',
+
+          email: 'johnS@email.com',
+
+          handleStr: 'johnsmith',
+
+        }],
+
+        allMembers: [{
+
+          uId: user1.authUserId,
+
+          nameFirst: 'John',
+
+          nameLast: 'Smith',
+
+          email: 'johnS@email.com',
+
+          handleStr: 'johnsmith',
+
+        },
+
+        {
+
+          uId: user2.authUserId,
+
+          nameFirst: 'Alice',
+
+          nameLast: 'Person',
+
+          email: 'aliceP@fmail.au',
+
+          handleStr: 'aliceperson',
+
+        }],
+      });
+
+      requestChannelLeave(user2.token, channel1.channelId);
+
+      expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual(
+
+        {
+  
+          name: 'channel1',
+  
+          isPublic: true,
+  
+          ownerMembers: [{
+  
+            uId: user1.authUserId,
+  
+            nameFirst: 'John',
+  
+            nameLast: 'Smith',
+  
+            email: 'johnS@email.com',
+  
+            handleStr: 'johnsmith',
+  
+          }],
+  
+          allMembers: [{
+  
+            uId: user1.authUserId,
+  
+            nameFirst: 'John',
+  
+            nameLast: 'Smith',
+  
+            email: 'johnS@email.com',
+  
+            handleStr: 'johnsmith',
+  
+          }],
+        });
+
+
+
+  });
+
+      
+
+    
   });
 });
