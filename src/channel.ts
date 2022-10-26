@@ -30,14 +30,13 @@ export function channelMessagesV2(token: string, channelId: number, start: numbe
   let end = 0;
   if (data.channels[channelIndex].messages.length + start > 50) {
     end = start + 50;
-  } else if (data.channels[channelIndex].messages.length !== 0) {
+  } else {
     end = data.channels[channelIndex].messages.length;
-    end -= 1;
   }
 
   const messagesArray = [];
   if (end !== 0) {
-    for (let i = start; i <= end; i++) {
+    for (let i = start; i < end; i++) {
       messagesArray.push(data.channels[channelIndex].messages[i]);
     }
   }
@@ -49,7 +48,7 @@ export function channelMessagesV2(token: string, channelId: number, start: numbe
   return {
     messages: messagesArray,
     start: start,
-    end: end,
+    end: end - 1,
   };
 }
 
