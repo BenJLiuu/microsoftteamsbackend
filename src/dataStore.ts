@@ -2,6 +2,7 @@ import { Data } from './objects';
 import fs from 'fs';
 
 let data: Data = {
+  nextMessage: 1,
   users: [],
   channels: [],
   sessions: [],

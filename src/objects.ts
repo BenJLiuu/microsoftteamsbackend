@@ -94,6 +94,7 @@ export type DmDetails = {
 };
 
 export type Data = {
+  nextMessage: number,
   users: User[],
   channels: Channel[],
   sessions: Session[],
@@ -112,3 +113,5 @@ export type Token = {
 export type messageId = {
   messageId: number;
 };
+
+export type Empty = {};
