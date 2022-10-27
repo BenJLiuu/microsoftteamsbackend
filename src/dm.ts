@@ -1,19 +1,28 @@
 import { getData, setData } from './dataStore';
-import { validUserId, validToken, getUserIdFromToken, gethandleStrFromId, validDmId, checkUserIdtoDm, removePassword } from './helper';
-import { Error, DmId, DmList, DmDetails, MessageList, Dm } from './objects';
+import { Empty, Error, DmId, Start, Token, UIds } from './interfaceTypes';
+import { DmDetails, MessageList, DMsObj, PrivateDm } from './internalTypes';
+import {
+  validUserId,
+  validToken,
+  getUserIdFromToken,
+  gethandleStrFromId,
+  validDmId,
+  checkUserIdtoDm,
+  getPublicUser
+} from './helper';
 
 /**
   * Creates and stores a new DM.
   *
-  * @param {string} token - Token of user creating the dm.
-  * @param {array} uIds - Array of user ids, reffering to users added to the dm.
+  * @param {Token} token - Token of user creating the dm.
+  * @param {UIds} uIds - Array of user ids, reffering to users added to the dm.
   *
-  * @returns {error: 'Invalid User Id.'}  - any uId in arrray does not correspond to an existing user.
-  * @returns {error: 'Duplicate User Id found.'} - duplicate user id found in uIds array.
-  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
-  * @returns {integer} dmId - if creation is successfull.
+  * @returns {Error} {error: 'Invalid User Id.'}  - any uId in arrray does not correspond to an existing user.
+  * @returns {Error} {error: 'Duplicate User Id found.'} - duplicate user id found in uIds array.
+  * @returns {Error} {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {{dmId: DmId}} {dmId: number} - if creation is successfull.
 */
-export function dmCreateV1(token: string, uIds: Array<number>): DmId | Error {
+export function dmCreateV1(token: Token, uIds: UIds): {dmId: DmId} | Error {
   if (!validToken(token)) return { error: 'Invalid Token.' };
   for (const i of uIds) {
     if (!validUserId(i)) return { error: 'Invalid User Id given.' };
@@ -26,10 +35,10 @@ export function dmCreateV1(token: string, uIds: Array<number>): DmId | Error {
   const members = [];
 
   names.push(gethandleStrFromId(authUserId));
-  members.push(removePassword(data.users.find(user => user.uId === authUserId)));
+  members.push(getPublicUser(data.users.find(user => user.uId === authUserId)));
   if (uIds.length !== 0) {
     for (const uId of uIds) {
-      members.push(removePassword(data.users.find(user => user.uId === uId)));
+      members.push(getPublicUser(data.users.find(user => user.uId === uId)));
       names.push(gethandleStrFromId(uId));
     }
   }
@@ -42,11 +51,11 @@ export function dmCreateV1(token: string, uIds: Array<number>): DmId | Error {
   let newdmId = 0;
   while (data.dms.some(c => c.dmId === newdmId)) newdmId++;
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
-  const newDm: Dm = {
+  const newDm: PrivateDm = {
     dmId: newdmId,
     name: name,
     members: members,
-    owner: removePassword(data.users[ownerIndex]),
+    owner: getPublicUser(data.users[ownerIndex]),
     messages: []
   };
 
@@ -59,12 +68,12 @@ export function dmCreateV1(token: string, uIds: Array<number>): DmId | Error {
 /**
   * Lists all DMs that the user is a member of.
   *
-  * @param {string} token - Token of user checking each dm.
+  * @param {Token} token - Token of user checking each dm.
   *
-  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
-  * @returns {array} dms - array of objects containing information about each dm.
+  * @returns {Error} {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {DMsObj} dms - array of objects containing information about each dm.
 */
-export function dmListV1(token: string): DmList | Error {
+export function dmListV1(token: Token): DMsObj | Error {
   if (!validToken(token)) return { error: 'Invalid Token.' };
 
   const data = getData();
@@ -85,15 +94,15 @@ export function dmListV1(token: string): DmList | Error {
 /**
   * Removes the user from a chosen DM.
   *
-  * @param {string} token - Token of user leaving the dm.
-  * @param {number} dmId - Id of the DM that the user wants to leave.
+  * @param {Token} token - Token of user leaving the dm.
+  * @param {DmId} dmId - Id of the DM that the user wants to leave.
   *
-  * @returns {error: 'Invalid DM Id.'}  - DM Id does not correspond to an existing DM.
-  * @returns {error: 'Authorised user is not a member of the DM.'} - The user is not a member of the DM.
-  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
-  * @returns {} - DM has been succesfully left.
+  * @returns {Error} {error: 'Invalid DM Id.'}  - DM Id does not correspond to an existing DM.
+  * @returns {Error} {error: 'Authorised user is not a member of the DM.'} - The user is not a member of the DM.
+  * @returns {Error} {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {Empty} {} - DM has been succesfully left.
 */
-export function dmLeaveV1(token: string, dmId: number): Record<string, never> | Error {
+export function dmLeaveV1(token: Token, dmId: DmId): Empty | Error {
   if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
 
@@ -113,15 +122,15 @@ export function dmLeaveV1(token: string, dmId: number): Record<string, never> | 
 /**
   * Deletes a DM entirely.
   *
-  * @param {string} token - Token of user deleting the dm.
-  * @param {number} dmId - Id of the DM that the user wants to delete.
+  * @param {Token} token - Token of user deleting the dm.
+  * @param {DmId} dmId - Id of the DM that the user wants to delete.
   *
-  * @returns {error: 'Invalid DM Id.'}  - DM Id does not correspond to an existing DM.
-  * @returns {error: 'Authorised user is not a member of the DM.'} - The user is not a member of the DM.
-  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
-  * @returns {} - DM has been succesfully left.
+  * @returns {Error} {error: 'Invalid DM Id.'}  - DM Id does not correspond to an existing DM.
+  * @returns {Error} {error: 'Authorised user is not a member of the DM.'} - The user is not a member of the DM.
+  * @returns {Error} {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {Empty} {} - DM has been succesfully left.
 */
-export function dmRemoveV1(token: string, dmId: number): Record<string, never> | Error {
+export function dmRemoveV1(token: Token, dmId: DmId): Empty | Error {
   if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
 
@@ -141,15 +150,15 @@ export function dmRemoveV1(token: string, dmId: number): Record<string, never> |
 /**
   * Given a DM, returns its name and members.
   *
-  * @param {string} token - Token of user deleting the dm.
-  * @param {number} dmId - Id of the DM that the user wants to delete.
+  * @param {Token} token - Token of user deleting the dm.
+  * @param {DmId} dmId - Id of the DM that the user wants to delete.
   *
-  * @returns {error: 'Invalid DM Id.'}  - DM Id does not correspond to an existing DM.
-  * @returns {error: 'Authorised user is not a member of the DM.'} - The user is not a member of the DM.
-  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
-  * @returns { DmDetails } - Dm exists and user is a valid candidate to view its details.
+  * @returns {Error} {error: 'Invalid DM Id.'}  - DM Id does not correspond to an existing DM.
+  * @returns {Error} {error: 'Authorised user is not a member of the DM.'} - The user is not a member of the DM.
+  * @returns {Error} {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {DmDetails} DmDetails if Dm exists and user is a valid candidate to view its details.
 */
-export function dmDetailsV1(token: string, dmId: number): DmDetails | Error {
+export function dmDetailsV1(token: Token, dmId: DmId): DmDetails | Error {
   if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
 
@@ -169,17 +178,17 @@ export function dmDetailsV1(token: string, dmId: number): DmDetails | Error {
 /**
   * Views 50 or less messages in a given Dm
   *
-  * @param {string} token - Token of user deleting the dm.
-  * @param {number} dmId - Id of the DM that the user wants to delete.
-  * @param {number} start - offset of messages from the most recent to begin displaying from
+  * @param {Token} token - Token of user deleting the dm.
+  * @param {DmId} dmId - Id of the DM that the user wants to delete.
+  * @param {Start} start - offset of messages from the most recent to begin displaying from
   *
-  * @returns {error: 'Invalid DM Id.'}  - DM Id does not correspond to an existing DM.
-  * @returns {error: 'Authorised user is not a member of the DM.'} - The user is not a member of the DM.
-  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
-  * @returns {error: 'Start is greater than total messages'} - start offset is higher than total messages.
-  * @returns {MessageList} - DM messages are returned and valid.
+  * @returns {Error} {error: 'Invalid DM Id.'}  - DM Id does not correspond to an existing DM.
+  * @returns {Error} {error: 'Authorised user is not a member of the DM.'} - The user is not a member of the DM.
+  * @returns {Error} {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {Error} {error: 'Start is greater than total messages'} - start offset is higher than total messages.
+  * @returns {MessageList} DM messages if valid.
 */
-export function dmMessagesV1(token: string, dmId: number, start: number): MessageList | Error {
+export function dmMessagesV1(token: Token, dmId: DmId, start: Start): MessageList | Error {
   if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
 
@@ -194,14 +203,17 @@ export function dmMessagesV1(token: string, dmId: number, start: number): Messag
   if (data.dms[dmIndex].messages.length + start > 50) {
     end = start + 50;
   } else {
-    if (data.dms[dmIndex].messages.length !== 0) {
-      end -= 1;
-    }
+    end = data.dms[dmIndex].messages.length;
   }
 
   const messagesArray = [];
-  for (let i = start; i < end - start; i++) {
-    messagesArray.push(data.dms[dmIndex].messages[i]);
+  if (end !== 0) {
+    for (let i = start; i < end; i++) {
+      messagesArray.push(data.dms[dmIndex].messages[i]);
+    }
+    if (end < 50) {
+      end = -1;
+    }
   }
 
   messagesArray.sort(function(a, b) {

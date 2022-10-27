@@ -1,68 +1,10 @@
-import request from 'sync-request';
+import {
+  requestAuthRegister, requestClear, requestChannelsCreate, requestChannelDetails,
+  requestMessageSend, requestChannelInvite, requestChannelJoin, requestChannelLeave,
+  requestChannelRemoveOwner, requestChannelAddOwner, requestChannelMessages
+} from './httpHelper';
 
-import { HttpVerb } from 'sync-request';
-
-import { port, url } from './../config.json';
-
-const SERVER_URL = `${url}:${port}`;
-
-function requestHelper(method: HttpVerb, path: string, payload: object) {
-  let qs = {};
-
-  let json = {};
-
-  if (['GET', 'DELETE'].includes(method)) {
-    qs = payload;
-  } else {
-    // PUT/POST
-
-    json = payload;
-  }
-
-  const res = request(method, SERVER_URL + path, { qs, json });
-
-  return JSON.parse(res.getBody('utf-8'));
-}
-
-function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
-  return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
-}
-
-function requestClear() {
-  return requestHelper('DELETE', '/clear/v1', {});
-}
-
-function requestChannelsCreate(token: string, name: string, isPublic: boolean) {
-  return requestHelper('POST', '/channels/create/v2', { token, name, isPublic });
-}
-
-function requestChannelDetails(token: string, channelId: number) {
-  return requestHelper('GET', '/channel/details/v2', { token, channelId });
-}
-
-function requestChannelMessages(token: string, channelId: number, start: number) {
-  return requestHelper('GET', '/channel/messages/v2', { token, channelId, start });
-}
-
-function requestChannelInvite(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/invite/v2', { token, channelId, uId });
-}
-
-function requestChannelJoin(token: string, channelId: number) {
-  return requestHelper('POST', '/channel/join/v2', { token, channelId });
-}
-
-function requestChannelRemoveOwner(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/removeowner/v1', { token, channelId, uId });
-}
-
-function requestChannelAddOwner(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/removeowner/v1', { token, channelId, uId });
-}
-
-function requestChannelLeave(token: string, channelId: number) {
-  return requestHelper('POST', '/channel/leave/v1', { token, channelId });
-}
+import { getUserIdFromToken } from './../helper';
 
 describe('ChannelMessages', () => {
   beforeEach(() => {
@@ -102,25 +44,25 @@ describe('ChannelMessages', () => {
     });
   });
 
-  /* These tests utilise the channelSendMessage helper function to test the
-  /* functionality of requestChannelMessages. This is white-box testing, so it has
-  /* been commented out, but if the helper function and these tests are uncommented
-  /* they will pass.
+  /* These tests utilise the requestMessageSend helper function to test the
+   functionality of requestChannelMessages. This is white-box testing, so it has
+   been commented out, but if the helper function and these tests are uncommented
+   they will pass. */
 
   test('Authorised user is invalid', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-    channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-    expect(requestChannelMessages(user1.authUserId + 1, channel1.channelId, 0)).toStrictEqual({error: 'Invalid Authorised User Id.'});
+    requestMessageSend(user1.token, channel1.channelId, 'hello');
+    expect(requestChannelMessages(user1.token + 'a', channel1.channelId, 0)).toStrictEqual({ error: 'Invalid Session.' });
   });
 
   test('Success, less than 50 messages.', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-    const message1 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-    const message2 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-    const message3 = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
-    expect(requestChannelMessages(user1.authUserId, channel1.channelId, 0)).toEqual({
+    requestMessageSend(user1.token, channel1.channelId, 'hello');
+    requestMessageSend(user1.token, channel1.channelId, 'hello');
+    requestMessageSend(user1.token, channel1.channelId, 'hello');
+    expect(requestChannelMessages(user1.token, channel1.channelId, 0)).toEqual({
       messages: [
         {
           messageId: expect.any(Number),
@@ -142,7 +84,7 @@ describe('ChannelMessages', () => {
         },
       ],
       start: 0,
-      end: 2,
+      end: -1,
     });
   });
 
@@ -150,16 +92,15 @@ describe('ChannelMessages', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     for (let i = 0; i < 60; i++) {
-      const message = channelSendMessageV1(user1.authUserId, channel1.channelId, 'hello');
+      requestMessageSend(user1.token, channel1.channelId, 'hello' + i);
     }
-
-    expect(requestChannelMessages(user1.authUserId, channel1.channelId, 5)).toEqual({
+    expect(requestChannelMessages(user1.token, channel1.channelId, 5)).toEqual({
       messages: expect.any(Array),
       start: 5,
       end: 55,
     });
+    expect(requestChannelMessages(user1.token, channel1.channelId, 5).messages).toHaveLength(50);
   });
-  */
 });
 
 // requestChannelInvite tests
@@ -377,7 +318,7 @@ describe('requestChannelJoin', () => {
 
     const channel1 = requestChannelsCreate(user1.token, 'example', false);
 
-    expect(requestChannelJoin(user2.token, channel1.channelId)).toStrictEqual({ error: expect.any(String) });
+    expect(requestChannelJoin(user2.token, channel1.channelId)).toStrictEqual({ error: 'You do not have access to this channel.' });
   });
 
   test('Invalid Token', () => {
@@ -531,9 +472,72 @@ describe('requestChannelJoin', () => {
 
       expect(requestChannelRemoveOwner('test', channel1.channelId, user2.uId)).toStrictEqual({ error: expect.any(String) });
     });
-  });
+    // Sucessful channelRemoveOwner test
+    test('Sucessfully removed owner', () => {
+      const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+      const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+      const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-  // channelAddOwner tests
+      requestChannelJoin(user2.token, channel1.channelId);
+
+      const user2AuthUId = getUserIdFromToken(user2.token);
+      requestChannelAddOwner(user1.token, channel1.channelId, user2AuthUId);
+      const userAuthUId = getUserIdFromToken(user1.token);
+      requestChannelRemoveOwner(user2.token, channel1.channelId, userAuthUId);
+
+      expect(requestChannelDetails(user2.token, channel1.channelId)).toStrictEqual(
+
+        {
+
+          name: 'channel1',
+
+          isPublic: true,
+
+          ownerMembers: [{
+
+            uId: user2.authUserId,
+
+            nameFirst: 'Alice',
+
+            nameLast: 'Person',
+
+            email: 'aliceP@fmail.au',
+
+            handleStr: 'aliceperson',
+
+          }],
+
+          allMembers: [{
+
+            uId: user1.authUserId,
+
+            nameFirst: 'John',
+
+            nameLast: 'Smith',
+
+            email: 'johnS@email.com',
+
+            handleStr: 'johnsmith',
+
+          },
+
+          {
+
+            uId: user2.authUserId,
+
+            nameFirst: 'Alice',
+
+            nameLast: 'Person',
+
+            email: 'aliceP@fmail.au',
+
+            handleStr: 'aliceperson',
+
+          }]
+        });
+    });
+  });
+  // channelAddOwner error tests
   describe('requestChannelAddOwner Tests', () => {
     beforeEach(() => {
       requestClear();
@@ -599,10 +603,89 @@ describe('requestChannelJoin', () => {
 
       expect(requestChannelAddOwner('test', channel1.channelId, user2.uId)).toStrictEqual({ error: expect.any(String) });
     });
+    // Sucessful ChannelAddOwner test
+
+    test('Sucessfully added owner', () => {
+      const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+
+      const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+
+      const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+
+      requestChannelJoin(user2.token, channel1.channelId);
+
+      const authUId = getUserIdFromToken(user2.token);
+
+      requestChannelAddOwner(user1.token, channel1.channelId, authUId);
+
+      expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual(
+
+        {
+
+          name: 'channel1',
+
+          isPublic: true,
+
+          ownerMembers: [{
+
+            uId: user1.authUserId,
+
+            nameFirst: 'John',
+
+            nameLast: 'Smith',
+
+            email: 'johnS@email.com',
+
+            handleStr: 'johnsmith',
+
+          },
+          {
+
+            uId: user2.authUserId,
+
+            nameFirst: 'Alice',
+
+            nameLast: 'Person',
+
+            email: 'aliceP@fmail.au',
+
+            handleStr: 'aliceperson',
+
+          }],
+
+          allMembers: [{
+
+            uId: user1.authUserId,
+
+            nameFirst: 'John',
+
+            nameLast: 'Smith',
+
+            email: 'johnS@email.com',
+
+            handleStr: 'johnsmith',
+
+          },
+
+          {
+
+            uId: user2.authUserId,
+
+            nameFirst: 'Alice',
+
+            nameLast: 'Person',
+
+            email: 'aliceP@fmail.au',
+
+            handleStr: 'aliceperson',
+
+          }]
+        });
+    });
   });
 
-  // channelLeavetests
-  describe('requestChannelAddOwner Tests', () => {
+  // channelLeave error tests
+  describe('requestChannelLeave Tests', () => {
     beforeEach(() => {
       requestClear();
     });
@@ -628,112 +711,54 @@ describe('requestChannelJoin', () => {
       expect(requestChannelLeave('test', channel1.channelId)).toStrictEqual({ error: expect.any(String) });
     });
 
-  // Sucessful Tests
+    // Sucessful channelLeave test
     test('Successful Leave', () => {
-    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+      const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
 
-    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+      const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
 
-    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+      const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    requestChannelJoin(user2.token, channel1.channelId);
-
-    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual(
-
-      {
-
-        name: 'channel1',
-
-        isPublic: true,
-
-        ownerMembers: [{
-
-          uId: user1.authUserId,
-
-          nameFirst: 'John',
-
-          nameLast: 'Smith',
-
-          email: 'johnS@email.com',
-
-          handleStr: 'johnsmith',
-
-        }],
-
-        allMembers: [{
-
-          uId: user1.authUserId,
-
-          nameFirst: 'John',
-
-          nameLast: 'Smith',
-
-          email: 'johnS@email.com',
-
-          handleStr: 'johnsmith',
-
-        },
-
-        {
-
-          uId: user2.authUserId,
-
-          nameFirst: 'Alice',
-
-          nameLast: 'Person',
-
-          email: 'aliceP@fmail.au',
-
-          handleStr: 'aliceperson',
-
-        }],
-      });
+      requestChannelJoin(user2.token, channel1.channelId);
 
       requestChannelLeave(user2.token, channel1.channelId);
 
       expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual(
 
         {
-  
+
           name: 'channel1',
-  
+
           isPublic: true,
-  
+
           ownerMembers: [{
-  
+
             uId: user1.authUserId,
-  
+
             nameFirst: 'John',
-  
+
             nameLast: 'Smith',
-  
+
             email: 'johnS@email.com',
-  
+
             handleStr: 'johnsmith',
-  
+
           }],
-  
+
           allMembers: [{
-  
+
             uId: user1.authUserId,
-  
+
             nameFirst: 'John',
-  
+
             nameLast: 'Smith',
-  
+
             email: 'johnS@email.com',
-  
+
             handleStr: 'johnsmith',
-  
+
           }],
         });
-
-
-
-  });
-
-      
-
-    
+    });
   });
 });

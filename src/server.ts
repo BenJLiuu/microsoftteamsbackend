@@ -3,14 +3,13 @@ import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 
-import { echo } from './echo';
 import { channelsCreateV2, channelsListV2, channelsListAllV2 } from './channels';
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2, channelLeaveV1, channelRemoveOwnerV1, channelAddOwnerV1 } from './channel';
 import { clearV1 } from './other';
 import { userProfileV2, usersAllV1, userProfileSetNameV1, userProfileSetEmailV1, userProfileSetHandleV1 } from './users';
 import { dmCreateV1, dmListV1, dmLeaveV1, dmMessagesV1, dmDetailsV1, dmRemoveV1 } from './dm';
-import { messageSendDmV1, messageSendV1 } from './message';
+import { messageSendDmV1, messageSendV1, messageEditV1, messageRemoveV1 } from './message';
 
 // Set up web app
 const app = express();
@@ -23,16 +22,6 @@ app.use(morgan('dev'));
 
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || 'localhost';
-
-// Example get request
-app.get('/echo', (req: Request, res: Response, next) => {
-  try {
-    const data = req.query.echo as string;
-    return res.json(echo(data));
-  } catch (err) {
-    next(err);
-  }
-});
 
 app.post('/auth/login/v2', (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -186,6 +175,15 @@ app.post('/message/sendDm/V1', (req: Request, res: Response) => {
 app.post('/message/send/V1', (req: Request, res: Response) => {
   const { token, channelId, message } = req.body;
   res.json(messageSendV1(token, channelId, message));
+});
+app.put('/message/edit/V1', (req: Request, res: Response) => {
+  const { token, messageId, message } = req.body;
+  res.json(messageEditV1(token, messageId, message));
+});
+app.delete('/message/remove/V1', (req: Request, res: Response) => {
+  const token = req.query.token as string;
+  const messageId = req.query.messageId as string;
+  res.json(messageRemoveV1(token, messageId ? parseInt(messageId) : undefined));
 });
 // start server
 const server = app.listen(PORT, HOST, () => {

@@ -1,20 +1,22 @@
 import { getData, setData } from './dataStore';
-import { Session, Error } from './objects';
+import { Empty, Email, Password, Name, Token, Error } from './interfaceTypes';
+import { Session } from './internalTypes';
+
 import validator from 'validator';
-import { generateSession } from './helper';
+import { generateUId, generateSession, generateHandleStr } from './helper';
 
 /**
   * Logs in a user and returns their user Id.
   *
-  * @param {string} email - the users' email
-  * @param {string} password - the users' password, unencrypted
+  * @param {Email} email - the users' email
+  * @param {Password} password - the users' password, unencrypted
   * ...
   *
-  * @returns {Object} {authUserId, token} - If login is successful
-  * @returns {Object} {error : 'Incorrect Password.'} - If email is found, but password is incorrect
-  * @returns {Object} {error : 'Email Not Found.'} - If email was not found.
+  * @returns {Session} {authUserId, token} - If login is successful
+  * @returns {Error} {error : 'Incorrect Password.'} - If email is found, but password is incorrect
+  * @returns {Error} {error : 'Email Not Found.'} - If email was not found.
 */
-function authLoginV2(email: string, password: string): Session | Error {
+export function authLoginV2(email: Email, password: Password): Session | Error {
   const data = getData();
   for (const user of data.users) {
     if (user.email === email) {
@@ -31,23 +33,22 @@ function authLoginV2(email: string, password: string): Session | Error {
   * Registers a user and returns their new user Id.
   * Also generates a unique user handle.
   *
-  * @param {string} email - the user's email address
-  * @param {string} password - the user's password
-  * @param {string} nameFirst - the user's first name
-  * @param {string} nameLast - the user's last name
+  * @param {Email} email - the user's email address
+  * @param {Password} password - the user's password
+  * @param {Name} nameFirst - the user's first name
+  * @param {Name} nameLast - the user's last name
   *
-  * @returns {Object} {authUserId: integer} - if registration is successfull
-  * @returns {Object} {error: 'Invalid Email Address.'} - if email is invalid (fails validator.isEmail)
-  * @returns {Object} {error: 'Email Already in Use.'} - if email is already in data
-  * @returns {Object} {error: 'Password too Short.'} - if password is <6 characters
-  * @returns {Object} {error: Invalid First Name.'} - if first name is too short/long
-  * @returns {Object} {error: Invalid Last Name.'} - if last name is too short/long
+  * @returns {Session} {authUserId, token} - if registration is successfull
+  * @returns {Error} {error: 'Invalid Email Address.'} - if email is invalid (fails validator.isEmail)
+  * @returns {Error} {error: 'Email Already in Use.'} - if email is already in data
+  * @returns {Error} {error: 'Password too Short.'} - if password is <6 characters
+  * @returns {Error} {error: Invalid First Name.'} - if first name is too short/long
+  * @returns {Error} {error: Invalid Last Name.'} - if last name is too short/long
 */
+export function authRegisterV2(email: Email, password: Password, nameFirst: Name, nameLast: Name): Session | Error {
+  let data = getData();
 
-function authRegisterV2(email: string, password: string, nameFirst: string, nameLast: string): Session | Error {
-  const data = getData();
-
-  if (validator.isEmail(email) === false) return { error: 'Invalid Email Address.' };
+  if (!validator.isEmail(email)) return { error: 'Invalid Email Address.' };
   if (data.users.some(user => user.email === email)) return { error: 'Email Already in Use.' };
 
   if (password.length < 6) return { error: 'Password too Short.' };
@@ -58,39 +59,19 @@ function authRegisterV2(email: string, password: string, nameFirst: string, name
   if (/[^a-zA-Z0-9]/.test(nameFirst)) return { error: 'Invalid First Name.' };
   if (/[^a-zA-Z0-9]/.test(nameLast)) return { error: 'Invalid Last Name.' };
 
-  let newUId = 0;
-  while (data.users.some(user => user.uId === newUId)) newUId++;
+  const newUId = generateUId().uId;
+  const handleStr = generateHandleStr(nameFirst, nameLast);
 
-  let handleString = nameFirst + nameLast;
-  handleString = handleString.toLowerCase();
-  handleString = handleString.replace(/[^a-z0-9]/gi, '');
-  if (handleString.length > 20) {
-    handleString = handleString.substring(0, 20);
-  }
-
-  let i = 0;
-  let HandleStringExists = false;
-
-  for (const user of data.users) {
-    if (handleString === user.handleStr) {
-      i = 0;
-      HandleStringExists = true;
-    } else if ((handleString === user.handleStr.substring(0, handleString.length) === true) && (isNumber(user.handleStr[user.handleStr.length - 1]) === true)) {
-      i++;
-    }
-  }
-
-  if (HandleStringExists) {
-    handleString += i;
-  }
-
+  data = getData();
   data.users.push({
     uId: newUId,
     nameFirst: nameFirst,
     nameLast: nameLast,
     email: email,
-    handleStr: handleString,
+    handleStr: handleStr,
     passwordHash: password,
+    // 1 if first UId made, 2 otherwise.
+    globalPermissions: newUId === 0 ? 1 : 2,
   });
 
   setData(data);
@@ -100,11 +81,11 @@ function authRegisterV2(email: string, password: string, nameFirst: string, name
 /**
   * Given a session token for a user, closes that token thus logging out the user.
   *
-  * @param {string} token - the token representing the session.
+  * @param {Token} token - the token representing the session.
   *
-  * @returns {error: 'Invalid token'} - if token does not exist in dataStore.
+  * @returns {Error} {error: 'Invalid token'} - if token does not exist in dataStore.
 */
-function authLogoutV1(token: string): Record<string, never> | Error {
+export function authLogoutV1(token: Token): Empty | Error {
   const data = getData();
   if (!(data.sessions.some(session => session.token === token))) return { error: 'Invalid token' };
 
@@ -114,10 +95,3 @@ function authLogoutV1(token: string): Record<string, never> | Error {
   setData(data);
   return {};
 }
-
-// Returns true if a character in a string is a number
-function isNumber(char: string): boolean {
-  return /^\d$/.test(char);
-}
-
-export { authLoginV2, authRegisterV2, authLogoutV1 };

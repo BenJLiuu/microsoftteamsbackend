@@ -1,40 +1,4 @@
-import request from 'sync-request';
-import { HttpVerb } from 'sync-request';
-import { port, url } from './../config.json';
-const SERVER_URL = `${url}:${port}`;
-
-function requestHelper(method: HttpVerb, path: string, payload: object) {
-  let qs = {};
-  let json = {};
-  if (['GET', 'DELETE'].includes(method)) {
-    qs = payload;
-  } else {
-    // PUT/POST
-    json = payload;
-  }
-  const res = request(method, SERVER_URL + path, { qs, json });
-  return JSON.parse(res.getBody('utf-8'));
-}
-
-function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
-  return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
-}
-
-function requestAuthLogin(email: string, password: string) {
-  return requestHelper('POST', '/auth/login/v2', { email, password });
-}
-
-function requestClear() {
-  return requestHelper('DELETE', '/clear/v1', {});
-}
-
-function requestUserProfile(token: string, uId: number) {
-  return requestHelper('GET', '/user/profile/v2', { token, uId });
-}
-
-function requestAuthLogout(token: string) {
-  return requestHelper('POST', '/auth/logout/v1', { token });
-}
+import { requestAuthRegister, requestAuthLogin, requestClear, requestUserProfile, requestAuthLogout } from './httpHelper';
 
 describe('Test authRegister ', () => {
   beforeEach(() => {
@@ -89,7 +53,9 @@ describe('Test authRegister ', () => {
   test('Registration of existing handle', () => {
     const user1 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
     const user2 = requestAuthRegister('johnnymatey@gmail.com', 'password1234', 'Johnny', 'Mate');
+    const user3 = requestAuthRegister('johnnymateyy@gmail.com', 'password12345', 'Johnny', 'Mate');
     const userConfirm = requestUserProfile(user1.token, user2.authUserId);
+    const userConfirm2 = requestUserProfile(user1.token, user3.authUserId);
     expect(userConfirm).toStrictEqual({
       user: {
         uId: expect.any(Number),
@@ -97,6 +63,15 @@ describe('Test authRegister ', () => {
         nameLast: expect.any(String),
         email: expect.any(String),
         handleStr: 'johnnymate0',
+      }
+    });
+    expect(userConfirm2).toStrictEqual({
+      user: {
+        uId: expect.any(Number),
+        nameFirst: expect.any(String),
+        nameLast: expect.any(String),
+        email: expect.any(String),
+        handleStr: 'johnnymate1',
       }
     });
   });
