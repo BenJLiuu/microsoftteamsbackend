@@ -3,7 +3,7 @@ import { Empty, Email, Password, Name, Token, Error } from './interfaceTypes';
 import { Session } from './internalTypes';
 
 import validator from 'validator';
-import { generateSession, generateHandleStr } from './helper';
+import { generateUId, generateSession, generateHandleStr } from './helper';
 
 /**
   * Logs in a user and returns their user Id.
@@ -46,9 +46,9 @@ export function authLoginV2(email: Email, password: Password): Session | Error {
   * @returns {Error} {error: Invalid Last Name.'} - if last name is too short/long
 */
 export function authRegisterV2(email: Email, password: Password, nameFirst: Name, nameLast: Name): Session | Error {
-  const data = getData();
+  let data = getData();
 
-  if (validator.isEmail(email) === false) return { error: 'Invalid Email Address.' };
+  if (!validator.isEmail(email)) return { error: 'Invalid Email Address.' };
   if (data.users.some(user => user.email === email)) return { error: 'Email Already in Use.' };
 
   if (password.length < 6) return { error: 'Password too Short.' };
@@ -59,11 +59,10 @@ export function authRegisterV2(email: Email, password: Password, nameFirst: Name
   if (/[^a-zA-Z0-9]/.test(nameFirst)) return { error: 'Invalid First Name.' };
   if (/[^a-zA-Z0-9]/.test(nameLast)) return { error: 'Invalid Last Name.' };
 
-  let newUId = 0;
-  while (data.users.some(user => user.uId === newUId)) newUId++;
-
+  const newUId = generateUId().uId;
   const handleStr = generateHandleStr(nameFirst, nameLast);
 
+  data = getData();
   data.users.push({
     uId: newUId,
     nameFirst: nameFirst,
@@ -71,7 +70,8 @@ export function authRegisterV2(email: Email, password: Password, nameFirst: Name
     email: email,
     handleStr: handleStr,
     passwordHash: password,
-    globalPermissions: 2,
+    // 1 if first UId made, 2 otherwise.
+    globalPermissions: newUId === 0 ? 1 : 2,
   });
 
   setData(data);

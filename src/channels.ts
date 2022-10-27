@@ -4,7 +4,7 @@ import { PrivateChannel, ChannelsObj } from './internalTypes';
 
 import {
   validToken,
-  checkUserIdtoChannel,
+  userIsChannelMember,
   getPublicUser,
   getUserIdFromToken,
 } from './helper';
@@ -48,7 +48,7 @@ export function channelsListV2(token: Token): ChannelsObj | Error {
   const data = getData();
   const channelList = [];
   for (const channel of data.channels) {
-    if (checkUserIdtoChannel(getUserIdFromToken(token), channel.channelId)) {
+    if (userIsChannelMember(getUserIdFromToken(token), channel.channelId)) {
       channelList.push({
         channelId: channel.channelId,
         name: channel.name

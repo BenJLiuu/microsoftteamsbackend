@@ -316,7 +316,7 @@ describe('requestChannelJoin', () => {
 
     const channel1 = requestChannelsCreate(user1.token, 'example', false);
 
-    expect(requestChannelJoin(user2.token, channel1.channelId)).toStrictEqual({ error: expect.any(String) });
+    expect(requestChannelJoin(user2.token, channel1.channelId)).toStrictEqual({ error: 'You do not have access to this channel.' });
   });
 
   test('Invalid Token', () => {
@@ -541,7 +541,7 @@ describe('requestChannelJoin', () => {
   });
 
   // channelLeavetests
-  describe('requestChannelAddOwner Tests', () => {
+  describe('requestChannelLeave Tests', () => {
     beforeEach(() => {
       requestClear();
     });

@@ -7,7 +7,7 @@ import {
   getUserIdFromToken,
   validDmId,
   checkUserIdtoDm,
-  checkUserIdtoChannel,
+  userIsChannelMember,
   generateMessageId,
 } from './helper';
 
@@ -57,7 +57,7 @@ export function messageSendV1(token: Token, channelId: ChannelId, message: Messa
   if (message.length > 1000) return { error: 'Message contains too many characters.' };
   if (!validToken(token)) return { error: 'Invalid Session.' };
   const authUserId = getUserIdFromToken(token);
-  if (!checkUserIdtoChannel(authUserId, channelId)) return { error: 'Authorised user is not a channel member' };
+  if (!userIsChannelMember(authUserId, channelId)) return { error: 'Authorised user is not a channel member' };
 
   const messageId = generateMessageId().messageId;
   const data = getData();

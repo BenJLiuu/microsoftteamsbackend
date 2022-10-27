@@ -9,6 +9,7 @@ import { setData } from './dataStore';
 export function clearV1 (): Empty {
   setData({
     nextMessage: 1,
+    nextUId: 0,
     users: [],
     channels: [],
     sessions: [],
