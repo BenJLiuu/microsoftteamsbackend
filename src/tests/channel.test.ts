@@ -92,7 +92,6 @@ describe('ChannelMessages', () => {
     for (let i = 0; i < 60; i++) {
       requestMessageSend(user1.token, channel1.channelId, 'hello' + i);
     }
-    console.log(requestChannelMessages(user1.token, channel1.channelId, 5));
     expect(requestChannelMessages(user1.token, channel1.channelId, 5)).toEqual({
       messages: expect.any(Array),
       start: 5,
@@ -100,8 +99,6 @@ describe('ChannelMessages', () => {
     });
     expect(requestChannelMessages(user1.token, channel1.channelId, 5).messages).toHaveLength(50);
   });
-
-
 });
 
 // requestChannelInvite tests
