@@ -1,7 +1,7 @@
 import { getData, setData } from './dataStore';
 import { Session, Error } from './objects';
 import validator from 'validator';
-import { generateSession } from './helper';
+import { generateSession, generateHandleStr } from './helper';
 
 /**
   * Logs in a user and returns their user Id.
@@ -61,35 +61,14 @@ function authRegisterV2(email: string, password: string, nameFirst: string, name
   let newUId = 0;
   while (data.users.some(user => user.uId === newUId)) newUId++;
 
-  let handleString = nameFirst + nameLast;
-  handleString = handleString.toLowerCase();
-  handleString = handleString.replace(/[^a-z0-9]/gi, '');
-  if (handleString.length > 20) {
-    handleString = handleString.substring(0, 20);
-  }
-
-  let i = 0;
-  let HandleStringExists = false;
-
-  for (const user of data.users) {
-    if (handleString === user.handleStr) {
-      i = 0;
-      HandleStringExists = true;
-    } else if ((handleString === user.handleStr.substring(0, handleString.length) === true) && (isNumber(user.handleStr[user.handleStr.length - 1]) === true)) {
-      i++;
-    }
-  }
-
-  if (HandleStringExists) {
-    handleString += i;
-  }
+  const handleStr = generateHandleStr(nameFirst, nameLast);
 
   data.users.push({
     uId: newUId,
     nameFirst: nameFirst,
     nameLast: nameLast,
     email: email,
-    handleStr: handleString,
+    handleStr: handleStr,
     passwordHash: password,
   });
 
@@ -113,11 +92,6 @@ function authLogoutV1(token: string): Record<string, never> | Error {
 
   setData(data);
   return {};
-}
-
-// Returns true if a character in a string is a number
-function isNumber(char: string): boolean {
-  return /^\d$/.test(char);
 }
 
 export { authLoginV2, authRegisterV2, authLogoutV1 };

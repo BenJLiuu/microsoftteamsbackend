@@ -53,7 +53,9 @@ describe('Test authRegister ', () => {
   test('Registration of existing handle', () => {
     const user1 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
     const user2 = requestAuthRegister('johnnymatey@gmail.com', 'password1234', 'Johnny', 'Mate');
+    const user3 = requestAuthRegister('johnnymateyy@gmail.com', 'password12345', 'Johnny', 'Mate');
     const userConfirm = requestUserProfile(user1.token, user2.authUserId);
+    const userConfirm2 = requestUserProfile(user1.token, user3.authUserId);
     expect(userConfirm).toStrictEqual({
       user: {
         uId: expect.any(Number),
@@ -61,6 +63,15 @@ describe('Test authRegister ', () => {
         nameLast: expect.any(String),
         email: expect.any(String),
         handleStr: 'johnnymate0',
+      }
+    });
+    expect(userConfirm2).toStrictEqual({
+      user: {
+        uId: expect.any(Number),
+        nameFirst: expect.any(String),
+        nameLast: expect.any(String),
+        email: expect.any(String),
+        handleStr: 'johnnymate1',
       }
     });
   });
