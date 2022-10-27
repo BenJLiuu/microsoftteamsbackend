@@ -247,7 +247,7 @@ describe('Test Updating User Info', () => {
     requestChannelJoin(user2.token, channel.channelId);
     requestChannelJoin(user3.token, channel.channelId);
     expect(requestChannelDetails(user1.token, channel.channelId)).toStrictEqual(
-        {
+      {
         name: 'everyone',
         isPublic: true,
         ownerMembers: [{
@@ -293,7 +293,7 @@ describe('Test Updating User Info', () => {
     requestChannelJoin(user3.token, channel.channelId);
     requestUserProfileSetName(user1.token, 'John', 'Smith');
     expect(requestChannelDetails(user1.token, channel.channelId)).toStrictEqual(
-        {
+      {
         name: 'everyone',
         isPublic: true,
         ownerMembers: [{
@@ -339,7 +339,7 @@ describe('Test Updating User Info', () => {
     requestChannelJoin(user3.token, channel.channelId);
     requestUserProfileSetEmail(user2.token, 'scottywhite@gmail.com');
     expect(requestChannelDetails(user1.token, channel.channelId)).toStrictEqual(
-        {
+      {
         name: 'everyone',
         isPublic: true,
         ownerMembers: [{
@@ -385,7 +385,7 @@ describe('Test Updating User Info', () => {
     requestChannelJoin(user3.token, channel.channelId);
     requestUserProfileSetHandle(user3.token, 'jimhalp');
     expect(requestChannelDetails(user1.token, channel.channelId)).toStrictEqual(
-        {
+      {
         name: 'everyone',
         isPublic: true,
         ownerMembers: [{
@@ -421,4 +421,4 @@ describe('Test Updating User Info', () => {
       }
     );
   });
-})
+});

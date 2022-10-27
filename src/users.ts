@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { UserOmitPassword, UsersOmitPassword, Error } from './objects';
+import { Empty, UserOmitPassword, UsersOmitPassword, Error } from './objects';
 import validator from 'validator';
 import {
   validToken,

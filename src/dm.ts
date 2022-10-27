@@ -4,7 +4,7 @@ import {
   validToken,
   getUserIdFromToken,
   gethandleStrFromId,
-  validDmId, 
+  validDmId,
   checkUserIdtoDm,
   removePassword
 } from './helper';
