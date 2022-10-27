@@ -60,7 +60,7 @@ export function messageSendV1(token: string, channelId: number, message: string)
 
   const messageId = generateMessageId().messageId;
   const data = getData();
-  
+
   data.channels.find(channel => channel.channelId === channelId).messages.push({
     messageId: messageId,
     uId: authUserId,

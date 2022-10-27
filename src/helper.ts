@@ -1,5 +1,12 @@
 import { getData, setData } from './dataStore';
-import { User, PrivateUser, Session, messageId } from './objects';
+import {
+  Empty,
+  Error,
+  User,
+  PrivateUser,
+  Session,
+  messageId,
+} from './objects';
 
 /**
  * Checks whether a user is valid (whether they exist in the database)
@@ -170,7 +177,7 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
  * @returns {Empty} {} - if successful
  * @returns {Error} {error: "uId invalid"} if user does not exist.
  */
-export function updateUserDetails(uId: number) : Record<string, never> | Error {
+export function updateUserDetails(uId: number) : Empty | Error {
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
   const data = getData();
 
@@ -191,7 +198,7 @@ export function updateUserDetails(uId: number) : Record<string, never> | Error {
   for (const dm of data.dms) {
     if (checkUserIdtoDm(uId, dm.dmId)) {
       if (dm.owner.uId === uId) dm.owner = updatedUser;
-      const memberIndex = dm.members.findIndex((user) => user.uId === uId)
+      const memberIndex = dm.members.findIndex((user) => user.uId === uId);
       dm.members[memberIndex] = updatedUser;
     }
   }
