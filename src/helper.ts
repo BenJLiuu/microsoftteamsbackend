@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { User, PrivateUser, Session } from './objects';
+import { User, PrivateUser, Session, messageId } from './objects';
 
 /**
  * Checks whether a user is valid (whether they exist in the database)
@@ -61,7 +61,7 @@ export function checkUserIdtoChannel(authUserId : number, channelId : number) : 
  * Removes password parameter from user object
  *
  * @param user - to remove password from
- * @returns {
+ * @returns {PrivateUser} {
  *   uId: integer,
  *   nameFirst: string,
  *   nameLast: string,
@@ -93,6 +93,21 @@ export function generateSession(uId: number): Session {
   data.sessions.push(session);
   setData(data);
   return session;
+}
+
+/**
+ * Creates a messageId.
+ *
+ * @returns {Object} {messageId : number} - the session object that was created.
+ */
+export function generateMessageId(): messageId {
+  const data = getData();
+  const messageId = data.nextMessage;
+  data.nextMessage++;
+  setData(data);
+  return {
+    messageId: messageId
+  };
 }
 
 /**
