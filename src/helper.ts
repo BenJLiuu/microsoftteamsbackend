@@ -73,8 +73,8 @@ export function userIsChannelMember(uId: UId, channelId : ChannelId) : boolean {
  */
 export function userIsChannelOwner(uId: UId, channelId : ChannelId) : boolean {
   const data = getData();
-  const position = data.channels.findIndex(channel => channel.channelId === channelId);
-  return data.channels[position].ownerMembers.some(user => user.uId === uId);
+  const channel = data.channels.find(channel => channel.channelId === channelId);
+  return channel.ownerMembers.some(user => user.uId === uId);
 }
 
 /**

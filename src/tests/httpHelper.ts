@@ -95,7 +95,7 @@ export function requestChannelRemoveOwner(token: string, channelId: number, uId:
 }
 
 export function requestChannelAddOwner(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/removeowner/v1', { token, channelId, uId });
+  return requestHelper('POST', '/channel/addowner/v1', { token, channelId, uId });
 }
 
 export function requestChannelLeave(token: string, channelId: number) {

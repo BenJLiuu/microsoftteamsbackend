@@ -120,12 +120,11 @@ export function channelLeaveV1(token: Token, channelId: ChannelId): Empty | Erro
 export function channelAddOwnerV1(token: Token, channelId: ChannelId, uId: UId): Empty | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
-  if (!userIsChannelMember(uId, channelId)) return { error: 'User is not a member of this channel.' };
+  if (!userIsChannelMember(uId, channelId)) return { error: 'User is not a Member of this channel.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
-
   const data = getData();
   const authUId = getUserIdFromToken(token);
-  if (userIsChannelOwner(uId, channelId)) return { error: 'User is already an owner of this channel.' };
+  if (userIsChannelOwner(uId, channelId)) return { error: 'User is already an Owner of this channel.' };
   const userHasPermissions = userIsChannelOwner(authUId, channelId) || isGlobalOwner(authUId);
   if (!userHasPermissions) return { error: 'You do not have the required permissions.' };
 
@@ -161,7 +160,7 @@ export function channelRemoveOwnerV1(token: Token, channelId: ChannelId, uId: UI
 
   const data = getData();
   const authUId = getUserIdFromToken(token);
-  if (userIsChannelOwner(uId, channelId)) return { error: 'User is already an owner of this channel.' };
+  if (!userIsChannelOwner(uId, channelId)) return { error: 'User is not an Owner of this channel.' };
   const userHasPermissions = userIsChannelOwner(authUId, channelId) || isGlobalOwner(authUId);
   if (!userHasPermissions) return { error: 'You do not have the required permissions.' };
 
@@ -198,13 +197,11 @@ export function channelInviteV2(token: Token, channelId: ChannelId, uId: UId): E
   if (!validToken(token)) return { error: 'Invalid Token.' };
   if (userIsChannelMember(uId, channelId)) return { error: 'User is already a member.' };
   if (!userIsChannelMember(getUserIdFromToken(token), channelId)) return { error: 'Authorised User is not a member.' };
-
   const data = getData();
 
   const userIndex = data.users.findIndex(user => user.uId === uId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
-  const publicUser = getPublicUser(data.users[userIndex]);
-  data.channels[channelIndex].allMembers.push(publicUser);
+  data.channels[channelIndex].allMembers.push(getPublicUser(data.users[userIndex]));
 
   setData(data);
   return {};

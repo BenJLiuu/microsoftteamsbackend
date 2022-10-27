@@ -541,7 +541,7 @@ describe('requestChannelJoin', () => {
   });
 
   // channelLeavetests
-  describe('requestChannelAddOwner Tests', () => {
+  describe('requestChannelLeave Tests', () => {
     beforeEach(() => {
       requestClear();
     });
