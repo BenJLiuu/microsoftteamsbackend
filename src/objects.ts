@@ -114,4 +114,5 @@ export type messageId = {
   messageId: number;
 };
 
-export type Empty = {};
+// Empty = {}
+export type Empty = Record<string, never>;

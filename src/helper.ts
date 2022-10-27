@@ -102,7 +102,7 @@ export function generateSession(uId: number): Session {
  */
 export function generateMessageId(): messageId {
   const data = getData();
-  let messageId = data.nextMessage;
+  const messageId = data.nextMessage;
   data.nextMessage++;
   setData(data);
   return {

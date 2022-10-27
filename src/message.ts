@@ -2,17 +2,17 @@ import { getData, setData } from './dataStore';
 import { Error, messageId } from './objects';
 import {
   validChannelId,
-  validToken, 
-  getUserIdFromToken, 
-  validDmId, 
-  checkUserIdtoDm, 
+  validToken,
+  getUserIdFromToken,
+  validDmId,
+  checkUserIdtoDm,
   checkUserIdtoChannel,
   generateMessageId,
 } from './helper';
 
 /**
  * Send and store a DM sent by a given user
- * 
+ *
  * @param token - the session id of the sender
  * @param dmId - the dm the message was sent in
  * @param message - the message to be sent
@@ -28,7 +28,7 @@ export function messageSendDmV1(token: string, dmId: number, message: string): m
 
   const data = getData();
 
-  const messageId = generateMessageId();
+  const messageId = generateMessageId().messageId;
 
   // Add message to DM list
   data.dms.find(dm => dm.dmId === dmId).messages.push({
@@ -46,7 +46,7 @@ export function messageSendDmV1(token: string, dmId: number, message: string): m
 
 /**
  * Send and store a message within a channel sent by a given user
- * 
+ *
  * @param token - the session id of the sender
  * @param dmId - the dm the message was sent in
  * @param message - the message to be sent
@@ -61,7 +61,7 @@ export function messageSendV1(token: string, channelId: number, message: string)
   if (!checkUserIdtoChannel(authUserId, channelId)) return { error: 'Authorised user is not a channel member' };
 
   const data = getData();
-  const messageId = generateMessageId();
+  const messageId = generateMessageId().messageId;
 
   data.channels.find(channel => channel.channelId === channelId).messages.push({
     messageId: messageId,
