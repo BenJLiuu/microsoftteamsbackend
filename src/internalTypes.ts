@@ -34,6 +34,7 @@ export type Session = {
 
 export type Data = {
   nextMessage: number,
+  nextUId: number,
   users: PrivateUser[],
   channels: PrivateChannel[],
   dms: PrivateDm[],

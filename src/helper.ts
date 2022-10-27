@@ -55,12 +55,26 @@ export function validChannelId(channelId : ChannelId) : boolean {
  *
  * @param {UId} uId - the user to check
  * @param {ChannelId} channelId - the channel the user may be contained in
- * @returns {boolean} boolean - whether the user is in the channel
+ * @returns {boolean} boolean - true if user is in the channel
  */
-export function checkUserIdtoChannel(uId : number, channelId : ChannelId) : boolean {
+export function userIsChannelMember(uId: UId, channelId : ChannelId) : boolean {
   const data = getData();
   const position = data.channels.findIndex(channel => channel.channelId === channelId);
   return data.channels[position].allMembers.some(user => user.uId === uId);
+}
+
+/**
+ * Checks whether a user owns a channel.
+ * Does not account for global permissions.
+ *
+ * @param {UId} uId - the user to check
+ * @param {ChannelId} channelId - the channel the user may be contained in
+ * @returns {boolean} boolean - true if the user owns the channel
+ */
+export function userIsChannelOwner(uId: UId, channelId : ChannelId) : boolean {
+  const data = getData();
+  const position = data.channels.findIndex(channel => channel.channelId === channelId);
+  return data.channels[position].ownerMembers.some(user => user.uId === uId);
 }
 
 /**
@@ -108,11 +122,39 @@ export function generateSession(uId: UId): Session {
 export function generateMessageId(): {messageId : MessageId} {
   const data = getData();
   const messageId = data.nextMessage;
-  data.nextMessage = data.nextMessage + 1;
+  data.nextMessage++;
   setData(data);
   return {
-    messageId: messageId
+    messageId: messageId,
   };
+}
+
+/**
+ * Creates a new uId.
+ * Updates data. (You may need to call getData() again.)
+ *
+ * @returns {uId : UId} {uId : UId} - the new uId that was created.
+ */
+export function generateUId(): {uId: UId} {
+  const data = getData();
+  const uId = data.nextMessage;
+  data.nextUId++;
+  setData(data);
+  return {
+    uId: uId,
+  };
+}
+
+/**
+ * Returns whether or not a user is a global owner, given a uid
+ * @param {UId} uId - the user to check
+ * @return {boolean} boolean of whether user is global owner or not
+ * @return {Error} {error: 'Invalid User'} if user does not exist
+ */
+export function isGlobalOwner(uId: UId): boolean | Error {
+  if (!validUserId(uId)) return { error: 'Invalid User' };
+  const data = getData();
+  return data.users.find((user) => user.uId === uId).globalPermissions === 1;
 }
 
 /**
@@ -182,7 +224,7 @@ export function updateUserDetails(uId: UId) : Empty | Error {
 
   // Update user details in each channel
   for (const channel of data.channels) {
-    if (checkUserIdtoChannel(uId, channel.channelId)) {
+    if (userIsChannelMember(uId, channel.channelId)) {
       const ownerIndex = channel.ownerMembers.findIndex((user) => user.uId === uId);
       channel.ownerMembers[ownerIndex] = updatedUser;
       const memberIndex = channel.allMembers.findIndex((user) => user.uId === uId);

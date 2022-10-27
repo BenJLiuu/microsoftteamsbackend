@@ -3,6 +3,7 @@ import fs from 'fs';
 
 let data: Data = {
   nextMessage: 1,
+  nextUId: 0,
   users: [],
   channels: [],
   sessions: [],

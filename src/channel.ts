@@ -5,7 +5,9 @@ import { MessageList, ChannelDetails } from './internalTypes';
 import {
   validUserId,
   validChannelId,
-  checkUserIdtoChannel,
+  userIsChannelMember,
+  userIsChannelOwner,
+  isGlobalOwner,
   getPublicUser,
   validToken,
   getUserIdFromToken
@@ -33,8 +35,8 @@ export function channelMessagesV2(token: Token, channelId: ChannelId, start: Sta
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
   if (start > data.channels[channelIndex].messages.length) return { error: 'Start is greater than total messages' };
 
-  const authUser = getUserIdFromToken(token);
-  if (!checkUserIdtoChannel(authUser, channelId)) return { error: 'Authorised user is not a channel member' };
+  const authUId = getUserIdFromToken(token);
+  if (!userIsChannelMember(authUId, channelId)) return { error: 'Authorised user is not a channel member' };
 
   let end = 0;
   if (data.channels[channelIndex].messages.length + start > 50) {
@@ -82,18 +84,18 @@ export function channelLeaveV1(token: Token, channelId: ChannelId): Empty | Erro
 
   if (!validToken(token)) return { error: 'Invalid Token.' };
   const UserId = getUserIdFromToken(token);
-  if (!checkUserIdtoChannel(UserId, channelId)) return { error: 'You are not a member of this channel.' };
+  if (!userIsChannelMember(UserId, channelId)) return { error: 'You are not a member of this channel.' };
   const data = getData();
   const userIndex = data.users.findIndex(user => user.uId === UserId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
-  const privateUser = getPublicUser(data.users[userIndex]);
+  const publicUser = getPublicUser(data.users[userIndex]);
   for (let i = 0; i < data.channels[channelIndex].allMembers.length; i++) {
-    const privateIndexAll = data.channels.findIndex(channel => channel.allMembers[i] === privateUser);
-    data.channels[channelIndex].allMembers.splice(privateIndexAll, 1);
+    const publicIndexAll = data.channels.findIndex(channel => channel.allMembers[i] === publicUser);
+    data.channels[channelIndex].allMembers.splice(publicIndexAll, 1);
   }
   for (let i = 0; i < data.channels[channelIndex].ownerMembers.length; i++) {
-    const privateIndexOwner = data.channels.findIndex(channel => channel.ownerMembers[i] === privateUser);
-    data.channels[channelIndex].ownerMembers.splice(privateIndexOwner, 1);
+    const publicIndexOwner = data.channels.findIndex(channel => channel.ownerMembers[i] === publicUser);
+    data.channels[channelIndex].ownerMembers.splice(publicIndexOwner, 1);
   }
 
   setData(data);
@@ -109,7 +111,8 @@ export function channelLeaveV1(token: Token, channelId: ChannelId): Empty | Erro
   *
   * @returns {Error} {error: 'Invalid Channel Id.'} - Channel does not exist.
   * @returns {Error} {error: 'Invalid User Id.'} - User Id does not exist.
-  * @returns {Error} {error: 'You are not a member of this channel.'} - The user is not a member of the channel.
+  * @returns {Error} {error: 'User is not a member of this channel.'} - The user is not a member of the channel.
+  * @returns {Error} {error: 'User is already an owner of this channel.'} - The user is already an owner of the channel.
   * @returns {Error} {error: 'Invalid Token.'} - Token does not correspond to an existing user.
   * @returns {Empty} {} - authUserId successfully grants another member owner permissions.
   *
@@ -117,15 +120,20 @@ export function channelLeaveV1(token: Token, channelId: ChannelId): Empty | Erro
 export function channelAddOwnerV1(token: Token, channelId: ChannelId, uId: UId): Empty | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
-  if (!checkUserIdtoChannel(uId, channelId)) return { error: 'You are not a member of this channel.' };
+  if (!userIsChannelMember(uId, channelId)) return { error: 'User is not a member of this channel.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
 
   const data = getData();
+  const authUId = getUserIdFromToken(token);
+  if (userIsChannelOwner(uId, channelId)) return { error: 'User is already an owner of this channel.' };
+  const userHasPermissions = userIsChannelOwner(authUId, channelId) || isGlobalOwner(authUId);
+  if (!userHasPermissions) return { error: 'You do not have the required permissions.' };
+
   const userIndex = data.users.findIndex(user => user.uId === uId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
-  const privateUser = getPublicUser(data.users[userIndex]);
+  const publicUser = getPublicUser(data.users[userIndex]);
 
-  data.channels[channelIndex].ownerMembers.push(privateUser);
+  data.channels[channelIndex].ownerMembers.push(publicUser);
 
   setData(data);
   return {};
@@ -148,17 +156,22 @@ export function channelAddOwnerV1(token: Token, channelId: ChannelId, uId: UId):
 export function channelRemoveOwnerV1(token: Token, channelId: ChannelId, uId: UId): Empty | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
-  if (!checkUserIdtoChannel(uId, channelId)) return { error: 'You are not a member of this channel.' };
+  if (!userIsChannelMember(uId, channelId)) return { error: 'User is not a member of this channel.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
 
   const data = getData();
+  const authUId = getUserIdFromToken(token);
+  if (userIsChannelOwner(uId, channelId)) return { error: 'User is already an owner of this channel.' };
+  const userHasPermissions = userIsChannelOwner(authUId, channelId) || isGlobalOwner(authUId);
+  if (!userHasPermissions) return { error: 'You do not have the required permissions.' };
+
   const userIndex = data.users.findIndex(user => user.uId === uId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
-  const privateUser = getPublicUser(data.users[userIndex]);
+  const publicUser = getPublicUser(data.users[userIndex]);
 
   for (let i = 0; i < data.channels[channelIndex].ownerMembers.length; i++) {
-    const privateIndexOwner = data.channels.findIndex(channel => channel.ownerMembers[i] === privateUser);
-    data.channels[channelIndex].ownerMembers.splice(privateIndexOwner, 1);
+    const publicIndexOwner = data.channels.findIndex(channel => channel.ownerMembers[i] === publicUser);
+    data.channels[channelIndex].ownerMembers.splice(publicIndexOwner, 1);
   }
 
   setData(data);
@@ -183,15 +196,15 @@ export function channelInviteV2(token: Token, channelId: ChannelId, uId: UId): E
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
-  if (checkUserIdtoChannel(uId, channelId)) return { error: 'User is already a member.' };
-  if (!checkUserIdtoChannel(getUserIdFromToken(token), channelId)) return { error: 'Authorised User is not a member.' };
+  if (userIsChannelMember(uId, channelId)) return { error: 'User is already a member.' };
+  if (!userIsChannelMember(getUserIdFromToken(token), channelId)) return { error: 'Authorised User is not a member.' };
 
   const data = getData();
 
   const userIndex = data.users.findIndex(user => user.uId === uId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
-  const privateUser = getPublicUser(data.users[userIndex]);
-  data.channels[channelIndex].allMembers.push(privateUser);
+  const publicUser = getPublicUser(data.users[userIndex]);
+  data.channels[channelIndex].allMembers.push(publicUser);
 
   setData(data);
   return {};
@@ -211,7 +224,7 @@ export function channelInviteV2(token: Token, channelId: ChannelId, uId: UId): E
 export function channelDetailsV2(token: Token, channelId: ChannelId): ChannelDetails | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
-  if (!checkUserIdtoChannel(getUserIdFromToken(token), channelId)) return { error: 'Authorised User is not a member.' };
+  if (!userIsChannelMember(getUserIdFromToken(token), channelId)) return { error: 'Authorised User is not a member.' };
 
   const data = getData();
 
@@ -242,22 +255,21 @@ export function channelDetailsV2(token: Token, channelId: ChannelId): ChannelDet
 export function channelJoinV2(token: Token, channelId: ChannelId): Empty | Error {
   const data = getData();
 
-  if (!data.channels.some(channel => channel.channelId === channelId)) return { error: 'Invalid Channel Id.' };
+  if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
+  const uId = getUserIdFromToken(token);
 
   const channelIndex = data.channels.map(object => object.channelId).indexOf(channelId);
   const userIndex = data.users.findIndex(user => user.uId === getUserIdFromToken(token));
-  const privateUser = getPublicUser(data.users[userIndex]);
+  const publicUser = getPublicUser(data.users[userIndex]);
 
-  if (data.channels[channelIndex].allMembers.some(user => user.uId === getUserIdFromToken(token))) return { error: 'You are already a member.' };
+  if (userIsChannelMember(uId, channelId)) return { error: 'You are already a member.' };
+  const userHasAccess = data.channels[channelIndex].isPublic ||
+                        userIsChannelMember(uId, channelId) ||
+                        isGlobalOwner(uId);
+  if (!userHasAccess) return { error: 'You do not have access to this channel.' };
 
-  if (data.channels[channelIndex].isPublic === false &&
-      data.channels[channelIndex].allMembers.includes(privateUser) === false &&
-      data.users[0].uId !== getUserIdFromToken(token)) {
-    return { error: 'You do not have access to this channel.' };
-  }
-
-  data.channels[channelIndex].allMembers.push(privateUser);
+  data.channels[channelIndex].allMembers.push(publicUser);
   setData(data);
 
   return {};
