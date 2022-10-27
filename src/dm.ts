@@ -1,6 +1,22 @@
 import { getData, setData } from './dataStore';
-import { validUserId, validToken, getUserIdFromToken, gethandleStrFromId, validDmId, checkUserIdtoDm, removePassword } from './helper';
-import { Error, DmId, DmList, DmDetails, MessageList, Dm } from './objects';
+import {
+  validUserId,
+  validToken,
+  getUserIdFromToken,
+  gethandleStrFromId,
+  validDmId, 
+  checkUserIdtoDm,
+  removePassword
+} from './helper';
+import {
+  Empty,
+  Error,
+  Dm,
+  DmId,
+  DmList,
+  DmDetails,
+  MessageList,
+} from './objects';
 
 /**
   * Creates and stores a new DM.
@@ -93,7 +109,7 @@ export function dmListV1(token: string): DmList | Error {
   * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {} - DM has been succesfully left.
 */
-export function dmLeaveV1(token: string, dmId: number): Record<string, never> | Error {
+export function dmLeaveV1(token: string, dmId: number): Empty | Error {
   if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
 
@@ -121,7 +137,7 @@ export function dmLeaveV1(token: string, dmId: number): Record<string, never> | 
   * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {} - DM has been succesfully left.
 */
-export function dmRemoveV1(token: string, dmId: number): Record<string, never> | Error {
+export function dmRemoveV1(token: string, dmId: number): Empty | Error {
   if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
 

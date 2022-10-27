@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import { validUserId, validChannelId, checkUserIdtoChannel, removePassword, validToken, getUserIdFromToken } from './helper';
-import { Error, MessageList, ChannelDetails } from './objects';
+import { Empty, Error, MessageList, ChannelDetails } from './objects';
 
 /**
   * Returns an object containing all messages sent from a certain start point in
@@ -54,36 +54,6 @@ export function channelMessagesV2(token: string, channelId: number, start: numbe
 }
 
 /**
-  * Helper function intended to implement message sending for the sake of future
-  * iterations of channel messages. If uncommented along with the white-box tests
-  * in channel.test.js, will pass. Will be redone in a black-box fashion in a
-  * future iteration.
-  *
-*/
-/*
-export function messageSendV1 (token, channelId, message) {
-  if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' }
-  if (!validToken(token)) return { error: 'Invalid Authorised User Id.' };
-  const authUserId = getUserIdFromToken(token);
-
-  const data = getData();
-  const index = data.channels.findIndex(channel => channel.channelId === channelId);
-  const messageId = Math.floor(Math.random() * 899999 + 100000);
-  const messageTime = new Date().getTime();
-
-  const newMessage = {
-    messageId: messageId,
-    uId: authUserId,
-    message: message,
-    timeSent: messageTime,
-  }
-
-  data.channels[index].messages.push(newMessage);
-  setData(data);
-  return { messageId: messageId };
-}
-*/
-/**
   * Removes the user from the channel member list.
   *
   * @param {string} token - Token of user sending the invite.
@@ -96,7 +66,7 @@ export function messageSendV1 (token, channelId, message) {
   * @returns {} - authUserId successfully leaves the specified channel.
   *
 */
-export function channelLeaveV1(token: string, channelId: number): Record<string, never> | Error {
+export function channelLeaveV1(token: string, channelId: number): Empty | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
 
   if (!validToken(token)) return { error: 'Invalid Token.' };
@@ -133,7 +103,7 @@ export function channelLeaveV1(token: string, channelId: number): Record<string,
   * @returns {} - authUserId successfully grants another member owner permissions.
   *
 */
-export function channelAddOwnerV1(token: string, channelId: number, uId: number): Record<string, never> | Error {
+export function channelAddOwnerV1(token: string, channelId: number, uId: number): Empty | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
   if (!checkUserIdtoChannel(uId, channelId)) return { error: 'You are not a member of this channel.' };
@@ -164,7 +134,7 @@ export function channelAddOwnerV1(token: string, channelId: number, uId: number)
   * @returns {} - authUserId successfully grants another member owner permissions.
   *
 */
-export function channelRemoveOwnerV1(token: string, channelId: number, uId: number): Record<string, never> | Error {
+export function channelRemoveOwnerV1(token: string, channelId: number, uId: number): Empty | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
   if (!checkUserIdtoChannel(uId, channelId)) return { error: 'You are not a member of this channel.' };
@@ -183,6 +153,7 @@ export function channelRemoveOwnerV1(token: string, channelId: number, uId: numb
   setData(data);
   return {};
 }
+
 /**
   * Sends a user specific invite to a given channel
   *
@@ -197,7 +168,7 @@ export function channelRemoveOwnerV1(token: string, channelId: number, uId: numb
   * @returns {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
   * @returns {} - uId has been succesfully invited to corresponding channel.
 */
-export function channelInviteV2(token: string, channelId: number, uId: number): Record<string, never> | Error {
+export function channelInviteV2(token: string, channelId: number, uId: number): Empty | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
   if (!validToken(token)) return { error: 'Invalid Token.' };
@@ -258,7 +229,7 @@ export function channelDetailsV2(token: string, channelId: number): ChannelDetai
   * @returns {} - authUserId successfully joins the specified channel.
   *
 */
-export function channelJoinV2(token: string, channelId: number): Record<string, never> | Error {
+export function channelJoinV2(token: string, channelId: number): Empty | Error {
   const data = getData();
 
   if (!data.channels.some(channel => channel.channelId === channelId)) return { error: 'Invalid Channel Id.' };
