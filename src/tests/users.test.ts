@@ -1,48 +1,7 @@
-import request from 'sync-request';
-import { HttpVerb } from 'sync-request';
-import { port, url } from './../config.json';
-const SERVER_URL = `${url}:${port}`;
-
-function requestHelper(method: HttpVerb, path: string, payload: object) {
-  let qs = {};
-  let json = {};
-  if (['GET', 'DELETE'].includes(method)) {
-    qs = payload;
-  } else {
-    // PUT/POST
-    json = payload;
-  }
-  const res = request(method, SERVER_URL + path, { qs, json });
-  return JSON.parse(res.getBody('utf-8'));
-}
-
-function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
-  return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
-}
-
-function requestUserProfile(token: string, uId: number) {
-  return requestHelper('GET', '/user/profile/v2', { token, uId });
-}
-
-function requestUsersAll(token: string) {
-  return requestHelper('GET', '/users/all/v1', { token });
-}
-
-function requestUserProfileSetName(token: string, nameFirst: string, nameLast: string) {
-  return requestHelper('PUT', '/user/profile/setname/v1', { token, nameFirst, nameLast });
-}
-
-function requestUserProfileSetEmail(token: string, email: string) {
-  return requestHelper('PUT', '/user/profile/setemail/v1', { token, email });
-}
-
-function requestUserProfileSetHandle(token: string, handleStr: string) {
-  return requestHelper('PUT', '/user/profile/sethandle/v1', { token, handleStr });
-}
-
-function requestClear() {
-  return requestHelper('DELETE', '/clear/v1', {});
-}
+import {
+  requestAuthRegister, requestUserProfile, requestUsersAll, requestUserProfileSetName,
+  requestUserProfileSetEmail, requestUserProfileSetHandle, requestClear
+} from './httpHelper';
 
 describe('Test userProfile', () => {
   beforeEach(() => {

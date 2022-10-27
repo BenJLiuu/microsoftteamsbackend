@@ -1,72 +1,8 @@
-import request from 'sync-request';
-
-import { HttpVerb } from 'sync-request';
-
-import { port, url } from './../config.json';
-
-const SERVER_URL = `${url}:${port}`;
-
-function requestHelper(method: HttpVerb, path: string, payload: object) {
-  let qs = {};
-
-  let json = {};
-
-  if (['GET', 'DELETE'].includes(method)) {
-    qs = payload;
-  } else {
-    // PUT/POST
-
-    json = payload;
-  }
-
-  const res = request(method, SERVER_URL + path, { qs, json });
-
-  return JSON.parse(res.getBody('utf-8'));
-}
-
-function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
-  return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
-}
-
-function requestClear() {
-  return requestHelper('DELETE', '/clear/v1', {});
-}
-
-function requestChannelsCreate(token: string, name: string, isPublic: boolean) {
-  return requestHelper('POST', '/channels/create/v2', { token, name, isPublic });
-}
-
-function requestChannelDetails(token: string, channelId: number) {
-  return requestHelper('GET', '/channel/details/v2', { token, channelId });
-}
-
-function requestChannelMessages(token: string, channelId: number, start: number) {
-  return requestHelper('GET', '/channel/messages/v2', { token, channelId, start });
-}
-
-function requestMessageSend(token: string, channelId: number, message: string) {
-  return requestHelper('POST', '/message/send/V1', { token, channelId, message });
-}
-
-function requestChannelInvite(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/invite/v2', { token, channelId, uId });
-}
-
-function requestChannelJoin(token: string, channelId: number) {
-  return requestHelper('POST', '/channel/join/v2', { token, channelId });
-}
-
-function requestChannelRemoveOwner(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/removeowner/v1', { token, channelId, uId });
-}
-
-function requestChannelAddOwner(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/removeowner/v1', { token, channelId, uId });
-}
-
-function requestChannelLeave(token: string, channelId: number) {
-  return requestHelper('POST', '/channel/leave/v1', { token, channelId });
-}
+import {
+  requestAuthRegister, requestClear, requestChannelsCreate, requestChannelDetails,
+  requestMessageSend, requestChannelInvite, requestChannelJoin, requestChannelLeave,
+  requestChannelRemoveOwner, requestChannelAddOwner, requestChannelMessages
+} from './httpHelper';
 
 describe('ChannelMessages', () => {
   beforeEach(() => {
