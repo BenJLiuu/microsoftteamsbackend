@@ -1,7 +1,13 @@
 import { getData, setData } from './dataStore';
-import { UserOmitPassword, UsersOmitPassword, Error } from './objects';
-import { validToken, validUserId, removePassword, getUserIdFromToken } from './helper';
+import { Empty, UserOmitPassword, UsersOmitPassword, Error } from './objects';
 import validator from 'validator';
+import {
+  validToken,
+  validUserId,
+  removePassword,
+  getUserIdFromToken,
+  updateUserDetails,
+} from './helper';
 
 /**
   * For a valid user, returns information about a requested valid user profile
@@ -55,15 +61,20 @@ export function usersAllV1 (token: string): UsersOmitPassword | Error {
  * @returns {Object} { error: 'Invalid Last Name.' } - If last name is too short/long.
  * @returns {Object} { error: 'Invalid Session Id.' } - If token is invalid.
  */
-export function userProfileSetNameV1 (token: string, nameFirst: string, nameLast: string): Record<string, never> | Error {
+export function userProfileSetNameV1 (token: string, nameFirst: string, nameLast: string): Empty | Error {
   if (nameFirst.length < 1 || nameFirst.length > 50) return { error: 'Invalid First Name.' };
   if (nameLast.length < 1 || nameLast.length > 50) return { error: 'Invalid Last Name.' };
-  const data = getData();
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
-  const userId = Number(getUserIdFromToken(token));
+
+  const data = getData();
+
+  const userId = getUserIdFromToken(token);
   data.users.find(user => user.uId === userId).nameFirst = nameFirst;
   data.users.find(user => user.uId === userId).nameLast = nameLast;
+
   setData(data);
+  // Update user details in channel
+  updateUserDetails(userId);
 
   return {};
 }
@@ -79,15 +90,17 @@ export function userProfileSetNameV1 (token: string, nameFirst: string, nameLast
  * @returns {Object} { error: 'Email Already in Use.' } - If email to be changed to is already in user by another user.
  * @returns {Object} { error: 'Invalid Session Id.' } - If token is invalid.
  */
-export function userProfileSetEmailV1 (token: string, email: string): Record<string, never> | Error {
+export function userProfileSetEmailV1 (token: string, email: string): Empty | Error {
   if (!validator.isEmail(email)) return { error: 'Invalid Email Address.' };
   const data = getData();
   if (data.users.some(user => user.email === email)) return { error: 'Email Already in Use.' };
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
-  const userId = Number(getUserIdFromToken(token));
+  const userId = getUserIdFromToken(token);
   data.users.find(user => user.uId === userId).email = email;
-  setData(data);
 
+  setData(data);
+  // Update user details in channel
+  updateUserDetails(userId);
   return {};
 }
 
@@ -102,15 +115,18 @@ export function userProfileSetEmailV1 (token: string, email: string): Record<str
  * @returns {Object} { error: 'Invalid Session Id. } - If token is invalid.
  * @returns {Object} {} - If user successfully updates handle.
  */
-export function userProfileSetHandleV1 (token: string, handleStr: string): Record<string, never> | Error {
+export function userProfileSetHandleV1 (token: string, handleStr: string): Empty | Error {
   if (handleStr.length < 3 || handleStr.length > 20) return { error: 'Invalid Handle.' };
   if (handleStr.match(/^[0-9A-Za-z]+$/) === null) return { error: 'Invalid Handle.' };
   const data = getData();
   if (data.users.some(user => user.handleStr === handleStr)) return { error: 'Handle Already in Use.' };
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
-  const userId = Number(getUserIdFromToken(token));
-  data.users.find(user => user.uId === userId).handleStr = handleStr;
-  setData(data);
 
+  const userId = getUserIdFromToken(token);
+  data.users.find(user => user.uId === userId).handleStr = handleStr;
+
+  setData(data);
+  // Update user details in channel
+  updateUserDetails(userId);
   return {};
 }

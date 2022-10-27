@@ -1,5 +1,12 @@
 import { getData, setData } from './dataStore';
-import { User, PrivateUser, Session, messageId } from './objects';
+import {
+  Empty,
+  Error,
+  User,
+  PrivateUser,
+  Session,
+  messageId,
+} from './objects';
 
 /**
  * Checks whether a user is valid (whether they exist in the database)
@@ -97,13 +104,14 @@ export function generateSession(uId: number): Session {
 
 /**
  * Creates a messageId.
+ * Updates data. (You may need to call getData() again.)
  *
  * @returns {Object} {messageId : number} - the session object that was created.
  */
 export function generateMessageId(): messageId {
   const data = getData();
   const messageId = data.nextMessage;
-  data.nextMessage++;
+  data.nextMessage = data.nextMessage + 1;
   setData(data);
   return {
     messageId: messageId
@@ -161,7 +169,44 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
 }
 
 /**
- * Generates a unique handle for a user
+ * Update users' information in all channels. ie. if a name changes, then update
+ * that name in all channels
+ *
+ * @param uId - the users details to update.
+ * @returns {Empty} {} - if successful
+ * @returns {Error} {error: "uId invalid"} if user does not exist.
+ */
+export function updateUserDetails(uId: number) : Empty | Error {
+  if (!validUserId(uId)) return { error: 'Invalid User Id.' };
+  const data = getData();
+
+  // Get updated user details
+  const updatedUser = removePassword(data.users.find(user => user.uId === uId));
+
+  // Update user details in each channel
+  for (const channel of data.channels) {
+    if (checkUserIdtoChannel(uId, channel.channelId)) {
+      const ownerIndex = channel.ownerMembers.findIndex((user) => user.uId === uId);
+      channel.ownerMembers[ownerIndex] = updatedUser;
+      const memberIndex = channel.allMembers.findIndex((user) => user.uId === uId);
+      channel.allMembers[memberIndex] = updatedUser;
+    }
+  }
+
+  // Update user details in each DM
+  for (const dm of data.dms) {
+    if (checkUserIdtoDm(uId, dm.dmId)) {
+      if (dm.owner.uId === uId) dm.owner = updatedUser;
+      const memberIndex = dm.members.findIndex((user) => user.uId === uId);
+      dm.members[memberIndex] = updatedUser;
+    }
+  }
+
+  setData(data);
+  return {};
+}
+
+/** Generates a unique handle for a user
  *
  * @param {string} nameFirst - first name of the user
  * @param {string} nameLast - last name of the user

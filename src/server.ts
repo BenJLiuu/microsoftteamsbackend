@@ -3,7 +3,6 @@ import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 
-import { echo } from './echo';
 import { channelsCreateV2, channelsListV2, channelsListAllV2 } from './channels';
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2, channelLeaveV1, channelRemoveOwnerV1, channelAddOwnerV1 } from './channel';
@@ -23,16 +22,6 @@ app.use(morgan('dev'));
 
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || 'localhost';
-
-// Example get request
-app.get('/echo', (req: Request, res: Response, next) => {
-  try {
-    const data = req.query.echo as string;
-    return res.json(echo(data));
-  } catch (err) {
-    next(err);
-  }
-});
 
 app.post('/auth/login/v2', (req: Request, res: Response) => {
   const { email, password } = req.body;
