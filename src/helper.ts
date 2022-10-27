@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { User, PrivateUser, Session } from './objects';
+import { User, PrivateUser, Session, messageId } from './objects';
 
 /**
  * Checks whether a user is valid (whether they exist in the database)
@@ -61,7 +61,7 @@ export function checkUserIdtoChannel(authUserId : number, channelId : number) : 
  * Removes password parameter from user object
  *
  * @param user - to remove password from
- * @returns {
+ * @returns {PrivateUser} {
  *   uId: integer,
  *   nameFirst: string,
  *   nameLast: string,
@@ -93,6 +93,21 @@ export function generateSession(uId: number): Session {
   data.sessions.push(session);
   setData(data);
   return session;
+}
+
+/**
+ * Creates a messageId.
+ *
+ * @returns {Object} {messageId : number} - the session object that was created.
+ */
+export function generateMessageId(): messageId {
+  const data = getData();
+  const messageId = data.nextMessage;
+  data.nextMessage++;
+  setData(data);
+  return {
+    messageId: messageId
+  };
 }
 
 /**
@@ -181,4 +196,36 @@ export function updateUserDetails(uId: number) : Record<string, never> | Error {
 
   setData(data);
   return {};
+}
+
+/* Generates a unique handle for a user
+ *
+ * @param {string} nameFirst - first name of the user
+ * @param {string} nameLast - last name of the user
+ *
+ * @returns {string} handleStr - generated handle for user
+ */
+export function generateHandleStr(nameFirst: string, nameLast: string): string {
+  let handleStr = nameFirst + nameLast;
+  handleStr = handleStr.toLowerCase();
+  handleStr = handleStr.replace(/[^a-z0-9]/gi, '');
+  if (handleStr.length > 20) {
+    handleStr = handleStr.substring(0, 20);
+  }
+  let num = 0;
+  let handleStringExists = false;
+  const data = getData();
+  for (const user of data.users) {
+    if (handleStr === user.handleStr) {
+      num = 0;
+      handleStringExists = true;
+    } else if ((handleStr === user.handleStr.substring(0, handleStr.length)) && /^\d$/.test(user.handleStr[user.handleStr.length - 1])) {
+      num++;
+    }
+  }
+  if (handleStringExists) {
+    handleStr += num;
+  }
+
+  return handleStr;
 }

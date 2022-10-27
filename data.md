@@ -1,5 +1,6 @@
 ```javascript
 let data = {
+  nextMessage: 1,
   users: [ 
     {
       uId: 1,
@@ -91,13 +92,15 @@ let data = {
   sessions: [
     {
       token: 'c$jDgeUCeV%kY$fo9%xxwlkvyzFSZ(M^',
-      authUserId: '1'
+      authUserId: 1
     },
   ],
 };
 ```
 
-[Optional] short description: 
+nextMessage contains the next unused message id. You can get this information using
+the helper function generateMessageId. This messageId should be used for channels and DMs, as there should be no conflict.
+
 The example object in the 'users' array contains a uId, first and last names, email and a handle string. Moreover, a field named 'passwordHash' has been included for the hashed version of the password checked on user login. 
 
 The example object in the 'channels' array contains a channel Id and a name for the channel. We have also added an isPublic field containing a boolean showing whether or not the channel is public. Moreover, arrays containing the members with owner privileges and all members have also been added.

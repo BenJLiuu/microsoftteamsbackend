@@ -1,3 +1,4 @@
+import { Empty } from './objects';
 import { setData } from './dataStore';
 
 /**
@@ -7,8 +8,9 @@ import { setData } from './dataStore';
   *
   * @returns {} - function successfully resets all data directly at the data store.
 */
-function clearV1 (): Record<string, never> {
+function clearV1 (): Empty {
   setData({
+    nextMessage: 1,
     users: [],
     channels: [],
     sessions: [],
