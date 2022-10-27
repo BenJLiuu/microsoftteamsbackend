@@ -202,6 +202,7 @@ export function dmMessagesV1(token: string, dmId: number, start: number): Messag
     for (let i = start; i < end; i++) {
       messagesArray.push(data.dms[dmIndex].messages[i]);
     }
+    end -= 1;
   }
 
   messagesArray.sort(function(a, b) {
@@ -211,6 +212,6 @@ export function dmMessagesV1(token: string, dmId: number, start: number): Messag
   return {
     messages: messagesArray,
     start: start,
-    end: end - 1,
+    end: end,
   };
 }

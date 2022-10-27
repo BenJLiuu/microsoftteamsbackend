@@ -1,6 +1,8 @@
-import { requestAuthRegister, requestClear, requestChannelsCreate, requestChannelDetails, 
-         requestMessageSend, requestChannelInvite, requestChannelJoin, requestChannelLeave,
-         requestChannelRemoveOwner, requestChannelAddOwner, requestChannelMessages } from './httpHelper';
+import {
+  requestAuthRegister, requestClear, requestChannelsCreate, requestChannelDetails,
+  requestMessageSend, requestChannelInvite, requestChannelJoin, requestChannelLeave,
+  requestChannelRemoveOwner, requestChannelAddOwner, requestChannelMessages
+} from './httpHelper';
 
 describe('ChannelMessages', () => {
   beforeEach(() => {

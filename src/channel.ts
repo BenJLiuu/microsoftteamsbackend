@@ -39,6 +39,9 @@ export function channelMessagesV2(token: string, channelId: number, start: numbe
     for (let i = start; i < end; i++) {
       messagesArray.push(data.channels[channelIndex].messages[i]);
     }
+    if (end < 50) {
+      end -= 1;
+    }
   }
 
   messagesArray.sort(function(a, b) {
@@ -48,7 +51,7 @@ export function channelMessagesV2(token: string, channelId: number, start: numbe
   return {
     messages: messagesArray,
     start: start,
-    end: end - 1,
+    end: end,
   };
 }
 

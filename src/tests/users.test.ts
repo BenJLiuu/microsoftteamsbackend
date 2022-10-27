@@ -1,5 +1,7 @@
-import { requestAuthRegister, requestUserProfile, requestUsersAll, requestUserProfileSetName, 
-         requestUserProfileSetEmail, requestUserProfileSetHandle, requestClear } from './httpHelper';
+import {
+  requestAuthRegister, requestUserProfile, requestUsersAll, requestUserProfileSetName,
+  requestUserProfileSetEmail, requestUserProfileSetHandle, requestClear
+} from './httpHelper';
 
 describe('Test userProfile', () => {
   beforeEach(() => {

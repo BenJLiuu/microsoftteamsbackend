@@ -1,5 +1,7 @@
-import { requestAuthRegister, requestClear, requestChannelsCreate, requestChannelsList,
-         requestChannelsListAll, requestChannelDetails, requestChannelJoin } from './httpHelper';
+import {
+  requestAuthRegister, requestClear, requestChannelsCreate, requestChannelsList,
+  requestChannelsListAll, requestChannelDetails, requestChannelJoin
+} from './httpHelper';
 
 describe('Test channelsCreateV1', () => {
   beforeEach(() => {

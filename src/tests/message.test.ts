@@ -1,5 +1,7 @@
-import { requestAuthRegister, requestMessageSendDm, requestMessageSend, 
-         requestClear, requestDmCreate, requestChannelsCreate } from './httpHelper';
+import {
+  requestAuthRegister, requestMessageSendDm, requestMessageSend,
+  requestClear, requestDmCreate, requestChannelsCreate
+} from './httpHelper';
 
 describe('messageSendDm Tests', () => {
   beforeEach(() => {

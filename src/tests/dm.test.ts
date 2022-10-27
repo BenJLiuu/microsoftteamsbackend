@@ -1,5 +1,7 @@
-import { requestAuthRegister, requestDmCreate, requestDmList, requestDmLeave, 
-         requestDmDetails, requestDmMessages, requestDmRemove, requestClear } from './httpHelper';
+import {
+  requestAuthRegister, requestDmCreate, requestDmList, requestDmLeave,
+  requestDmDetails, requestDmMessages, requestDmRemove, requestClear
+} from './httpHelper';
 
 // DmCreate V1 Testing
 

@@ -16,7 +16,7 @@ function requestHelper(method: HttpVerb, path: string, payload: object) {
   return JSON.parse(res.getBody('utf-8'));
 }
 
-// AUTH 
+// AUTH
 
 export function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
   return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
@@ -112,7 +112,6 @@ export function requestMessageSendDm(token: string, dmId: number, message: strin
   return requestHelper('POST', '/message/senddm/v1', { token, dmId, message });
 }
 
-
 // DM
 
 export function requestDmCreate(token: string, uIds: Array<number>) {
@@ -138,8 +137,3 @@ export function requestDmMessages(token: string, dmId: number, start: number) {
 export function requestDmRemove(token: string, dmId: number) {
   return requestHelper('DELETE', '/dm/remove/v1', { token, dmId });
 }
-
-
-
-
-
