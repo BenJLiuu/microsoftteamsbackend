@@ -212,7 +212,7 @@ export function dmMessagesV1(token: Token, dmId: DmId, start: Start): MessageLis
       messagesArray.push(data.dms[dmIndex].messages[i]);
     }
     if (end < 50) {
-      end -= 1;
+      end = -1;
     }
   }
 
