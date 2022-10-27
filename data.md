@@ -8,7 +8,6 @@ let data = {
       email: 'mitchellemail@gmail.com',
       handleStr: 'mitchellgayfer',
       passwordHash: 0x5AF3d6,
-
     }
   ],
 
@@ -17,8 +16,30 @@ let data = {
       channelId: 20,
       name: 'myChannel',
       isPublic: true,
-      ownerMembers: [1, 2, 3],
-      allMembers: [1, 2, 3, 4, 5, 6, 7],
+      ownerMembers: [
+        {
+          uId: 1,
+          nameFirst: 'Mitchell',
+          nameLast: 'Gayfer',
+          email: 'mitchellemail@gmail.com',
+          handleStr: 'mitchellgayfer',
+        }
+      ],
+      allMembers: [
+        {
+          uId: 1,
+          nameFirst: 'Mitchell',
+          nameLast: 'Gayfer',
+          email: 'mitchellemail@gmail.com',
+          handleStr: 'mitchellgayfer',
+        },{
+          uId: 2,
+          nameFirst: 'Jayden',
+          nameLast: 'Hunter',
+          email: 'jaydenhunter@gmail.com',
+          handleStr: 'jaydenhunter',
+        }
+      ],
       messages: [
         {
           messageId: 300,
@@ -27,6 +48,43 @@ let data = {
           timeSent: 100000000
         }
       ],
+    }
+  ],
+
+  dms: [
+    {
+      dmId: 1,
+      name: 'jaydenhunter, mitchellgayfer',
+      members: [
+        {
+          uId: 1,
+          nameFirst: 'Mitchell',
+          nameLast: 'Gayfer',
+          email: 'mitchellemail@gmail.com',
+          handleStr: 'mitchellgayfer',
+        },{
+          uId: 2,
+          nameFirst: 'Jayden',
+          nameLast: 'Hunter',
+          email: 'jaydenhunter@gmail.com',
+          handleStr: 'jaydenhunter',
+        },
+      ]
+      owner: {
+        uId: 1,
+        nameFirst: 'Mitchell',
+        nameLast: 'Gayfer',
+        email: 'mitchellemail@gmail.com',
+        handleStr: 'mitchellgayfer',
+      }
+      messages: [
+        {
+          messageId: 301,
+          uId: 1,
+          message: 'hello jayden!',
+          timeSent: 100000000
+        }
+      ]
     }
   ],
 
