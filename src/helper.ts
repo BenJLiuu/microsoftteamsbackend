@@ -112,7 +112,6 @@ export function generateMessageId(): messageId {
   const data = getData();
   const messageId = data.nextMessage;
   data.nextMessage = data.nextMessage + 1;
-  console.log(data);
   setData(data);
   return {
     messageId: messageId

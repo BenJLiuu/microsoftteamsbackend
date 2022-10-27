@@ -1,6 +1,7 @@
 import {
   requestAuthRegister, requestUserProfile, requestUsersAll, requestUserProfileSetName,
-  requestUserProfileSetEmail, requestUserProfileSetHandle, requestClear
+  requestUserProfileSetEmail, requestUserProfileSetHandle, requestClear,
+  requestChannelsCreate, requestChannelJoin, requestChannelDetails
 } from './httpHelper';
 
 describe('Test userProfile', () => {
@@ -232,3 +233,192 @@ describe('Test userProfileSetHandle', () => {
     });
   });
 });
+
+describe('Test Updating User Info', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('Updating nothing', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('michael@gmail.com', 'dm12345', 'Michael', 'Scott');
+    const user3 = requestAuthRegister('jimhalp@gmail.com', 'password', 'Jim', 'Halpert');
+    const channel = requestChannelsCreate(user1.token, 'everyone', true);
+    requestChannelJoin(user2.token, channel.channelId);
+    requestChannelJoin(user3.token, channel.channelId);
+    expect(requestChannelDetails(user1.token, channel.channelId)).toStrictEqual(
+        {
+        name: 'everyone',
+        isPublic: true,
+        ownerMembers: [{
+          uId: user1.authUserId,
+          nameFirst: 'Alice',
+          nameLast: 'Person',
+          email: 'aliceP@fmail.au',
+          handleStr: 'aliceperson',
+        }],
+        allMembers: [
+          {
+            uId: user1.authUserId,
+            nameFirst: 'Alice',
+            nameLast: 'Person',
+            email: 'aliceP@fmail.au',
+            handleStr: 'aliceperson',
+          },
+          {
+            uId: user2.authUserId,
+            nameFirst: 'Michael',
+            nameLast: 'Scott',
+            email: 'michael@gmail.com',
+            handleStr: 'michaelscott',
+          },
+          {
+            uId: user3.authUserId,
+            nameFirst: 'Jim',
+            nameLast: 'Halpert',
+            email: 'jimhalp@gmail.com',
+            handleStr: 'jimhalpert',
+          }
+        ],
+      }
+    );
+  });
+
+  test('Updating name', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('michael@gmail.com', 'dm12345', 'Michael', 'Scott');
+    const user3 = requestAuthRegister('jimhalp@gmail.com', 'password', 'Jim', 'Halpert');
+    const channel = requestChannelsCreate(user1.token, 'everyone', true);
+    requestChannelJoin(user2.token, channel.channelId);
+    requestChannelJoin(user3.token, channel.channelId);
+    requestUserProfileSetName(user1.token, 'John', 'Smith');
+    expect(requestChannelDetails(user1.token, channel.channelId)).toStrictEqual(
+        {
+        name: 'everyone',
+        isPublic: true,
+        ownerMembers: [{
+          uId: user1.authUserId,
+          nameFirst: 'John',
+          nameLast: 'Smith',
+          email: 'aliceP@fmail.au',
+          handleStr: 'aliceperson',
+        }],
+        allMembers: [
+          {
+            uId: user1.authUserId,
+            nameFirst: 'John',
+            nameLast: 'Smith',
+            email: 'aliceP@fmail.au',
+            handleStr: 'aliceperson',
+          },
+          {
+            uId: user2.authUserId,
+            nameFirst: 'Michael',
+            nameLast: 'Scott',
+            email: 'michael@gmail.com',
+            handleStr: 'michaelscott',
+          },
+          {
+            uId: user3.authUserId,
+            nameFirst: 'Jim',
+            nameLast: 'Halpert',
+            email: 'jimhalp@gmail.com',
+            handleStr: 'jimhalpert',
+          }
+        ],
+      }
+    );
+  });
+
+  test('Updating email', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('michael@gmail.com', 'dm12345', 'Michael', 'Scott');
+    const user3 = requestAuthRegister('jimhalp@gmail.com', 'password', 'Jim', 'Halpert');
+    const channel = requestChannelsCreate(user1.token, 'everyone', true);
+    requestChannelJoin(user2.token, channel.channelId);
+    requestChannelJoin(user3.token, channel.channelId);
+    requestUserProfileSetEmail(user2.token, 'scottywhite@gmail.com');
+    expect(requestChannelDetails(user1.token, channel.channelId)).toStrictEqual(
+        {
+        name: 'everyone',
+        isPublic: true,
+        ownerMembers: [{
+          uId: user1.authUserId,
+          nameFirst: 'Alice',
+          nameLast: 'Person',
+          email: 'aliceP@fmail.au',
+          handleStr: 'aliceperson',
+        }],
+        allMembers: [
+          {
+            uId: user1.authUserId,
+            nameFirst: 'Alice',
+            nameLast: 'Person',
+            email: 'aliceP@fmail.au',
+            handleStr: 'aliceperson',
+          },
+          {
+            uId: user2.authUserId,
+            nameFirst: 'Michael',
+            nameLast: 'Scott',
+            email: 'scottywhite@gmail.com',
+            handleStr: 'michaelscott',
+          },
+          {
+            uId: user3.authUserId,
+            nameFirst: 'Jim',
+            nameLast: 'Halpert',
+            email: 'jimhalp@gmail.com',
+            handleStr: 'jimhalpert',
+          }
+        ],
+      }
+    );
+  });
+
+  test('Updating handle', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('michael@gmail.com', 'dm12345', 'Michael', 'Scott');
+    const user3 = requestAuthRegister('jimhalp@gmail.com', 'password', 'Jim', 'Halpert');
+    const channel = requestChannelsCreate(user1.token, 'everyone', true);
+    requestChannelJoin(user2.token, channel.channelId);
+    requestChannelJoin(user3.token, channel.channelId);
+    requestUserProfileSetHandle(user3.token, 'jimhalp');
+    expect(requestChannelDetails(user1.token, channel.channelId)).toStrictEqual(
+        {
+        name: 'everyone',
+        isPublic: true,
+        ownerMembers: [{
+          uId: user1.authUserId,
+          nameFirst: 'Alice',
+          nameLast: 'Person',
+          email: 'aliceP@fmail.au',
+          handleStr: 'aliceperson',
+        }],
+        allMembers: [
+          {
+            uId: user1.authUserId,
+            nameFirst: 'Alice',
+            nameLast: 'Person',
+            email: 'aliceP@fmail.au',
+            handleStr: 'aliceperson',
+          },
+          {
+            uId: user2.authUserId,
+            nameFirst: 'Michael',
+            nameLast: 'Scott',
+            email: 'michael@gmail.com',
+            handleStr: 'michaelscott',
+          },
+          {
+            uId: user3.authUserId,
+            nameFirst: 'Jim',
+            nameLast: 'Halpert',
+            email: 'jimhalp@gmail.com',
+            handleStr: 'jimhalp',
+          }
+        ],
+      }
+    );
+  });
+})

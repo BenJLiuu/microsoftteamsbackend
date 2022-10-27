@@ -197,13 +197,12 @@ export function channelInviteV2(token: string, channelId: number, uId: number): 
   * @returns {error: 'Invalid Channel Id.'} - Channel does not exist.
   * @returns {error: 'Invalid Session.'} - token does not correspond to an existing session.
   * @returns {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
-  * @returns ChannelDetails - Object containing channel successfully examined by authUserId.
+  * @returns {ChannelDetails} ChannelDetails - Object containing channel successfully examined by authUserId.
 */
 export function channelDetailsV2(token: string, channelId: number): ChannelDetails | Error {
   if (!validChannelId(channelId)) return { error: 'Invalid Channel Id.' };
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
-  const authUser = getUserIdFromToken(token);
-  if (!checkUserIdtoChannel(authUser, channelId)) return { error: 'Authorised User is not a member.' };
+  if (!checkUserIdtoChannel(getUserIdFromToken(token), channelId)) return { error: 'Authorised User is not a member.' };
 
   const data = getData();
 
