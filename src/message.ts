@@ -26,10 +26,8 @@ export function messageSendDmV1(token: string, dmId: number, message: string): m
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the Dm' };
 
-  const data = getData();
-
   const messageId = generateMessageId().messageId;
-
+  const data = getData();
   // Add message to DM list
   data.dms.find(dm => dm.dmId === dmId).messages.push({
     messageId: messageId,
@@ -60,9 +58,9 @@ export function messageSendV1(token: string, channelId: number, message: string)
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoChannel(authUserId, channelId)) return { error: 'Authorised user is not a channel member' };
 
-  const data = getData();
   const messageId = generateMessageId().messageId;
-
+  const data = getData();
+  
   data.channels.find(channel => channel.channelId === channelId).messages.push({
     messageId: messageId,
     uId: authUserId,

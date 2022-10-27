@@ -97,13 +97,15 @@ export function generateSession(uId: number): Session {
 
 /**
  * Creates a messageId.
+ * Updates data. (You may need to call getData() again.)
  *
  * @returns {Object} {messageId : number} - the session object that was created.
  */
 export function generateMessageId(): messageId {
   const data = getData();
   const messageId = data.nextMessage;
-  data.nextMessage++;
+  data.nextMessage = data.nextMessage + 1;
+  console.log(data);
   setData(data);
   return {
     messageId: messageId
@@ -198,7 +200,7 @@ export function updateUserDetails(uId: number) : Record<string, never> | Error {
   return {};
 }
 
-/* Generates a unique handle for a user
+/** Generates a unique handle for a user
  *
  * @param {string} nameFirst - first name of the user
  * @param {string} nameLast - last name of the user
