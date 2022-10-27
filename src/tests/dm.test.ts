@@ -1,59 +1,7 @@
-import request from 'sync-request';
-
-import { HttpVerb } from 'sync-request';
-
-import { port, url } from './../config.json';
-
-const SERVER_URL = `${url}:${port}`;
-
-function requestHelper(method: HttpVerb, path: string, payload: object) {
-  let qs = {};
-
-  let json = {};
-
-  if (['GET', 'DELETE'].includes(method)) {
-    qs = payload;
-  } else {
-    // PUT/POST
-    json = payload;
-  }
-
-  const res = request(method, SERVER_URL + path, { qs, json });
-
-  return JSON.parse(res.getBody('utf-8'));
-}
-
-function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
-  return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
-}
-
-function requestDmCreate(token: string, uIds: Array<number>) {
-  return requestHelper('POST', '/dm/create/v1', { token, uIds });
-}
-
-function requestDmList(token: string) {
-  return requestHelper('GET', '/dm/list/v1', { token });
-}
-
-function requestDmLeave(token: string, dmId: number) {
-  return requestHelper('POST', '/dm/leave/v1', { token, dmId });
-}
-
-function requestDmDetails(token: string, dmId: number) {
-  return requestHelper('GET', '/dm/details/v1', { token, dmId });
-}
-
-function requestDmMessages(token: string, dmId: number, start: number) {
-  return requestHelper('GET', '/dm/messages/v1', { token, dmId, start });
-}
-
-function requestDmRemove(token: string, dmId: number) {
-  return requestHelper('DELETE', '/dm/remove/v1', { token, dmId });
-}
-
-function requestClear() {
-  return requestHelper('DELETE', '/clear/v1', {});
-}
+import {
+  requestAuthRegister, requestDmCreate, requestDmList, requestDmLeave,
+  requestDmDetails, requestDmMessages, requestDmRemove, requestClear
+} from './httpHelper';
 
 // DmCreate V1 Testing
 

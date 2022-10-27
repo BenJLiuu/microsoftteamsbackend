@@ -209,15 +209,17 @@ export function dmMessagesV1(token: string, dmId: number, start: number): Messag
   let end = 0;
   if (data.dms[dmIndex].messages.length + start > 50) {
     end = start + 50;
-  } else if (data.dms[dmIndex].messages.length !== 0) {
+  } else {
     end = data.dms[dmIndex].messages.length;
-    end -= 1;
   }
 
   const messagesArray = [];
   if (end !== 0) {
-    for (let i = start; i <= end; i++) {
+    for (let i = start; i < end; i++) {
       messagesArray.push(data.dms[dmIndex].messages[i]);
+    }
+    if (end < 50) {
+      end -= 1;
     }
   }
 
