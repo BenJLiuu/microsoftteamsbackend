@@ -67,13 +67,13 @@ export function userProfileSetNameV1 (token: string, nameFirst: string, nameLast
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
 
   const data = getData();
-  
+
   const userId = getUserIdFromToken(token);
   data.users.find(user => user.uId === userId).nameFirst = nameFirst;
   data.users.find(user => user.uId === userId).nameLast = nameLast;
 
   setData(data);
-  //Update user details in channel
+  // Update user details in channel
   updateUserDetails(userId);
 
   return {};
@@ -99,7 +99,7 @@ export function userProfileSetEmailV1 (token: string, email: string): Record<str
   data.users.find(user => user.uId === userId).email = email;
 
   setData(data);
-  //Update user details in channel
+  // Update user details in channel
   updateUserDetails(userId);
   return {};
 }
@@ -121,12 +121,12 @@ export function userProfileSetHandleV1 (token: string, handleStr: string): Recor
   const data = getData();
   if (data.users.some(user => user.handleStr === handleStr)) return { error: 'Handle Already in Use.' };
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
-  
+
   const userId = getUserIdFromToken(token);
   data.users.find(user => user.uId === userId).handleStr = handleStr;
 
   setData(data);
-  //Update user details in channel
+  // Update user details in channel
   updateUserDetails(userId);
   return {};
 }

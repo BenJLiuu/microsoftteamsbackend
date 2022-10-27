@@ -145,17 +145,16 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
   return data.dms[position].members.some(user => user.uId === authUserId);
 }
 
-
 /**
  * Update users' information in all channels. ie. if a name changes, then update
  * that name in all channels
- * 
+ *
  * @param uId - the users details to update.
  * @returns {Empty} {} - if successful
  * @returns {Error} {error: "uId invalid"} if user does not exist.
  */
 export function updateUserDetails(uId: number) : Record<string, never> | Error {
-  if (!validUserId(uId)) return {error: "uId invalid"};
+  if (!validUserId(uId)) return { error: 'Invalid User Id.' };
   const data = getData();
 
   // Get updated user details
@@ -163,20 +162,23 @@ export function updateUserDetails(uId: number) : Record<string, never> | Error {
 
   // Update user details in each channel
   for (const channel of data.channels) {
-    if (checkUserIdtoChannel(uId, channel)) {
-      channel.ownerMembers.find((user) => user.uId === uId) = updatedUser;
-      channel.allMembers.find((user) => user.uId === uId) = updatedUser;
+    if (checkUserIdtoChannel(uId, channel.channelId)) {
+      const ownerIndex = channel.ownerMembers.findIndex((user) => user.uId === uId);
+      channel.ownerMembers[ownerIndex] = updatedUser;
+      const memberIndex = channel.allMembers.findIndex((user) => user.uId === uId);
+      channel.allMembers[memberIndex] = updatedUser;
     }
   }
 
   // Update user details in each DM
   for (const dm of data.dms) {
-    if (checkUserIdtoDm(uId, dm)) {
+    if (checkUserIdtoDm(uId, dm.dmId)) {
       if (dm.owner.uId === uId) dm.owner = updatedUser;
-      dm.members.find((user) => user.uId === uId) = updatedUser;
+      const memberIndex = dm.members.findIndex((user) => user.uId === uId)
+      dm.members[memberIndex] = updatedUser;
     }
   }
 
-  setData();
+  setData(data);
   return {};
 }
