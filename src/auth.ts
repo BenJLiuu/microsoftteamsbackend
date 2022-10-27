@@ -71,7 +71,7 @@ export function authRegisterV2(email: Email, password: Password, nameFirst: Name
     handleStr: handleStr,
     passwordHash: password,
     // 1 if first UId made, 2 otherwise.
-    globalPermissions: newUId ? 1 : 2,
+    globalPermissions: newUId === 0 ? 1 : 2,
   });
 
   setData(data);

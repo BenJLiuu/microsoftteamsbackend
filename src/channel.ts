@@ -264,9 +264,7 @@ export function channelJoinV2(token: Token, channelId: ChannelId): Empty | Error
   const publicUser = getPublicUser(data.users[userIndex]);
 
   if (userIsChannelMember(uId, channelId)) return { error: 'You are already a member.' };
-  const userHasAccess = data.channels[channelIndex].isPublic ||
-                        userIsChannelMember(uId, channelId) ||
-                        isGlobalOwner(uId);
+  const userHasAccess = data.channels[channelIndex].isPublic || isGlobalOwner(uId);
   if (!userHasAccess) return { error: 'You do not have access to this channel.' };
 
   data.channels[channelIndex].allMembers.push(publicUser);

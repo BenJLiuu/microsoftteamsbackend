@@ -59,8 +59,8 @@ export function validChannelId(channelId : ChannelId) : boolean {
  */
 export function userIsChannelMember(uId: UId, channelId : ChannelId) : boolean {
   const data = getData();
-  const position = data.channels.findIndex(channel => channel.channelId === channelId);
-  return data.channels[position].allMembers.some(user => user.uId === uId);
+  const channel = data.channels.find(channel => channel.channelId === channelId);
+  return channel.allMembers.some(user => user.uId === uId);
 }
 
 /**
@@ -137,7 +137,7 @@ export function generateMessageId(): {messageId : MessageId} {
  */
 export function generateUId(): {uId: UId} {
   const data = getData();
-  const uId = data.nextMessage;
+  const uId = data.nextUId;
   data.nextUId++;
   setData(data);
   return {
