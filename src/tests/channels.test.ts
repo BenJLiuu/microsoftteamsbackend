@@ -1,48 +1,7 @@
-import request from 'sync-request';
-import { HttpVerb } from 'sync-request';
-import { port, url } from './../config.json';
-const SERVER_URL = `${url}:${port}`;
-
-function requestHelper(method: HttpVerb, path: string, payload: object) {
-  let qs = {};
-  let json = {};
-  if (['GET', 'DELETE'].includes(method)) {
-    qs = payload;
-  } else {
-    // PUT/POST
-    json = payload;
-  }
-  const res = request(method, SERVER_URL + path, { qs, json });
-  return JSON.parse(res.getBody('utf-8'));
-}
-
-function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
-  return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
-}
-
-function requestClear() {
-  return requestHelper('DELETE', '/clear/v1', {});
-}
-
-function requestChannelsCreate(token: string, name: string, isPublic: boolean) {
-  return requestHelper('POST', '/channels/create/v2', { token, name, isPublic });
-}
-
-function requestChannelsList(token: string) {
-  return requestHelper('GET', '/channels/list/v2', { token });
-}
-
-function requestChannelsListAll(token: string) {
-  return requestHelper('GET', '/channels/listAll/v2', { token });
-}
-
-function requestChannelDetails(token: string, channelId: number) {
-  return requestHelper('GET', '/channel/details/v2', { token, channelId });
-}
-
-function requestChannelJoin(token: string, channelId: number) {
-  return requestHelper('POST', '/channel/join/v2', { token, channelId });
-}
+import {
+  requestAuthRegister, requestClear, requestChannelsCreate, requestChannelsList,
+  requestChannelsListAll, requestChannelDetails, requestChannelJoin
+} from './httpHelper';
 
 describe('Test channelsCreateV1', () => {
   beforeEach(() => {

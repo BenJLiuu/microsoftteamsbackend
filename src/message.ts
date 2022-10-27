@@ -1,11 +1,29 @@
 import { getData, setData } from './dataStore';
+import { Error, Token, DmId, ChannelId, Message } from './interfaceTypes';
+import { MessageIdObj } from './internalTypes';
 import {
-  validChannelId, validToken, getUserIdFromToken, validDmId, checkUserIdtoDm, checkUserIdtoChannel,
-  checkMessageToChannel, checkMessageToDm, checkUserToMessage, validMessageId
+  validChannelId,
+  validToken,
+  getUserIdFromToken,
+  validDmId,
+  checkUserIdtoDm,
+  checkUserIdtoChannel,
+  generateMessageId,
+  checkMessageToChannel,
+  checkMessageToDm,
+  checkUserToMessage,
+  validMessageId,
 } from './helper';
-import { Error, messageId } from './objects';
 
-export function messageSendDmV1(token: string, dmId: number, message: string): messageId | Error {
+/**
+ * Send and store a DM sent by a given user
+ *
+ * @param {Token} token - the session id of the sender
+ * @param {DmId} dmId - the dm the message was sent in
+ * @param {Message} message - the message to be sent
+ * @returns {messageId} messageId - the Id of the stored message
+ */
+export function messageSendDmV1(token: Token, dmId: DmId, message: Message): MessageIdObj | Error {
   if (!validDmId(dmId)) return { error: 'Not valid Dm Id' };
   if (message.length < 1) return { error: 'Message contains too little characters.' };
   if (message.length > 1000) return { error: 'Message contains too many characters.' };
@@ -13,26 +31,31 @@ export function messageSendDmV1(token: string, dmId: number, message: string): m
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the Dm' };
 
+  const messageId = generateMessageId().messageId;
   const data = getData();
-  const index = data.dms.findIndex(dm => dm.dmId === dmId);
-
-  const currentTime = new Date();
-  const time = currentTime.getHours() + currentTime.getMinutes() + currentTime.getSeconds();
-  const messageId = Math.floor(Math.random() * 899999 + 100000);
-
-  const newDmMessage = {
+  // Add message to DM list
+  data.dms.find(dm => dm.dmId === dmId).messages.push({
     messageId: messageId,
     uId: authUserId,
     message: message,
-    timeSent: time,
-  };
-  data.dms[index].messages.push(newDmMessage);
+    timeSent: Date.now(),
+  });
 
   setData(data);
-  return { messageId: messageId };
+  return {
+    messageId: messageId,
+  };
 }
 
-export function messageSendV1(token: string, channelId: number, message: string): messageId | Error {
+/**
+ * Send and store a message within a channel sent by a given user
+ *
+ * @param {Token} token - the session id of the sender
+ * @param {ChannelId} channelId - the dm the message was sent in
+ * @param {Message} message - the message to be sent
+ * @returns {messageId} messageId - the Id of the stored message
+ */
+export function messageSendV1(token: Token, channelId: ChannelId, message: Message): MessageIdObj | Error {
   if (!validChannelId(channelId)) return { error: 'Not valid channelId' };
   if (message.length < 1) return { error: 'Message contains too little characters.' };
   if (message.length > 1000) return { error: 'Message contains too many characters.' };
@@ -40,23 +63,20 @@ export function messageSendV1(token: string, channelId: number, message: string)
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoChannel(authUserId, channelId)) return { error: 'Authorised user is not a channel member' };
 
+  const messageId = generateMessageId().messageId;
   const data = getData();
-  const index = data.channels.findIndex(channel => channel.channelId === channelId);
 
-  const currentTime = new Date();
-  const time = currentTime.getHours() + currentTime.getMinutes() + currentTime.getSeconds();
-  const messageId = Math.floor(Math.random() * 899999 + 100000);
-
-  const newMessage = {
+  data.channels.find(channel => channel.channelId === channelId).messages.push({
     messageId: messageId,
     uId: authUserId,
     message: message,
-    timeSent: time,
-  };
-  data.channels[index].messages.push(newMessage);
+    timeSent: Date.now(),
+  });
 
   setData(data);
-  return { messageId: messageId };
+  return {
+    messageId: messageId,
+  };
 }
 
 /**

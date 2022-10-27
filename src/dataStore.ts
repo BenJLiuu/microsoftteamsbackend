@@ -1,23 +1,22 @@
-import { Data } from './objects';
+import { Data } from './internalTypes';
 import fs from 'fs';
 
 let data: Data = {
+  nextMessage: 1,
   users: [],
   channels: [],
   sessions: [],
   dms: [],
 };
 
-function setData(newData: Data) {
+export function setData(newData: Data) {
   const jsonstr = JSON.stringify(newData);
-  fs.writeFileSync('./database.json', jsonstr);
+  fs.writeFileSync('./src/database.json', jsonstr);
   data = newData;
 }
 
-function getData(): Data {
-  const dbstr = fs.readFileSync('./database.json');
+export function getData(): Data {
+  const dbstr = fs.readFileSync('./src/database.json');
   data = JSON.parse(String(dbstr));
   return data;
 }
-
-export { getData, setData };
