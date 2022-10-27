@@ -40,12 +40,12 @@ export function channelMessagesV2(token: string, channelId: number, start: numbe
       messagesArray.push(data.channels[channelIndex].messages[i]);
     }
     if (end < 50) {
-      end -= 1;
+      end = -1;
     }
   }
 
   messagesArray.sort(function(a, b) {
-    return a.timeSent - b.timeSent;
+    return b.timeSent - a.timeSent;
   });
 
   return {

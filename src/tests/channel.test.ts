@@ -82,7 +82,7 @@ describe('ChannelMessages', () => {
         },
       ],
       start: 0,
-      end: 2,
+      end: -1,
     });
   });
 
@@ -90,15 +90,18 @@ describe('ChannelMessages', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     for (let i = 0; i < 60; i++) {
-      requestMessageSend(user1.token, channel1.channelId, 'hello');
+      requestMessageSend(user1.token, channel1.channelId, 'hello' + i);
     }
-
+    console.log(requestChannelMessages(user1.token, channel1.channelId, 5));
     expect(requestChannelMessages(user1.token, channel1.channelId, 5)).toEqual({
       messages: expect.any(Array),
       start: 5,
       end: 55,
     });
+    expect(requestChannelMessages(user1.token, channel1.channelId, 5).messages).toHaveLength(50);
   });
+
+
 });
 
 // requestChannelInvite tests

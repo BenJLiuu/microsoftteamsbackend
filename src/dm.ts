@@ -203,7 +203,7 @@ export function dmMessagesV1(token: string, dmId: number, start: number): Messag
       messagesArray.push(data.dms[dmIndex].messages[i]);
     }
     if (end < 50) {
-      end -= 1;
+      end = -1;
     }
   }
 
