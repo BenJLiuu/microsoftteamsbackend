@@ -31,33 +31,16 @@ export function channelMessagesV2(token: Token, channelId: ChannelId, start: Sta
   if (!validChannelId(channelId)) return { error: 'Not valid channelId' };
   if (!validToken(token)) return { error: 'Invalid Session.' };
 
-  const data = getData();
-  const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
-  if (start > data.channels[channelIndex].messages.length) return { error: 'Start is greater than total messages' };
+  const messages = getData().channels.find(channel => channel.channelId === channelId).messages;
+  if (start > messages.length) return { error: 'Start is greater than total messages' };  
+  if (!userIsChannelMember(getUserIdFromToken(token), channelId)) return { error: 'Authorised user is not a channel member' };
 
-  const authUId = getUserIdFromToken(token);
-  if (!userIsChannelMember(authUId, channelId)) return { error: 'Authorised user is not a channel member' };
-
-  let end = 0;
-  if (data.channels[channelIndex].messages.length + start > 50) {
-    end = start + 50;
-  } else {
-    end = data.channels[channelIndex].messages.length;
-  }
+  let end = Math.min(messages.length, start + 50);
 
   const messagesArray = [];
-  if (end !== 0) {
-    for (let i = start; i < end; i++) {
-      messagesArray.push(data.channels[channelIndex].messages[i]);
-    }
-    if (end < 50) {
-      end -= 1;
-    }
-  }
-
-  messagesArray.sort(function(a, b) {
-    return a.timeSent - b.timeSent;
-  });
+  for (let i = start; i < end; i++) messagesArray.push(messages[i]);
+  if (end === messages.length) end = -1;
+  messagesArray.sort((a,b) => a.timeSent - b.timeSent);
 
   return {
     messages: messagesArray,
