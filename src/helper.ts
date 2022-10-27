@@ -144,3 +144,39 @@ export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
   const position = data.dms.findIndex(dm => dm.dmId === dmId);
   return data.dms[position].members.some(user => user.uId === authUserId);
 }
+
+
+/**
+ * Update users' information in all channels. ie. if a name changes, then update
+ * that name in all channels
+ * 
+ * @param uId - the users details to update.
+ * @returns {Empty} {} - if successful
+ * @returns {Error} {error: "uId invalid"} if user does not exist.
+ */
+export function updateUserDetails(uId: number) : Record<string, never> | Error {
+  if (!validUserId(uId)) return {error: "uId invalid"};
+  const data = getData();
+
+  // Get updated user details
+  const updatedUser = removePassword(data.users.find(user => user.uId === uId));
+
+  // Update user details in each channel
+  for (const channel of data.channels) {
+    if (checkUserIdtoChannel(uId, channel)) {
+      channel.ownerMembers.find((user) => user.uId === uId) = updatedUser;
+      channel.allMembers.find((user) => user.uId === uId) = updatedUser;
+    }
+  }
+
+  // Update user details in each DM
+  for (const dm of data.dms) {
+    if (checkUserIdtoDm(uId, dm)) {
+      if (dm.owner.uId === uId) dm.owner = updatedUser;
+      dm.members.find((user) => user.uId === uId) = updatedUser;
+    }
+  }
+
+  setData();
+  return {};
+}

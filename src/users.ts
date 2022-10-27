@@ -1,7 +1,13 @@
 import { getData, setData } from './dataStore';
 import { UserOmitPassword, UsersOmitPassword, Error } from './objects';
-import { validToken, validUserId, removePassword, getUserIdFromToken } from './helper';
 import validator from 'validator';
+import {
+  validToken,
+  validUserId,
+  removePassword,
+  getUserIdFromToken,
+  updateUserDetails,
+} from './helper';
 
 /**
   * For a valid user, returns information about a requested valid user profile
@@ -58,12 +64,17 @@ export function usersAllV1 (token: string): UsersOmitPassword | Error {
 export function userProfileSetNameV1 (token: string, nameFirst: string, nameLast: string): Record<string, never> | Error {
   if (nameFirst.length < 1 || nameFirst.length > 50) return { error: 'Invalid First Name.' };
   if (nameLast.length < 1 || nameLast.length > 50) return { error: 'Invalid Last Name.' };
-  const data = getData();
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
-  const userId = Number(getUserIdFromToken(token));
+
+  const data = getData();
+  
+  const userId = getUserIdFromToken(token);
   data.users.find(user => user.uId === userId).nameFirst = nameFirst;
   data.users.find(user => user.uId === userId).nameLast = nameLast;
+
   setData(data);
+  //Update user details in channel
+  updateUserDetails(userId);
 
   return {};
 }
@@ -84,10 +95,12 @@ export function userProfileSetEmailV1 (token: string, email: string): Record<str
   const data = getData();
   if (data.users.some(user => user.email === email)) return { error: 'Email Already in Use.' };
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
-  const userId = Number(getUserIdFromToken(token));
+  const userId = getUserIdFromToken(token);
   data.users.find(user => user.uId === userId).email = email;
-  setData(data);
 
+  setData(data);
+  //Update user details in channel
+  updateUserDetails(userId);
   return {};
 }
 
@@ -108,9 +121,12 @@ export function userProfileSetHandleV1 (token: string, handleStr: string): Recor
   const data = getData();
   if (data.users.some(user => user.handleStr === handleStr)) return { error: 'Handle Already in Use.' };
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
-  const userId = Number(getUserIdFromToken(token));
+  
+  const userId = getUserIdFromToken(token);
   data.users.find(user => user.uId === userId).handleStr = handleStr;
-  setData(data);
 
+  setData(data);
+  //Update user details in channel
+  updateUserDetails(userId);
   return {};
 }
