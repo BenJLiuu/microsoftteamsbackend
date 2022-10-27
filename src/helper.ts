@@ -1,30 +1,29 @@
 import { getData, setData } from './dataStore';
 import {
-  Empty,
-  Error,
-  User,
-  PrivateUser,
-  Session,
-  messageId,
-} from './objects';
+  Empty, Error,
+  UId, Token,
+  ChannelId, DmId, MessageId,
+  User, HandleStr, Name,
 
+} from './interfaceTypes';
+import { PrivateUser, Session } from './internalTypes';
 /**
- * Checks whether a user is valid (whether they exist in the database)
+ * Checks whether a uId exists in the database
  *
- * @param authUserId - Id of user.
- * @returns boolean of whether user is valid
+ * @param {UId} uId - Id of user.
+ * @returns {boolean} boolean of whether user is valid
  */
-export function validUserId(authUserId : number) : boolean {
+export function validUserId(uId: UId): boolean {
   const data = getData();
-  return data.users.some(user => user.uId === authUserId);
+  return data.users.some(user => user.uId === uId);
 }
 
 /**
  * Gets the value of a uId (not an object) from a given token.
- * @param {string} token - token to get authUserId from
- * @returns {number} authUserId - not an object.
+ * @param {Token} token - token to get authUserId from
+ * @returns {UId} uId - not an object.
  */
-export function getUserIdFromToken(token: string): number {
+export function getUserIdFromToken(token: Token): UId {
   const data = getData();
   return data.sessions.find(s => s.token === token).authUserId;
 }
@@ -32,10 +31,10 @@ export function getUserIdFromToken(token: string): number {
 /**
  * Checks whether a token is valid (whether it exists in the sessions)
  *
- * @param {string} token - Token to check
+ * @param {Token} token - Token to check
  * @returns {boolean} Boolean of whether the session is valid
  */
-export function validToken(token: string): boolean {
+export function validToken(token: Token): boolean {
   const data = getData();
   return data.sessions.some(t => t.token === token);
 }
@@ -43,10 +42,10 @@ export function validToken(token: string): boolean {
 /**
  * Checks whether a channel is valid (whether it exists in the database)
  *
- * @param channelId - Id of channel.
- * @returns boolean - whether channel is valid
+ * @param {ChannelId} channelId - Id of channel.
+ * @returns {boolean} boolean - whether channel is valid
  */
-export function validChannelId(channelId : number) : boolean {
+export function validChannelId(channelId : ChannelId) : boolean {
   const data = getData();
   return data.channels.some(channel => channel.channelId === channelId);
 }
@@ -54,41 +53,39 @@ export function validChannelId(channelId : number) : boolean {
 /**
  * Checks whether a user is in a channel
  *
- * @param authUserId - the user to check
- * @param channelId - the channel the user may be contained in
- * @returns boolean - whether the user is in the channel
+ * @param {UId} uId - the user to check
+ * @param {ChannelId} channelId - the channel the user may be contained in
+ * @returns {boolean} boolean - whether the user is in the channel
  */
-export function checkUserIdtoChannel(authUserId : number, channelId : number) : boolean {
+export function checkUserIdtoChannel(uId : number, channelId : ChannelId) : boolean {
   const data = getData();
   const position = data.channels.findIndex(channel => channel.channelId === channelId);
-  return data.channels[position].allMembers.some(user => user.uId === authUserId);
+  return data.channels[position].allMembers.some(user => user.uId === uId);
 }
 
 /**
- * Removes password parameter from user object
+ * Converts Private User to Public User
  *
- * @param user - to remove password from
- * @returns {PrivateUser} {
- *   uId: integer,
- *   nameFirst: string,
- *   nameLast: string,
- *   email: string,
- *   handleStr: string
- * } - a user but without the password key
+ * @param {PrivateUser} user - to remove password from
+ * @returns {User} User type - a user as in interface
  */
-export function removePassword(user : User) : PrivateUser {
-  const copy = { ...user };
-  delete copy.passwordHash;
-  return copy;
+export function getPublicUser(user: PrivateUser): User {
+  return {
+    uId: user.uId,
+    email: user.email,
+    nameFirst: user.nameFirst,
+    nameLast: user.nameLast,
+    handleStr: user.handleStr,
+  };
 }
 
 /**
  * Creates a session token for a user.
  *
- * @param {integer} uId - the user to assign the token to
+ * @param {UId} uId - the user to assign the token to
  * @returns {Session} {token : string, authUserId: number} - the session object that was created.
  */
-export function generateSession(uId: number): Session {
+export function generateSession(uId: UId): Session {
   const tokenLength = 32;
   const session = {
     token: genRandomString(tokenLength),
@@ -106,9 +103,9 @@ export function generateSession(uId: number): Session {
  * Creates a messageId.
  * Updates data. (You may need to call getData() again.)
  *
- * @returns {Object} {messageId : number} - the session object that was created.
+ * @returns {messageId : MessageId} {messageId : number} - the session object that was created.
  */
-export function generateMessageId(): messageId {
+export function generateMessageId(): {messageId : MessageId} {
   const data = getData();
   const messageId = data.nextMessage;
   data.nextMessage = data.nextMessage + 1;
@@ -136,10 +133,10 @@ function genRandomString(length: number): string {
 
 /**
  * Gets the handle string of a user from a given user id.
- * @param {number} uId - id of the the required user.
- * @returns {string} handleStr - users handle string.
+ * @param {UId} uId - id of the the required user.
+ * @returns {HandleStr} handleStr - users handle string.
  */
-export function gethandleStrFromId(uId: number): string {
+export function gethandleStrFromId(uId: UId): HandleStr {
   const data = getData();
   return data.users.find(s => s.uId === uId).handleStr;
 }
@@ -147,10 +144,10 @@ export function gethandleStrFromId(uId: number): string {
 /**
  * Checks whether a dm id is valid (whether it exists in the database)
  *
- * @param dmId - Id of dm
- * @returns boolean - whether dm id is valid
+ * @param {DmId} dmId - Id of dm
+ * @returns {boolean} boolean - whether dm id is valid
  */
-export function validDmId(dmId : number) : boolean {
+export function validDmId(dmId: DmId): boolean {
   const data = getData();
   return data.dms.some(dm => dm.dmId === dmId);
 }
@@ -158,30 +155,30 @@ export function validDmId(dmId : number) : boolean {
 /**
  * Checks whether a user is in a dm
  *
- * @param authUserId - the user to check
- * @param dmId - the dm the user may be contained in
- * @returns boolean - whether the user is in the dm
+ * @param {UId} uId - the user to check
+ * @param {DmId} dmId - the dm the user may be contained in
+ * @returns {boolean} boolean - whether the user is in the dm
  */
-export function checkUserIdtoDm(authUserId : number, dmId : number) : boolean {
+export function checkUserIdtoDm(uId: UId, dmId: DmId): boolean {
   const data = getData();
   const position = data.dms.findIndex(dm => dm.dmId === dmId);
-  return data.dms[position].members.some(user => user.uId === authUserId);
+  return data.dms[position].members.some(user => user.uId === uId);
 }
 
 /**
  * Update users' information in all channels. ie. if a name changes, then update
  * that name in all channels
  *
- * @param uId - the users details to update.
+ * @param {UId} uId - the users details to update.
  * @returns {Empty} {} - if successful
  * @returns {Error} {error: "uId invalid"} if user does not exist.
  */
-export function updateUserDetails(uId: number) : Empty | Error {
+export function updateUserDetails(uId: UId) : Empty | Error {
   if (!validUserId(uId)) return { error: 'Invalid User Id.' };
   const data = getData();
 
   // Get updated user details
-  const updatedUser = removePassword(data.users.find(user => user.uId === uId));
+  const updatedUser = getPublicUser(data.users.find(user => user.uId === uId));
 
   // Update user details in each channel
   for (const channel of data.channels) {
@@ -208,12 +205,12 @@ export function updateUserDetails(uId: number) : Empty | Error {
 
 /** Generates a unique handle for a user
  *
- * @param {string} nameFirst - first name of the user
- * @param {string} nameLast - last name of the user
+ * @param {Name} nameFirst - first name of the user
+ * @param {Name} nameLast - last name of the user
  *
- * @returns {string} handleStr - generated handle for user
+ * @returns {HandleStr} handleStr - generated handle for user
  */
-export function generateHandleStr(nameFirst: string, nameLast: string): string {
+export function generateHandleStr(nameFirst: Name, nameLast: Name): HandleStr {
   let handleStr = nameFirst + nameLast;
   handleStr = handleStr.toLowerCase();
   handleStr = handleStr.replace(/[^a-z0-9]/gi, '');
