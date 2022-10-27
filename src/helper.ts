@@ -276,3 +276,94 @@ export function generateHandleStr(nameFirst: Name, nameLast: Name): HandleStr {
 
   return handleStr;
 }
+
+/**
+ * Checks if a message is in a channel
+ *
+ * @param messageId - the id of the message to be checked
+ * @returns number - returns the index of the channel if present or -1 if not
+ */
+export function checkMessageToChannel(messageId : number) : number {
+  const data = getData();
+  for (let channel = 0; channel < data.channels.length; channel++) {
+    for (const message of data.channels[channel].messages) {
+      if (message.messageId === messageId) {
+        return channel;
+      }
+    }
+  }
+  return -1;
+}
+
+/**
+ * Checks if a message is in a dm
+ *
+ * @param messageId - the id of the message to be checked
+ * @returns number - returns the index of the dm if present or -1 if not
+ */
+export function checkMessageToDm(messageId : number) : number {
+  const data = getData();
+  for (let dm = 0; dm < data.dms.length; dm++) {
+    for (const message of data.dms[dm].messages) {
+      if (message.messageId === messageId) {
+        return dm;
+      }
+    }
+  }
+  return -1;
+}
+
+/**
+ * Checks whether a user has permission to affect a message
+ *
+ * @param authUserId - the user to check
+ * @param messageId - the id of the message to be checked
+ * @returns boolean - whether the user has access to change the message
+ */
+export function checkUserToMessage(authUserId : number, messageId : number) : boolean {
+  const data = getData();
+  const checkChannel = checkMessageToChannel(messageId);
+  if (checkChannel === -1) {
+    const checkDm = checkMessageToDm(messageId);
+    if (checkDm === -1) {
+      return false;
+    } else {
+      const dmPosition = data.dms[checkDm].messages.findIndex(message => message.messageId === messageId);
+      if (data.dms[checkDm].messages[dmPosition].uId === authUserId) {
+        return true;
+      } else {
+        if (data.dms[checkDm].owner.uId === authUserId) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+  } else {
+    const position = data.channels[checkChannel].messages.findIndex(message => message.messageId === messageId);
+    if (data.channels[checkChannel].messages[position].uId === authUserId) {
+      return true;
+    } else {
+      for (const member of data.channels[checkChannel].ownerMembers) {
+        if (member.uId === authUserId) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+}
+
+/**
+ * Checks whether a message id is valid
+ *
+ * @param messageId - the id of the message to be checked
+ * @returns boolean - whether the message id is valid or not
+ */
+export function validMessageId(messageId : number) : boolean {
+  if (!checkMessageToChannel(messageId) && !checkMessageToDm(messageId)) {
+    return false;
+  } else {
+    return true;
+  }
+}

@@ -137,3 +137,11 @@ export function requestDmMessages(token: string, dmId: number, start: number) {
 export function requestDmRemove(token: string, dmId: number) {
   return requestHelper('DELETE', '/dm/remove/v1', { token, dmId });
 }
+
+export function requestMessageEdit(token: string, messageId: number, message: string) {
+  return requestHelper('PUT', '/message/edit/v1', { token, messageId, message });
+}
+
+export function requestMessageRemove(token: string, messageId: number) {
+  return requestHelper('DELETE', '/message/remove/v1', { token, messageId });
+}
