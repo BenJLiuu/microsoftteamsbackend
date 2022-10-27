@@ -1,5 +1,6 @@
 import { getData, setData } from './dataStore';
-import { Error, messageId } from './objects';
+import { Error, Token, DmId, ChannelId, Message } from './interfaceTypes';
+import { MessageIdObj } from './internalTypes';
 import {
   validChannelId,
   validToken,
@@ -13,12 +14,12 @@ import {
 /**
  * Send and store a DM sent by a given user
  *
- * @param token - the session id of the sender
- * @param dmId - the dm the message was sent in
- * @param message - the message to be sent
+ * @param {Token} token - the session id of the sender
+ * @param {DmId} dmId - the dm the message was sent in
+ * @param {Message} message - the message to be sent
  * @returns {messageId} messageId - the Id of the stored message
  */
-export function messageSendDmV1(token: string, dmId: number, message: string): messageId | Error {
+export function messageSendDmV1(token: Token, dmId: DmId, message: Message): MessageIdObj | Error {
   if (!validDmId(dmId)) return { error: 'Not valid Dm Id' };
   if (message.length < 1) return { error: 'Message contains too little characters.' };
   if (message.length > 1000) return { error: 'Message contains too many characters.' };
@@ -45,12 +46,12 @@ export function messageSendDmV1(token: string, dmId: number, message: string): m
 /**
  * Send and store a message within a channel sent by a given user
  *
- * @param token - the session id of the sender
- * @param dmId - the dm the message was sent in
- * @param message - the message to be sent
+ * @param {Token} token - the session id of the sender
+ * @param {ChannelId} channelId - the dm the message was sent in
+ * @param {Message} message - the message to be sent
  * @returns {messageId} messageId - the Id of the stored message
  */
-export function messageSendV1(token: string, channelId: number, message: string): messageId | Error {
+export function messageSendV1(token: Token, channelId: ChannelId, message: Message): MessageIdObj | Error {
   if (!validChannelId(channelId)) return { error: 'Not valid channelId' };
   if (message.length < 1) return { error: 'Message contains too little characters.' };
   if (message.length > 1000) return { error: 'Message contains too many characters.' };

@@ -1,4 +1,4 @@
-import { Data } from './objects';
+import { Data } from './internalTypes';
 import fs from 'fs';
 
 let data: Data = {
@@ -9,16 +9,14 @@ let data: Data = {
   dms: [],
 };
 
-function setData(newData: Data) {
+export function setData(newData: Data) {
   const jsonstr = JSON.stringify(newData);
   fs.writeFileSync('./src/database.json', jsonstr);
   data = newData;
 }
 
-function getData(): Data {
+export function getData(): Data {
   const dbstr = fs.readFileSync('./src/database.json');
   data = JSON.parse(String(dbstr));
   return data;
 }
-
-export { getData, setData };

@@ -1,20 +1,22 @@
 import { getData, setData } from './dataStore';
-import { Session, Error } from './objects';
+import { Empty, Email, Password, Name, Token, Error } from './interfaceTypes';
+import { Session } from './internalTypes';
+
 import validator from 'validator';
 import { generateSession, generateHandleStr } from './helper';
 
 /**
   * Logs in a user and returns their user Id.
   *
-  * @param {string} email - the users' email
-  * @param {string} password - the users' password, unencrypted
+  * @param {Email} email - the users' email
+  * @param {Password} password - the users' password, unencrypted
   * ...
   *
-  * @returns {Object} {authUserId, token} - If login is successful
-  * @returns {Object} {error : 'Incorrect Password.'} - If email is found, but password is incorrect
-  * @returns {Object} {error : 'Email Not Found.'} - If email was not found.
+  * @returns {Session} {authUserId, token} - If login is successful
+  * @returns {Error} {error : 'Incorrect Password.'} - If email is found, but password is incorrect
+  * @returns {Error} {error : 'Email Not Found.'} - If email was not found.
 */
-function authLoginV2(email: string, password: string): Session | Error {
+export function authLoginV2(email: Email, password: Password): Session | Error {
   const data = getData();
   for (const user of data.users) {
     if (user.email === email) {
@@ -31,20 +33,19 @@ function authLoginV2(email: string, password: string): Session | Error {
   * Registers a user and returns their new user Id.
   * Also generates a unique user handle.
   *
-  * @param {string} email - the user's email address
-  * @param {string} password - the user's password
-  * @param {string} nameFirst - the user's first name
-  * @param {string} nameLast - the user's last name
+  * @param {Email} email - the user's email address
+  * @param {Password} password - the user's password
+  * @param {Name} nameFirst - the user's first name
+  * @param {Name} nameLast - the user's last name
   *
-  * @returns {Object} {authUserId: integer} - if registration is successfull
-  * @returns {Object} {error: 'Invalid Email Address.'} - if email is invalid (fails validator.isEmail)
-  * @returns {Object} {error: 'Email Already in Use.'} - if email is already in data
-  * @returns {Object} {error: 'Password too Short.'} - if password is <6 characters
-  * @returns {Object} {error: Invalid First Name.'} - if first name is too short/long
-  * @returns {Object} {error: Invalid Last Name.'} - if last name is too short/long
+  * @returns {Session} {authUserId, token} - if registration is successfull
+  * @returns {Error} {error: 'Invalid Email Address.'} - if email is invalid (fails validator.isEmail)
+  * @returns {Error} {error: 'Email Already in Use.'} - if email is already in data
+  * @returns {Error} {error: 'Password too Short.'} - if password is <6 characters
+  * @returns {Error} {error: Invalid First Name.'} - if first name is too short/long
+  * @returns {Error} {error: Invalid Last Name.'} - if last name is too short/long
 */
-
-function authRegisterV2(email: string, password: string, nameFirst: string, nameLast: string): Session | Error {
+export function authRegisterV2(email: Email, password: Password, nameFirst: Name, nameLast: Name): Session | Error {
   const data = getData();
 
   if (validator.isEmail(email) === false) return { error: 'Invalid Email Address.' };
@@ -70,6 +71,7 @@ function authRegisterV2(email: string, password: string, nameFirst: string, name
     email: email,
     handleStr: handleStr,
     passwordHash: password,
+    globalPermissions: 2,
   });
 
   setData(data);
@@ -79,11 +81,11 @@ function authRegisterV2(email: string, password: string, nameFirst: string, name
 /**
   * Given a session token for a user, closes that token thus logging out the user.
   *
-  * @param {string} token - the token representing the session.
+  * @param {Token} token - the token representing the session.
   *
-  * @returns {error: 'Invalid token'} - if token does not exist in dataStore.
+  * @returns {Error} {error: 'Invalid token'} - if token does not exist in dataStore.
 */
-function authLogoutV1(token: string): Record<string, never> | Error {
+export function authLogoutV1(token: Token): Empty | Error {
   const data = getData();
   if (!(data.sessions.some(session => session.token === token))) return { error: 'Invalid token' };
 
@@ -93,5 +95,3 @@ function authLogoutV1(token: string): Record<string, never> | Error {
   setData(data);
   return {};
 }
-
-export { authLoginV2, authRegisterV2, authLogoutV1 };

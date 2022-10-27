@@ -1,34 +1,32 @@
 import { getData, setData } from './dataStore';
-import { Channel, Channels, ChannelId, Error } from './objects';
+import { Token, Name, IsPublic, ChannelId, Error } from './interfaceTypes';
+import { PrivateChannel, ChannelsObj } from './internalTypes';
 
 import {
   validToken,
   checkUserIdtoChannel,
-  removePassword,
+  getPublicUser,
   getUserIdFromToken,
 } from './helper';
 
 /**
   * Lists all channels that currently exists. Returns an error if authUserID isn't an authorised user
   *
-  * @param {string} token - The token of the person calling channelsListAll
+  * @param {Token} token - The token of the person calling channelsListAll
   *
-  * @returns {Object} {error: 'Invalid Session Id.'} - If the user token is invalid
-  * @returns {Object} {
-  *   channelId: integer,
-  *   name: string
-  * } - If the user calling the function is authorised and if there are currently any existing channels
-  * @returns {Object} {channels: []} - If no channels have been created
+  * @returns {Error} {error: 'Invalid Session Id.'} - If the user token is invalid
+  * @returns {ChannelsObj} { channels: [...] } - Object containing array of channels If the user calling the function is authorised and if there are currently any existing channels
+  * @returns {ChannelsObj} { channels: [] } - If no channels have been created
   *
 */
-function channelsListAllV2 (token: string): Channels | Error {
+export function channelsListAllV2 (token: Token): ChannelsObj | Error {
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
   const data = getData();
   const channelList = [];
   for (const channel of data.channels) {
     channelList.push({
       channelId: channel.channelId,
-      name: channel.name
+      name: channel.name,
     });
   }
 
@@ -38,18 +36,14 @@ function channelsListAllV2 (token: string): Channels | Error {
 /**
   * Lists the channels that given user is a member of. Returns an error if the user is invalid.
   *
-  * @param {string} token - Token of the user who is using channels/list
+  * @param {Token} token - Token of the user who is using channels/list
   *
-  * @returns {Object} {error: 'Invalid Session Id.'} - If the token is invalid.
-  * @returns {Object} {
- *   channelId: integer,
- *   name: string
- * } - If the user calling the function is authorised and has joined a channel/s
- * @returns {Object} {channels: []} - If the user has not joined any channels
+  * @returns {Error} {error: 'Invalid Session Id.'} - If the token is invalid.
+  * @returns {ChannelsObj} { channels: [...] } - If the user calling the function is authorised and has joined a channel/s
+ * @returns {ChannelsObj} {channels: []} - If the user has not joined any channels
  *
 */
-
-function channelsListV2(token: string): Channels | Error {
+export function channelsListV2(token: Token): ChannelsObj | Error {
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
   const data = getData();
   const channelList = [];
@@ -70,15 +64,15 @@ function channelsListV2(token: string): Channels | Error {
   * Assigns the user that created the channel as the owner of that channel,
   * as well as making them a normal member.
   *
-  * @param {string} token - the channel creator's user ID
-  * @param {string} name - the new channel's name
-  * @param {boolean} isPublic - whether the new channel should be public or private
+  * @param {Token} token - the channel creator's user ID
+  * @param {Name} name - the new channel's name
+  * @param {IsPublic} isPublic - whether the new channel should be public or private
   *
-  * @returns {Object} {channelId: integer} - if channel creation is successfull
-  * @returns {Object} {error: 'Invalid user permissions.'} - If user is not a valid user
-  * @returns {Object} {error: 'Channel name must be between 1-20 characters.'} - If channel name is too long/short
+  * @returns {{channelId: ChannelId}} {channelId: ChannelId} - if channel creation is successfull
+  * @returns {Error} {error: 'Invalid user permissions.'} - If user is not a valid user
+  * @returns {Error} {error: 'Channel name must be between 1-20 characters.'} - If channel name is too long/short
 */
-function channelsCreateV2(token: string, name: string, isPublic: boolean): ChannelId | Error {
+export function channelsCreateV2(token: Token, name: Name, isPublic: IsPublic): { channelId: ChannelId } | Error {
   if (!validToken(token)) return { error: 'Invalid Session Id.' };
   if (name.length < 1 || name.length > 20) return { error: 'Channel name must be between 1-20 characters.' };
 
@@ -86,7 +80,7 @@ function channelsCreateV2(token: string, name: string, isPublic: boolean): Chann
   const authUserId = getUserIdFromToken(token);
   let newChannelId = 0;
   while (data.channels.some(c => c.channelId === newChannelId)) newChannelId++;
-  const newChannel: Channel = {
+  const newChannel: PrivateChannel = {
     channelId: newChannelId,
     name: name,
     isPublic: isPublic,
@@ -98,7 +92,7 @@ function channelsCreateV2(token: string, name: string, isPublic: boolean): Chann
   data.channels.push(newChannel);
   const userIndex = data.users.findIndex(user => user.uId === authUserId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === newChannelId);
-  const privateUser = removePassword(data.users[userIndex]);
+  const privateUser = getPublicUser(data.users[userIndex]);
 
   data.channels[channelIndex].ownerMembers.push(privateUser);
   data.channels[channelIndex].allMembers.push(privateUser);
@@ -107,5 +101,3 @@ function channelsCreateV2(token: string, name: string, isPublic: boolean): Chann
 
   return { channelId: newChannel.channelId };
 }
-
-export { channelsCreateV2, channelsListAllV2, channelsListV2 };
