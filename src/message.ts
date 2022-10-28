@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { Error, Token, DmId, ChannelId, Message } from './interfaceTypes';
+import { Error, Token, DmId, ChannelId, Message, Empty } from './interfaceTypes';
 import { MessageIdObj } from './internalTypes';
 import {
   validChannelId,

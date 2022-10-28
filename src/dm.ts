@@ -199,7 +199,6 @@ export function dmMessagesV1(token: Token, dmId: DmId, start: Start): MessageLis
   const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
   if (start > data.dms[dmIndex].messages.length) return { error: 'Start is greater than total messages' };
 
-
   let end = Math.min(data.dms[dmIndex].messages.length, start + 50);
 
   const messagesArray = [];

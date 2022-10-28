@@ -44,7 +44,7 @@ export function channelMessagesV2(token: Token, channelId: ChannelId, start: Sta
   const messagesArray = [];
   for (let i = start; i < end; i++) messagesArray.push(data.channels[channelIndex].messages[i]);
   if (end === data.channels[channelIndex].messages.length) end = -1;
-  messagesArray.sort((a,b) => b.timeSent - a.timeSent);
+  messagesArray.sort((a, b) => b.timeSent - a.timeSent);
 
   return {
     messages: messagesArray,

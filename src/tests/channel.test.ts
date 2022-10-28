@@ -40,7 +40,7 @@ describe('ChannelMessages', () => {
     expect(requestChannelMessages(user1.token, channel1.channelId, 0)).toStrictEqual({
       messages: [],
       start: 0,
-      end: 0,
+      end: -1,
     });
   });
 
