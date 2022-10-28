@@ -1,5 +1,5 @@
 // Empty Type = {}
-export type Empty = Record<string, never>;
+export type Empty = {};
 
 // REMOVE IN ITERATION 3 probably
 export type Error = {
