@@ -207,15 +207,15 @@ describe('requestMessageEdit', () => {
     expect(requestDmMessages(user1.token, dm1.dmId, 0)).toEqual({
       messages: [
         {
-          messageId: message1.messageId,
-          uId: user1.authUserId,
-          message: 'edited message',
-          timeSent: expect.any(Number),
-        },
-        {
           messageId: message2.messageId,
           uId: user1.authUserId,
           message: 'hi',
+          timeSent: expect.any(Number),
+        },
+        {
+          messageId: message1.messageId,
+          uId: user1.authUserId,
+          message: 'edited message',
           timeSent: expect.any(Number),
         },
       ],
@@ -321,15 +321,15 @@ describe('requestMessageRemove', () => {
     expect(requestDmMessages(user1.token, dm1.dmId, 0)).toEqual({
       messages: [
         {
-          messageId: message1.messageId,
-          uId: user1.authUserId,
-          message: 'test',
-          timeSent: expect.any(Number),
-        },
-        {
           messageId: message3.messageId,
           uId: user1.authUserId,
           message: 'hello',
+          timeSent: expect.any(Number),
+        },
+        {
+          messageId: message1.messageId,
+          uId: user1.authUserId,
+          message: 'test',
           timeSent: expect.any(Number),
         },
       ],

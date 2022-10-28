@@ -234,7 +234,7 @@ describe('requestDmMessages', () => {
       {
         messages: expect.any(Array),
         start: 0,
-        end: 0
+        end: -1
       }
     );
   });

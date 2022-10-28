@@ -39,26 +39,12 @@ export function channelMessagesV2(token: Token, channelId: ChannelId, start: Sta
   const authUId = getUserIdFromToken(token);
   if (!userIsChannelMember(authUId, channelId)) return { error: 'Authorised user is not a channel member' };
 
-  let end = 0;
-  if (data.channels[channelIndex].messages.length + start > 50) {
-    end = start + 50;
-  } else {
-    end = data.channels[channelIndex].messages.length;
-  }
+  let end = Math.min(data.channels[channelIndex].messages.length, start + 50);
 
   const messagesArray = [];
-  if (end !== 0) {
-    for (let i = start; i < end; i++) {
-      messagesArray.push(data.channels[channelIndex].messages[i]);
-    }
-    if (end < 50) {
-      end = -1;
-    }
-  }
-
-  messagesArray.sort(function(a, b) {
-    return b.timeSent - a.timeSent;
-  });
+  for (let i = start; i < end; i++) messagesArray.push(data.channels[channelIndex].messages[i]);
+  if (end === data.channels[channelIndex].messages.length) end = -1;
+  messagesArray.sort((a, b) => b.timeSent - a.timeSent);
 
   return {
     messages: messagesArray,
@@ -163,6 +149,7 @@ export function channelRemoveOwnerV1(token: Token, channelId: ChannelId, uId: UI
   const userHasPermissions = userIsChannelOwner(authUId, channelId) || isGlobalOwner(authUId);
   if (!userHasPermissions) return { error: 'You do not have the required permissions.' };
 
+  // Finds the index of the channel, and removes that index from the ownerMembers array.
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
   const ownerIndex = data.channels[channelIndex].ownerMembers.findIndex(channel => channel.uId === uId);
   data.channels[channelIndex].ownerMembers.splice(ownerIndex, 1);
