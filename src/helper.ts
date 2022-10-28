@@ -367,3 +367,15 @@ export function validMessageId(messageId : number) : boolean {
     return true;
   }
 }
+
+export function checkChannelOwner(authUserId: number, channelId: number) {
+  const data = getData();
+  let ifOwner = false;
+  const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  for (let i = 0; i < data.channels[channelIndex].ownerMembers.length; i++) {
+    if (authUserId === data.channels[channelIndex].ownerMembers[i].uId) {
+      ifOwner = true;
+    }
+  }
+  return ifOwner;
+}

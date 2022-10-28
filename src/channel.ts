@@ -10,7 +10,8 @@ import {
   isGlobalOwner,
   getPublicUser,
   validToken,
-  getUserIdFromToken
+  getUserIdFromToken,
+  checkChannelOwner
 } from './helper';
 
 /**
@@ -86,16 +87,14 @@ export function channelLeaveV1(token: Token, channelId: ChannelId): Empty | Erro
   const UserId = getUserIdFromToken(token);
   if (!userIsChannelMember(UserId, channelId)) return { error: 'You are not a member of this channel.' };
   const data = getData();
-  const userIndex = data.users.findIndex(user => user.uId === UserId);
+
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
-  const publicUser = getPublicUser(data.users[userIndex]);
-  for (let i = 0; i < data.channels[channelIndex].allMembers.length; i++) {
-    const publicIndexAll = data.channels.findIndex(channel => channel.allMembers[i] === publicUser);
-    data.channels[channelIndex].allMembers.splice(publicIndexAll, 1);
-  }
-  for (let i = 0; i < data.channels[channelIndex].ownerMembers.length; i++) {
-    const publicIndexOwner = data.channels.findIndex(channel => channel.ownerMembers[i] === publicUser);
-    data.channels[channelIndex].ownerMembers.splice(publicIndexOwner, 1);
+  const privateIndexAll = data.channels[channelIndex].allMembers.findIndex(channel => channel.uId === UserId);
+  data.channels[channelIndex].allMembers.splice(privateIndexAll, 1);
+
+  if (checkChannelOwner(UserId, channelId) === true) {
+    const privateIndexOwner = data.channels[channelIndex].ownerMembers.findIndex(channel => channel.uId === UserId);
+    data.channels[channelIndex].ownerMembers.splice(privateIndexOwner, 1);
   }
 
   setData(data);
@@ -164,14 +163,9 @@ export function channelRemoveOwnerV1(token: Token, channelId: ChannelId, uId: UI
   const userHasPermissions = userIsChannelOwner(authUId, channelId) || isGlobalOwner(authUId);
   if (!userHasPermissions) return { error: 'You do not have the required permissions.' };
 
-  const userIndex = data.users.findIndex(user => user.uId === uId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
-  const publicUser = getPublicUser(data.users[userIndex]);
-
-  for (let i = 0; i < data.channels[channelIndex].ownerMembers.length; i++) {
-    const publicIndexOwner = data.channels.findIndex(channel => channel.ownerMembers[i] === publicUser);
-    data.channels[channelIndex].ownerMembers.splice(publicIndexOwner, 1);
-  }
+  const ownerIndex = data.channels[channelIndex].ownerMembers.findIndex(channel => channel.uId === uId);
+  data.channels[channelIndex].ownerMembers.splice(ownerIndex, 1);
 
   setData(data);
   return {};
