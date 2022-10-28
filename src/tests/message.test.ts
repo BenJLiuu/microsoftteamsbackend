@@ -54,6 +54,16 @@ describe('messageSendDm Tests', () => {
   });
 
   // Sucessful messageSendDm test
+  test('Succesfully sent dm', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const uIds = [user2.authUserId, user3.authUserId];
+    const dm = requestDmCreate(user1.token, uIds);
+    requestMessageSendDm(user1.token, dm.dmId, 'test message');
+    const messageInfo = requestDmMessages(user1.token, dm.dmId, 0);
+    expect(messageInfo.messages[0].message).toStrictEqual('test message');
+  });
 });
 
 describe('messageSend Tests', () => {
@@ -102,6 +112,16 @@ describe('messageSend Tests', () => {
     const channel1 = requestChannelsCreate(user1.token, 'general', true);
 
     expect(requestMessageSend('Test', channel1.channelId, 'Hello there')).toStrictEqual({ error: expect.any(String) });
+  });
+
+  // Sucessful messageSend test
+  test('Succesfully sent message', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
+
+    requestMessageSend(user1.token, channel1.channelId, 'test message');
+    const messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
+    expect(messageInfo.messages[0].message).toStrictEqual('test message');
   });
 });
 
