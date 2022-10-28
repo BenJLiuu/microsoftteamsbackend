@@ -199,26 +199,12 @@ export function dmMessagesV1(token: Token, dmId: DmId, start: Start): MessageLis
   const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
   if (start > data.dms[dmIndex].messages.length) return { error: 'Start is greater than total messages' };
 
-  let end = 0;
-  if (data.dms[dmIndex].messages.length + start > 50) {
-    end = start + 50;
-  } else {
-    end = data.dms[dmIndex].messages.length;
-  }
+  let end = Math.min(data.dms[dmIndex].messages.length, start + 50);
 
   const messagesArray = [];
-  if (end !== 0) {
-    for (let i = start; i < end; i++) {
-      messagesArray.push(data.dms[dmIndex].messages[i]);
-    }
-    if (end < 50) {
-      end = -1;
-    }
-  }
-
-  messagesArray.sort(function(a, b) {
-    return a.timeSent - b.timeSent;
-  });
+  for (let i = start; i < end; i++) messagesArray.push(data.dms[dmIndex].messages[i]);
+  if (end === data.dms[dmIndex].messages.length) end = -1;
+  messagesArray.sort((a, b) => b.timeSent - a.timeSent);
 
   return {
     messages: messagesArray,
