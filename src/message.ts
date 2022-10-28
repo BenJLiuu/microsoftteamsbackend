@@ -21,13 +21,19 @@ import {
  * @param {Token} token - the session id of the sender
  * @param {DmId} dmId - the dm the message was sent in
  * @param {Message} message - the message to be sent
+ *
+ * @returns {Error} {error: 'Invalid Dm Id.'} - Dm does not exist.
+ * @returns {Error} {error: 'Message contains too little characters.'} - Message has less than 1 character.
+ * @returns {Error} {error: 'Message contains too many characters.'} - Message has more than 1000 characters.
+ * @returns {Error} {error: 'Invalid Token.'} - Token does not correspond to an existing user.
+ * @returns {Error} {error: 'Authorised user is not a member of the Dm.'} - The authUserId corresponds to user that is not a member of the Dm.
  * @returns {messageId} messageId - the Id of the stored message
  */
 export function messageSendDmV1(token: Token, dmId: DmId, message: Message): MessageIdObj | Error {
-  if (!validDmId(dmId)) return { error: 'Not valid Dm Id' };
+  if (!validDmId(dmId)) return { error: 'Invalid Dm Id' };
   if (message.length < 1) return { error: 'Message contains too little characters.' };
   if (message.length > 1000) return { error: 'Message contains too many characters.' };
-  if (!validToken(token)) return { error: 'Invalid Token' };
+  if (!validToken(token)) return { error: 'Invalid Session' };
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the Dm' };
 
@@ -51,12 +57,18 @@ export function messageSendDmV1(token: Token, dmId: DmId, message: Message): Mes
  * Send and store a message within a channel sent by a given user
  *
  * @param {Token} token - the session id of the sender
- * @param {ChannelId} channelId - the dm the message was sent in
+ * @param {ChannelId} channelId - the channel the message was sent in
  * @param {Message} message - the message to be sent
+ *
+ * @returns {Error} {error: 'Invalid Channel Id.'} - channel does not exist.
+ * @returns {Error} {error: 'Message contains too little characters.'} - Message has less than 1 character.
+ * @returns {Error} {error: 'Message contains too many characters.'} - Message has more than 1000 characters.
+ * @returns {Error} {error: 'Invalid Session.'} - Token does not correspond to an existing user.
+ * @returns {Error} {error: 'Authorised user is not a channel member.'} - The authUserId corresponds to user that is not a member of the channel.
  * @returns {messageId} messageId - the Id of the stored message
  */
 export function messageSendV1(token: Token, channelId: ChannelId, message: Message): MessageIdObj | Error {
-  if (!validChannelId(channelId)) return { error: 'Not valid channelId' };
+  if (!validChannelId(channelId)) return { error: 'Invalid Channel Id' };
   if (message.length < 1) return { error: 'Message contains too little characters.' };
   if (message.length > 1000) return { error: 'Message contains too many characters.' };
   if (!validToken(token)) return { error: 'Invalid Session.' };

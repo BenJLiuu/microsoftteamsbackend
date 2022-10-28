@@ -368,14 +368,21 @@ export function validMessageId(messageId : number) : boolean {
   }
 }
 
+/**
+ * Checks whether a member has owner permsissions within a channel
+ *
+ * @param authUserId - the user to check
+ * @param channelId - the channel to be checked
+ *
+ * @returns boolean - whether the user has owner permissions or not
+ */
 export function checkChannelOwner(authUserId: number, channelId: number) {
   const data = getData();
-  let ifOwner = false;
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
   for (let i = 0; i < data.channels[channelIndex].ownerMembers.length; i++) {
     if (authUserId === data.channels[channelIndex].ownerMembers[i].uId) {
-      ifOwner = true;
+      return true;
     }
   }
-  return ifOwner;
+  return false;
 }
