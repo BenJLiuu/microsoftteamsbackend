@@ -92,7 +92,7 @@ export function messageSendV1(token: Token, channelId: ChannelId, message: Messa
   * @returns {error: 'Message size exceeds limit.'} - message is over 1000 characters long.
   * @returns {} - Message edited successfully.
 */
-export function messageEditV1(token: string, messageId: number, message: string): Record<string, never> | Error {
+export function messageEditV1(token: string, messageId: number, message: string): Empty | Error {
   if (!validToken(token)) return { error: 'Invalid Token.' };
   const authUserId = getUserIdFromToken(token);
   if (!validMessageId(messageId)) return { error: 'Invalid Message Id.' };
@@ -134,7 +134,7 @@ export function messageEditV1(token: string, messageId: number, message: string)
   * @returns {error: 'Message  not sent by authorised user.'} - the message was not sent by the authorised user making this request.
   * @returns {} - Message removed successfully.
 */
-export function messageRemoveV1(token: string, messageId: number): Record<string, never> | Error {
+export function messageRemoveV1(token: string, messageId: number): Empty | Error {
   if (!validToken(token)) return { error: 'Invalid Token.' };
   const authUserId = getUserIdFromToken(token);
   if (!validMessageId(messageId)) return { error: 'Invalid Message Id.' };
