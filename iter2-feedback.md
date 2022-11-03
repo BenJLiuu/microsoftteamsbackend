@@ -14,13 +14,13 @@ W13A_AERO
 
 ### Test Design
 
-### Works with Frontend
+### Working with Frontend
 
 Setup
 
 - [x] clone your project-backend repo  (or `git pull` to get latest updates)
 
-    `git clone gitlab@gitlab.cse.unsw.EDU.AU:COMP1531/22T3/groups/W13A_AERO/project-backend.git`
+    `git clone gitlab@gitlab.cse.unsw.EDU.AU:COMP1531/22T3/groups/[CLASS_GROUP]/project-backend.git`
 
 - [x] clone the course frontend  repo  (or `git pull` to get latest updates)
 
@@ -28,7 +28,11 @@ Setup
 
 - [x] inside `project-backend/`, checkout to submission commit
 
-    `git checkout 62e176a91f5d9e0d8464632e3afa6b0c63429b9d`
+    `git checkout submission`
+
+    or
+
+    `git checkout [COMMIT_HASH]`
 
 - [x] inside `project-backend/` and `project-frontend/`, run `npm install`
 
@@ -44,25 +48,24 @@ Setup
 
 Basics
 
-- [x] can't register with dodgy email (bat@man) or 3 char password (bat)
-- [x] register 1st user (bat man, bat@bat.man, batman) in non-private window
+- [x] can't register with malformed email (bat@man) or 3 char password (bat)
+- [x] register 1st user (bat man, bat@bat.man, batman) in window 1
 
 Brief detour: sessions
 
-- [x] log in user 1 in private window
+- [x] log in user 1 in window 2
 - [x] log out user 1 from original window
-- [x] user 1 should remain logged in in private window (refresh to check)
+- [x] user 1 should remain logged in in window 2 (refresh to check)
 
 Basics (cont.)
 
-- [x] register 2nd user (cat man, meow@cat.man, catman1000000) in non-private window
+- [x] register 2nd user (cat man, meow@cat.man, catman1000000) in window 1
 - [x] user 1 creates public channel (bat cave)
 - [x] user 2 creates private channel (cat castle)
-- [x] "My Channels" and "Other Channels" display correct channels for both users
-- [x] user 2 creates DM with user 1 (batman, catman)
+- [x] user 2 creates DM with user 1
 - [x] user 1 invites user 2 into bat cave
-- [x] user 1 joins cat castle
-- [x] both users send a few messages to channels and DM (look at order and msg details like timestamp, sender)
+- [x] user 1 joins cat castle (global owner can join private channel)
+- [x] both users send a few messages to channels and DM (look at order and message details like timestamp, sender)
 
 Extra
 
@@ -71,11 +74,11 @@ Extra
 - [x] user 1 can't remove DM (global owners have no special perms in DMs)
 - [x] user 2 can remove DM (is DM creator)
 - [x] user 1 can add user 2 as owner of bat cave
-- [x] now user 2 can remove user 1 as owner of bat cave (it's a coup!)
+- [x] now user 2 can remove user 1 as owner of bat cave (it's a coup! :scream:)
 
 ### Persistence
 
-- [x] kill server and frontend (ctrl-c)
+- [x] kill server and frontend (CTRL-C) :skull:
 - [x] restart server and frontend
 - [x] log in with bat@bat.man, batman
 - [x] expecting 2 users and 2 channels containing old messages (and DM + messages if we didn't get around to removing the DM)
