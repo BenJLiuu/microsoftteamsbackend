@@ -7,7 +7,7 @@ import errorHandler from 'middleware-http-errors';
 import { channelsCreateV2, channelsListV2, channelsListAllV2 } from './channels';
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2, channelLeaveV1, channelRemoveOwnerV1, channelAddOwnerV1 } from './channel';
-import echo from './echo';
+import { echo } from './echo';
 import { clearV1 } from './other';
 import { userProfileV2, usersAllV1, userProfileSetNameV1, userProfileSetEmailV1, userProfileSetHandleV1 } from './users';
 import { dmCreateV1, dmListV1, dmLeaveV1, dmMessagesV1, dmDetailsV1, dmRemoveV1 } from './dm';
