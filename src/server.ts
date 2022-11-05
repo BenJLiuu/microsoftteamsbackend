@@ -2,6 +2,7 @@ import express, { json, Request, Response } from 'express';
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
+import HTTPError from 'http-errors';
 import errorHandler from 'middleware-http-errors';
 
 import { channelsCreateV2, channelsListV2, channelsListAllV2 } from './channels';
@@ -22,10 +23,17 @@ app.use(cors());
 // for logging errors (print to terminal)
 app.use(morgan('dev'));
 
-app.use(errorHandler());
-
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || 'localhost';
+
+// ECHO ROUTE
+
+app.get('/echo', (req: Request, res: Response) => {
+  const ec = req.query.echo as string;
+  res.json(echo(ec || undefined));
+});
+
+// AUTH ROUTES
 
 app.post('/auth/login/v2', (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -37,8 +45,16 @@ app.post('/auth/register/v2', (req: Request, res: Response) => {
   res.json(authRegisterV2(email, password, nameFirst, nameLast));
 });
 
+app.post('/auth/logout/v1', (req: Request, res: Response) => {
+  const token = req.header('token');
+  res.json(authLogoutV1(token));
+});
+
+// CHANNELS ROUTES
+
 app.post('/channels/create/v2', (req: Request, res: Response) => {
   const { token, name, isPublic } = req.body;
+  //const token = req.header('token');
   res.json(channelsCreateV2(token, name, isPublic));
 });
 
@@ -51,6 +67,8 @@ app.get('/channels/listAll/v2', (req: Request, res: Response) => {
   const token = req.query.token as string;
   res.json(channelsListAllV2(token));
 });
+
+// CHANNEL ROUTES
 
 app.post('/channel/invite/v2', (req: Request, res: Response) => {
   const { token, channelId, uId } = req.body;
@@ -68,11 +86,6 @@ app.post('/channel/join/v2', (req: Request, res: Response) => {
   res.json(channelJoinV2(token, channelId));
 });
 
-app.get('/echo', (req: Request, res: Response) => {
-  const ec = req.query.echo as string;
-  res.json(echo(ec || undefined));
-});
-
 app.get('/channel/messages/v2', (req: Request, res: Response) => {
   const token = req.query.token as string;
   const channelId = req.query.channelId as string;
@@ -80,15 +93,27 @@ app.get('/channel/messages/v2', (req: Request, res: Response) => {
   res.json(channelMessagesV2(token, channelId ? parseInt(channelId) : undefined, start ? parseInt(start) : undefined));
 });
 
+app.post('/channel/leave/v1', (req: Request, res: Response) => {
+  const { token, channelId } = req.body;
+  res.json(channelLeaveV1(token, channelId));
+});
+
+app.post('/channel/removeOwner/V1', (req: Request, res: Response) => {
+  const { token, channelId, uId } = req.body;
+  res.json(channelRemoveOwnerV1(token, channelId, uId));
+});
+
+app.post('/channel/addOwner/V1', (req: Request, res: Response) => {
+  const { token, channelId, uId } = req.body;
+  res.json(channelAddOwnerV1(token, channelId, uId));
+});
+
+// USER ROUTES
+
 app.get('/user/profile/v2', (req: Request, res: Response) => {
   const token = req.query.token as string;
   const uId = req.query.uId as string;
   res.json(userProfileV2(token || undefined, uId ? parseInt(uId) : undefined));
-});
-
-app.get('/users/all/v1', (req: Request, res: Response) => {
-  const token = req.query.token as string;
-  res.json(usersAllV1(token || undefined));
 });
 
 app.put('/user/profile/setname/v1', (req: Request, res: Response) => {
@@ -106,10 +131,12 @@ app.put('/user/profile/sethandle/v1', (req: Request, res: Response) => {
   res.json(userProfileSetHandleV1(token, handleStr));
 });
 
-app.post('/auth/logout/v1', (req: Request, res: Response) => {
-  const { token } = req.body;
-  res.json(authLogoutV1(token));
+app.get('/users/all/v1', (req: Request, res: Response) => {
+  const token = req.query.token as string;
+  res.json(usersAllV1(token || undefined));
 });
+
+// DM ROUTES
 
 app.post('/dm/create/v1', (req: Request, res: Response) => {
   const { token, uIds } = req.body;
@@ -145,55 +172,37 @@ app.get('/dm/messages/v1', (req: Request, res: Response) => {
   res.json(dmMessagesV1(token, dmId ? parseInt(dmId) : undefined, start ? parseInt(start) : undefined));
 });
 
-app.put('/user/profile/setname/v1', (req: Request, res: Response) => {
-  const { token, nameFirst, nameLast } = req.body;
-  res.json(userProfileSetNameV1(token, nameFirst, nameLast));
-});
+// MESSAGE ROUTES
 
-app.put('/user/profile/setemail/v1', (req: Request, res: Response) => {
-  const { token, email } = req.body;
-  res.json(userProfileSetEmailV1(token, email));
-});
-
-app.put('/user/profile/sethandle/v1', (req: Request, res: Response) => {
-  const { token, handleStr } = req.body;
-  res.json(userProfileSetHandleV1(token, handleStr));
-});
-
-app.delete('/clear/v1', (req: Request, res: Response) => {
-  res.json(clearV1());
-});
-
-app.post('/channel/leave/v1', (req: Request, res: Response) => {
-  const { token, channelId } = req.body;
-  res.json(channelLeaveV1(token, channelId));
-});
-
-app.post('/channel/removeOwner/V1', (req: Request, res: Response) => {
-  const { token, channelId, uId } = req.body;
-  res.json(channelRemoveOwnerV1(token, channelId, uId));
-});
-app.post('/channel/addOwner/V1', (req: Request, res: Response) => {
-  const { token, channelId, uId } = req.body;
-  res.json(channelAddOwnerV1(token, channelId, uId));
-});
 app.post('/message/sendDm/V1', (req: Request, res: Response) => {
   const { token, dmId, message } = req.body;
   res.json(messageSendDmV1(token, dmId, message));
 });
+
 app.post('/message/send/V1', (req: Request, res: Response) => {
   const { token, channelId, message } = req.body;
   res.json(messageSendV1(token, channelId, message));
 });
+
 app.put('/message/edit/V1', (req: Request, res: Response) => {
   const { token, messageId, message } = req.body;
   res.json(messageEditV1(token, messageId, message));
 });
+
 app.delete('/message/remove/V1', (req: Request, res: Response) => {
   const token = req.query.token as string;
   const messageId = req.query.messageId as string;
   res.json(messageRemoveV1(token, messageId ? parseInt(messageId) : undefined));
 });
+
+// OTHER ROUTES
+
+app.delete('/clear/v1', (req: Request, res: Response) => {
+  res.json(clearV1());
+});
+
+app.use(errorHandler());
+
 // start server
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE

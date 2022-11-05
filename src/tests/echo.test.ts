@@ -1,8 +1,8 @@
-test('default', () => {
+/*test('default', () => {
   expect(1).toBe(1);
-});
+});*/
 
-/*
+
 import request from 'sync-request';
 import config from './../config.json';
 
@@ -11,7 +11,7 @@ const INPUT_ERROR = 400;
 const port = config.port;
 const url = config.url;
 
-Iteration 2
+// Iteration 2
 
 describe('HTTP tests using Jest', () => {
   test('Test successful echo', () => {
@@ -48,4 +48,4 @@ describe('HTTP tests using Jest', () => {
 
   });
 });
-*/
+
