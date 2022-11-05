@@ -36,6 +36,6 @@ describe('HTTP tests using Jest', () => {
     );
     const bodyObj = JSON.parse(res.body as string);
     expect(res.statusCode).toBe(INPUT_ERROR);
-    expect(bodyObj.error).toStrictEqual({ message: 'Cannot echo "echo"' });
+    expect(bodyObj.error).toStrictEqual({ message: 'BadRequestError: Cannot echo "echo"' });
   });
 });
