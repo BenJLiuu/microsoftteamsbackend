@@ -7,7 +7,6 @@ const INPUT_ERROR = 400;
 const port = config.port;
 const url = config.url;
 
-
 Iteration 2
 
 describe('HTTP tests using Jest', () => {
@@ -42,9 +41,7 @@ describe('HTTP tests using Jest', () => {
     catch (err) {
       expect(err).toStrictEqual({ message: 'BadRequestError: Cannot echo "echo"' });
     }
-    
-    
-    
+
   });
 });
 */
