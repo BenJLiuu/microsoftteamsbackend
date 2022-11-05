@@ -7,36 +7,36 @@ describe('Test authRegister ', () => {
 
   // Error tests.
   test('Test only invalid email', () => {
-    expect(requestAuthRegister('@bob@.org.org', 'pass123', 'Bob', 'Smith')).toStrictEqual({ error: 'Invalid Email Address.' });
+    expect(requestAuthRegister('@bob@.org.org', 'pass123', 'Bob', 'Smith')).toEqual(400);
   });
 
   test('Test only email already in use', () => {
     requestAuthRegister('Ben10@gmail.com', 'password', 'Ben', 'Ten');
-    expect(requestAuthRegister('Ben10@gmail.com', 'pass123', 'Bob', 'Smith')).toStrictEqual({ error: 'Email Already in Use.' });
+    expect(requestAuthRegister('Ben10@gmail.com', 'pass123', 'Bob', 'Smith')).toStrictEqual({ message: 'Email Already in Use.' });
   });
 
   test('Test only password too short', () => {
-    expect(requestAuthRegister('bobsmith@gmail.com', 'abc3', 'Bob', 'Smith')).toStrictEqual({ error: 'Password too Short.' });
+    expect(requestAuthRegister('bobsmith@gmail.com', 'abc3', 'Bob', 'Smith')).toStrictEqual({ message: 'Password too Short.' });
   });
 
   test('Test only first name too long', () => {
-    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', 'Bobbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'Smith')).toStrictEqual({ error: 'Invalid First Name.' });
+    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', 'Bobbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'Smith')).toStrictEqual({ message: 'Invalid First Name.' });
   });
 
   test('Test only first name too short', () => {
-    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', '', 'Smith')).toStrictEqual({ error: 'Invalid First Name.' });
+    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', '', 'Smith')).toStrictEqual({ message: 'Invalid First Name.' });
   });
 
   test('Test only last name too long', () => {
-    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', 'Bob', 'Smithhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')).toStrictEqual({ error: 'Invalid Last Name.' });
+    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', 'Bob', 'Smithhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')).toStrictEqual({ message: 'Invalid Last Name.' });
   });
 
   test('Test only last name too short', () => {
-    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', 'Bob', '')).toStrictEqual({ error: 'Invalid Last Name.' });
+    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', 'Bob', '')).toStrictEqual({ message: 'Invalid Last Name.' });
   });
 
   test('Test first name contains invalid characters', () => {
-    expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'Joh%$y', 'Mate')).toEqual({ error: 'Invalid First Name.' });
+    expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'Joh%$y', 'Mate')).toEqual({ message: 'Invalid First Name.' });
   });
 
   // Successful Registration tests
@@ -133,22 +133,22 @@ describe('Test authLogin ', () => {
   test('Invalid password', () => {
     requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestAuthLogin('johnS@email.com', 'wrongpassword')).toStrictEqual({ error: 'Incorrect Password.' });
-    expect(requestAuthLogin('not@person.co', 'abc123')).toStrictEqual({ error: 'Email Not Found.' });
+    expect(requestAuthLogin('johnS@email.com', 'wrongpassword')).toEqual(400);
+    expect(requestAuthLogin('not@person.co', 'abc123')).toEqual(400);
   });
 
   test('Invalid email', () => {
     requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestAuthLogin('not@person.co', 'abc123')).toStrictEqual({ error: 'Email Not Found.' });
+    expect(requestAuthLogin('not@person.co', 'abc123')).toEqual(400);
   });
 
   test('No users login', () => {
-    expect(requestAuthLogin('not@person.co', 'abc123')).toStrictEqual({ error: 'Email Not Found.' });
+    expect(requestAuthLogin('not@person.co', 'abc123')).toEqual(400);
   });
 
   test('Empty string login', () => {
-    expect(requestAuthLogin('', '')).toStrictEqual({ error: 'Email Not Found.' });
+    expect(requestAuthLogin('', '')).toEqual(400);
   });
 });
 
@@ -160,22 +160,24 @@ describe('Test authLogout', () => {
   test('Invalid token', () => {
     requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user1login = requestAuthLogin('johnS@email.com', 'pasJohn');
-    expect(requestAuthLogout(user1login.token)).toStrictEqual({ error: 'Invalid token' });
+    expect(requestAuthLogout(user1login.token)).toEqual(403);
   });
 
-  test('Successfully login', () => {
+  test('Successfully logout', () => {
     requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user1login = requestAuthLogin('johnS@email.com', 'passJohn');
-    expect(requestAuthLogout(user1login.token)).toStrictEqual({});
+    expect(requestAuthLogout(user1login.token)).toEqual({});
   });
 
   test('Log off only one token', () => {
     requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user1login1 = requestAuthLogin('johnS@email.com', 'passJohn');
     const user1login2 = requestAuthLogin('johnS@email.com', 'passJohn');
+    console.log(user1login1);
+    console.log(user1login2);
     expect(requestAuthLogout(user1login1.token)).toStrictEqual({});
-    expect(requestAuthLogout(user1login1.token)).toStrictEqual({ error: 'Invalid token' });
+    expect(requestAuthLogout(user1login1.token)).toEqual(403);
     expect(requestAuthLogout(user1login2.token)).toStrictEqual({});
-    expect(requestAuthLogout(user1login2.token)).toStrictEqual({ error: 'Invalid token' });
+    expect(requestAuthLogout(user1login2.token)).toEqual(403);
   });
 });

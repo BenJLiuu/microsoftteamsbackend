@@ -4,9 +4,10 @@ import {
   UId, Token,
   ChannelId, DmId, MessageId,
   User, HandleStr, Name,
-
 } from './interfaceTypes';
 import { PrivateUser, Session } from './internalTypes';
+
+
 /**
  * Checks whether a uId exists in the database
  *
@@ -110,7 +111,29 @@ export function generateSession(uId: UId): Session {
 
   data.sessions.push(session);
   setData(data);
+
+  // We hash the token and then return the session object with this hashed token
+  // and a string 'secret', storing the original unhashed token.
+  session.token = hashCode(session.token + 'secret');
+
   return session;
+}
+
+
+/**
+ * 
+ * @param {string} str - the string to be hashed
+ * @returns {string} - the hashed version of the string
+ */
+export function hashCode(str: string): number {
+  let hash = 0;
+  if (str.length === 0) return hash;
+  for (let x = 0; x < str.length; x++) {
+    let ch = str.charCodeAt(x);
+    hash = ((hash << 5) - hash) + ch;
+    hash = hash & hash;
+  }
+  return hash;
 }
 
 /**
@@ -170,6 +193,7 @@ function genRandomString(length: number): string {
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * charLength));
   }
+
   return result;
 }
 
