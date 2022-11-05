@@ -69,8 +69,8 @@ app.post('/channel/join/v2', (req: Request, res: Response) => {
 });
 
 app.get('/echo', (req: Request, res: Response) => {
-  const echo = req.query.echo as string;
-  res.json(echo(echo ? echo : undefined));
+  const ec = req.query.echo as string;
+  res.json(echo(ec || undefined));
 });
 
 app.get('/channel/messages/v2', (req: Request, res: Response) => {

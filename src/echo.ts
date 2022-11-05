@@ -1,6 +1,6 @@
 import HTTPError from 'http-errors';
 
-function echo(value: string) {
+export function echo(value: string) {
   if (value === 'echo') {
     // NEW Iteration 3
     throw HTTPError(400, 'Cannot echo "echo"');
@@ -9,5 +9,3 @@ function echo(value: string) {
   }
   return value;
 }
-
-export { echo };
