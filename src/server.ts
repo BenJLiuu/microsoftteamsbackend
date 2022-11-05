@@ -2,10 +2,12 @@ import express, { json, Request, Response } from 'express';
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
+import errorHandler from 'middleware-http-errors';
 
 import { channelsCreateV2, channelsListV2, channelsListAllV2 } from './channels';
 import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
 import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2, channelLeaveV1, channelRemoveOwnerV1, channelAddOwnerV1 } from './channel';
+import { echo } from './echo';
 import { clearV1 } from './other';
 import { userProfileV2, usersAllV1, userProfileSetNameV1, userProfileSetEmailV1, userProfileSetHandleV1 } from './users';
 import { dmCreateV1, dmListV1, dmLeaveV1, dmMessagesV1, dmDetailsV1, dmRemoveV1 } from './dm';
@@ -19,6 +21,8 @@ app.use(json());
 app.use(cors());
 // for logging errors (print to terminal)
 app.use(morgan('dev'));
+
+app.use(errorHandler());
 
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || 'localhost';
@@ -62,6 +66,11 @@ app.get('/channel/details/v2', (req: Request, res: Response) => {
 app.post('/channel/join/v2', (req: Request, res: Response) => {
   const { token, channelId } = req.body;
   res.json(channelJoinV2(token, channelId));
+});
+
+app.get('/echo', (req: Request, res: Response) => {
+  const ec = req.query.echo as string;
+  res.json(echo(ec || undefined));
 });
 
 app.get('/channel/messages/v2', (req: Request, res: Response) => {
