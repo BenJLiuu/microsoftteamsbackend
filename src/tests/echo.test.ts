@@ -1,3 +1,7 @@
+test('default', () => {
+  expect(1).toBe(1);
+});
+
 /*
 import request from 'sync-request';
 import config from './../config.json';
