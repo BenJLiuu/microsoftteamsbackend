@@ -4,7 +4,7 @@ import { Session } from './internalTypes';
 import HTTPError from 'http-errors';
 
 import validator from 'validator';
-import { generateUId, generateSession, generateHandleStr, hashCode } from './helper';
+import { generateUId, generateSession, generateHandleStr, hashCode, validToken } from './helper';
 
 /**
   * Logs in a user and returns their user Id.
@@ -89,8 +89,8 @@ export function authRegisterV2(email: Email, password: Password, nameFirst: Name
   * @returns {Error} {error: 'Invalid token'} - if token does not exist in dataStore.
 */
 export function authLogoutV1(token: Token): Empty | Error {
+  validToken(token);
   const data = getData();
-  if (!(data.sessions.some(session => hashCode(session.token + 'secret') === token))) throw HTTPError(403, 'Invalid token'); 
 
   const sessionIndex = data.sessions.findIndex(session => session.token === token);
   data.sessions.splice(sessionIndex, 1);

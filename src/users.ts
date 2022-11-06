@@ -27,8 +27,8 @@ import {
   * @returns {User} User profile, without password key.
 */
 export function userProfileV2 (token: Token, uId: UId): UserObj | Error {
-  if (!validToken(token)) return { error: 'Invalid Session Id.' };
-  if (!validUserId(uId)) return { error: 'Invalid User Id.' };
+  validToken(token);
+  if (!validUserId(uId)) throw new HTTPError (400, 'Invalid User Id.');
 
   const data = getData();
   const user = data.users.find(user => user.uId === uId);

@@ -57,4 +57,4 @@ export type Dms = {
 }[];
 
 // ITERATION 3 TYPES
-export type HashedToken = number;
+

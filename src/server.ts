@@ -20,34 +20,48 @@ const app = express();
 app.use(json());
 // Use middleware that allows for access from other domains
 app.use(cors());
-// for logging errors (print to terminal)
-app.use(morgan('dev'));
 
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || 'localhost';
 
 // ECHO ROUTE
 
-app.get('/echo', (req: Request, res: Response) => {
-  const ec = req.query.echo as string;
-  res.json(echo(ec || undefined));
+app.get('/echo', (req: Request, res: Response, next) => {
+  try {
+    const data = req.query.echo as string;
+    return res.json(echo(data));
+  } catch (err) {
+    next(err);
+  }
 });
 
 // AUTH ROUTES
 
-app.post('/auth/login/v2', (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  res.json(authLoginV2(email, password));
+app.post('/auth/login/v2', (req: Request, res: Response, next) => {
+  try {
+    const { email, password } = req.body;
+    res.json(authLoginV2(email, password));
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.post('/auth/register/v2', (req: Request, res: Response) => {
-  const { email, password, nameFirst, nameLast } = req.body;
-  res.json(authRegisterV2(email, password, nameFirst, nameLast));
+app.post('/auth/register/v2', (req: Request, res: Response, next) => {
+  try {
+    const { email, password, nameFirst, nameLast } = req.body;
+    res.json(authRegisterV2(email, password, nameFirst, nameLast));
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.post('/auth/logout/v1', (req: Request, res: Response) => {
-  const token = req.header('token');
-  res.json(authLogoutV1(token));
+app.post('/auth/logout/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token');
+    res.json(authLogoutV1(token));
+  } catch (err) {
+    next(err);
+  }
 });
 
 // CHANNELS ROUTES
@@ -201,7 +215,11 @@ app.delete('/clear/v1', (req: Request, res: Response) => {
   res.json(clearV1());
 });
 
+// handles errors nicely
 app.use(errorHandler());
+
+// for logging errors (print to terminal)
+app.use(morgan('dev'));
 
 // start server
 const server = app.listen(PORT, HOST, () => {

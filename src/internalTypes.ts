@@ -1,5 +1,7 @@
 import * as itf from './interfaceTypes';
 
+export type HashedToken = number;
+
 export type PrivateUser = {
   uId: itf.UId,
   nameFirst: itf.Name,

@@ -5,7 +5,8 @@ import {
   ChannelId, DmId, MessageId,
   User, HandleStr, Name,
 } from './interfaceTypes';
-import { PrivateUser, Session } from './internalTypes';
+import { PrivateUser, Session, HashedToken } from './internalTypes';
+import HTTPError from 'http-errors';
 
 
 /**
@@ -26,7 +27,7 @@ export function validUserId(uId: UId): boolean {
  */
 export function getUserIdFromToken(token: Token): UId {
   const data = getData();
-  return data.sessions.find(s => s.token === token).authUserId;
+  return data.sessions.find(s => hashCode(s.token + 'secret') === token).authUserId;
 }
 
 /**
@@ -35,9 +36,13 @@ export function getUserIdFromToken(token: Token): UId {
  * @param {Token} token - Token to check
  * @returns {boolean} Boolean of whether the session is valid
  */
-export function validToken(token: Token): boolean {
+export function validToken(token: HashedToken): boolean {
   const data = getData();
-  return data.sessions.some(t => t.token === token);
+  if (data.sessions.some(t => hashCode(t.token + 'secret') === token)) {
+    return true;
+  } else {
+    throw HTTPError(403, 'Invalid token'); 
+  }
 }
 
 /**
@@ -112,13 +117,10 @@ export function generateSession(uId: UId): Session {
   data.sessions.push(session);
   setData(data);
 
-  // We hash the token and then return the session object with this hashed token
-  // and a string 'secret', storing the original unhashed token.
   session.token = hashCode(session.token + 'secret');
 
   return session;
 }
-
 
 /**
  * 

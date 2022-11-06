@@ -1,4 +1,5 @@
 import { requestAuthRegister, requestAuthLogin, requestClear, requestUserProfile, requestAuthLogout } from './httpHelper';
+import { getData } from './../dataStore';
 
 describe('Test authRegister ', () => {
   beforeEach(() => {
@@ -12,31 +13,31 @@ describe('Test authRegister ', () => {
 
   test('Test only email already in use', () => {
     requestAuthRegister('Ben10@gmail.com', 'password', 'Ben', 'Ten');
-    expect(requestAuthRegister('Ben10@gmail.com', 'pass123', 'Bob', 'Smith')).toStrictEqual({ message: 'Email Already in Use.' });
+    expect(requestAuthRegister('Ben10@gmail.com', 'pass123', 'Bob', 'Smith')).toEqual(400);
   });
 
   test('Test only password too short', () => {
-    expect(requestAuthRegister('bobsmith@gmail.com', 'abc3', 'Bob', 'Smith')).toStrictEqual({ message: 'Password too Short.' });
+    expect(requestAuthRegister('bobsmith@gmail.com', 'abc3', 'Bob', 'Smith')).toEqual(400);
   });
 
   test('Test only first name too long', () => {
-    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', 'Bobbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'Smith')).toStrictEqual({ message: 'Invalid First Name.' });
+    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', 'Bobbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'Smith')).toEqual(400);
   });
 
   test('Test only first name too short', () => {
-    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', '', 'Smith')).toStrictEqual({ message: 'Invalid First Name.' });
+    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', '', 'Smith')).toEqual(400);
   });
 
   test('Test only last name too long', () => {
-    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', 'Bob', 'Smithhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')).toStrictEqual({ message: 'Invalid Last Name.' });
+    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', 'Bob', 'Smithhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')).toEqual(400);
   });
 
   test('Test only last name too short', () => {
-    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', 'Bob', '')).toStrictEqual({ message: 'Invalid Last Name.' });
+    expect(requestAuthRegister('bobsmith@gmail.com', 'pass123', 'Bob', '')).toEqual(400);
   });
 
   test('Test first name contains invalid characters', () => {
-    expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'Joh%$y', 'Mate')).toEqual({ message: 'Invalid First Name.' });
+    expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'Joh%$y', 'Mate')).toEqual(400);
   });
 
   // Successful Registration tests
@@ -44,7 +45,7 @@ describe('Test authRegister ', () => {
   test('Successful Registration', () => {
     expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate')).toEqual(
       {
-        token: expect.any(String),
+        token: expect.any(Number),
         authUserId: expect.any(Number)
       }
     );
@@ -79,7 +80,7 @@ describe('Test authRegister ', () => {
   test('Test first name contains numbers', () => {
     expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'J0hnny', 'Mate')).toEqual(
       {
-        token: expect.any(String),
+        token: expect.any(Number),
         authUserId: expect.any(Number)
       }
     );
@@ -88,7 +89,7 @@ describe('Test authRegister ', () => {
   test('Test last name contains numbers', () => {
     expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'J0hnny', 'Mate')).toEqual(
       {
-        token: expect.any(String),
+        token: expect.any(Number),
         authUserId: expect.any(Number)
       }
     );
@@ -107,17 +108,17 @@ describe('Test authLogin ', () => {
     const user2login = requestAuthLogin('aliceP@fmail.au', 'alice123');
     expect(user1login).toStrictEqual({
       authUserId: user1.authUserId,
-      token: expect.any(String),
+      token: expect.any(Number),
     });
     const user3 = requestAuthRegister('jamieS@later.co', '&##@PA', 'Jamie', 'Son');
     const user3login = requestAuthLogin('jamieS@later.co', '&##@PA');
     expect(user2login).toStrictEqual({
       authUserId: user2.authUserId,
-      token: expect.any(String),
+      token: expect.any(Number),
     });
     expect(user3login).toStrictEqual({
       authUserId: user3.authUserId,
-      token: expect.any(String),
+      token: expect.any(Number),
     });
   });
 
@@ -175,6 +176,7 @@ describe('Test authLogout', () => {
     const user1login2 = requestAuthLogin('johnS@email.com', 'passJohn');
     console.log(user1login1);
     console.log(user1login2);
+    console.log(getData().sessions);
     expect(requestAuthLogout(user1login1.token)).toStrictEqual({});
     expect(requestAuthLogout(user1login1.token)).toEqual(403);
     expect(requestAuthLogout(user1login2.token)).toStrictEqual({});
