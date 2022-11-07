@@ -2,7 +2,6 @@ import { getData, setData } from './dataStore';
 import { Empty, Email, Password, Name, Token, Error } from './interfaceTypes';
 import { Session } from './internalTypes';
 import HTTPError from 'http-errors';
-
 import validator from 'validator';
 import { generateUId, generateSession, generateHandleStr, hashCode, validToken } from './helper';
 
@@ -17,7 +16,7 @@ import { generateUId, generateSession, generateHandleStr, hashCode, validToken }
   * @returns {Error} {error : 'Incorrect Password.'} - If email is found, but password is incorrect
   * @returns {Error} {error : 'Email Not Found.'} - If email was not found.
 */
-export function authLoginV2(email: Email, password: Password): Session {
+export function authLoginV3(email: Email, password: Password): Session {
   const data = getData();
   for (const user of data.users) {
     if (user.email === email) {
@@ -48,7 +47,7 @@ export function authLoginV2(email: Email, password: Password): Session {
   * @returns {Error} {error: Invalid First Name.'} - if first name is too short/long
   * @returns {Error} {error: Invalid Last Name.'} - if last name is too short/long
 */
-export function authRegisterV2(email: Email, password: Password, nameFirst: Name, nameLast: Name): Session {
+export function authRegisterV3(email: Email, password: Password, nameFirst: Name, nameLast: Name): Session {
   let data = getData();
 
   if (!validator.isEmail(email)) throw HTTPError(400, 'Invalid Email Address.');
@@ -88,7 +87,7 @@ export function authRegisterV2(email: Email, password: Password, nameFirst: Name
   *
   * @returns {Error} {error: 'Invalid token'} - if token does not exist in dataStore.
 */
-export function authLogoutV1(token: Token): Empty {
+export function authLogoutV2(token: Token): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   const data = getData();
 

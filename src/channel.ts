@@ -1,6 +1,7 @@
 import { getData, setData } from './dataStore';
 import { Empty, Token, ChannelId, UId, Start, Error } from './interfaceTypes';
 import { MessageList, ChannelDetails } from './internalTypes';
+import HTTPError from 'http-errors';
 
 import {
   validUserId,

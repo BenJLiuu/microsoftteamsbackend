@@ -1,5 +1,4 @@
 import { requestAuthRegister, requestAuthLogin, requestClear, requestUserProfile, requestAuthLogout } from './httpHelper';
-import { getData } from './../dataStore';
 
 describe('Test authRegister ', () => {
   beforeEach(() => {

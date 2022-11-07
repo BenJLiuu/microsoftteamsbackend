@@ -5,12 +5,12 @@ import cors from 'cors';
 import HTTPError from 'http-errors';
 import errorHandler from 'middleware-http-errors';
 
-import { channelsCreateV2, channelsListV2, channelsListAllV2 } from './channels';
-import { authRegisterV2, authLoginV2, authLogoutV1 } from './auth';
+import { channelsCreateV3, channelsListV3, channelsListAllV3 } from './channels';
+import { authRegisterV3, authLoginV3, authLogoutV2 } from './auth';
 import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2, channelLeaveV1, channelRemoveOwnerV1, channelAddOwnerV1 } from './channel';
 import { echo } from './echo';
 import { clearV1 } from './other';
-import { userProfileV2, usersAllV1, userProfileSetNameV1, userProfileSetEmailV1, userProfileSetHandleV1 } from './users';
+import { userProfileV3, usersAllV2, userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2 } from './users';
 import { dmCreateV1, dmListV1, dmLeaveV1, dmMessagesV1, dmDetailsV1, dmRemoveV1 } from './dm';
 import { messageSendDmV1, messageSendV1, messageEditV1, messageRemoveV1 } from './message';
 
@@ -37,28 +37,28 @@ app.get('/echo', (req: Request, res: Response, next) => {
 
 // AUTH ROUTES
 
-app.post('/auth/login/v2', (req: Request, res: Response, next) => {
+app.post('/auth/login/v3', (req: Request, res: Response, next) => {
   try {
     const { email, password } = req.body;
-    res.json(authLoginV2(email, password));
+    res.json(authLoginV3(email, password));
   } catch (err) {
     next(err);
   }
 });
 
-app.post('/auth/register/v2', (req: Request, res: Response, next) => {
+app.post('/auth/register/v3', (req: Request, res: Response, next) => {
   try {
     const { email, password, nameFirst, nameLast } = req.body;
-    res.json(authRegisterV2(email, password, nameFirst, nameLast));
+    res.json(authRegisterV3(email, password, nameFirst, nameLast));
   } catch (err) {
     next(err);
   }
 });
 
-app.post('/auth/logout/v1', (req: Request, res: Response, next) => {
+app.post('/auth/logout/v2', (req: Request, res: Response, next) => {
   try {
-    const token = req.header('token');
-    res.json(authLogoutV1(token));
+    const token = req.header('token') as string;
+    res.json(authLogoutV2(token));
   } catch (err) {
     next(err);
   }
@@ -66,20 +66,33 @@ app.post('/auth/logout/v1', (req: Request, res: Response, next) => {
 
 // CHANNELS ROUTES
 
-app.post('/channels/create/v2', (req: Request, res: Response, next) => {
-  const { token, name, isPublic } = req.body;
-  //const token = req.header('token');
-  res.json(channelsCreateV2(token, name, isPublic));
+app.post('/channels/create/v3', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { name, isPublic } = req.body;
+    res.json(channelsCreateV3(token, name, isPublic));
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.get('/channels/list/v2', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
-  res.json(channelsListV2(token));
+app.get('/channels/list/v3', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    res.json(channelsListV3(token));
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.get('/channels/listAll/v2', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
-  res.json(channelsListAllV2(token));
+app.get('/channels/listAll/v3', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    res.json(channelsListAllV3(token));
+  } catch (err) {
+    next(err);
+  }
+
 });
 
 // CHANNEL ROUTES
@@ -124,50 +137,50 @@ app.post('/channel/addOwner/V1', (req: Request, res: Response, next) => {
 
 // USER ROUTES
 
-app.get('/user/profile/v2', (req: Request, res: Response, next) => {
+app.get('/user/profile/v3', (req: Request, res: Response, next) => {
   try {
     const token = req.header('token') as string;
     const uId = req.query.uId as string;
-    res.json(userProfileV2(token, uId ? parseInt(uId) : undefined));
+    res.json(userProfileV3(token, uId ? parseInt(uId) : undefined));
   } catch (err) {
     next(err);
   }
 });
 
-app.put('/user/profile/setname/v1', (req: Request, res: Response, next) => {
-  try {
-    const token = req.header('token');
-    const { nameFirst, nameLast } = req.body;
-    res.json(userProfileSetNameV1(token, nameFirst, nameLast));
-  } catch (err) {
-    next(err);
-  }
-});
-
-app.put('/user/profile/setemail/v1', (req: Request, res: Response, next) => {
-  try {
-    const token = req.header('token');
-    const { email } = req.body;
-    res.json(userProfileSetEmailV1(token, email));
-  } catch (err) {
-    next(err);
-  }
-});
-
-app.put('/user/profile/sethandle/v1', (req: Request, res: Response, next) => {
-  try {
-    const token = req.header('token');
-    const { handleStr } = req.body;
-    res.json(userProfileSetHandleV1(token, handleStr));
-  } catch (err) {
-    next(err);
-  }
-});
-
-app.get('/users/all/v1', (req: Request, res: Response, next) => {
+app.put('/user/profile/setname/v2', (req: Request, res: Response, next) => {
   try {
     const token = req.header('token') as string;
-    res.json(usersAllV1(token || undefined));
+    const { nameFirst, nameLast } = req.body;
+    res.json(userProfileSetNameV2(token, nameFirst, nameLast));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.put('/user/profile/setemail/v2', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { email } = req.body;
+    res.json(userProfileSetEmailV2(token, email));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.put('/user/profile/sethandle/v2', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { handleStr } = req.body;
+    res.json(userProfileSetHandleV2(token, handleStr));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/users/all/v2', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    res.json(usersAllV2(token || undefined));
   } catch (err) {
     next(err);
   }

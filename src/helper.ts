@@ -42,9 +42,7 @@ export function validToken(token: Token): boolean {
   const hashedToken = hashCode(token + 'secret');
   if (data.sessions.some(t => t.token === hashedToken)) {
     return true;
-  } else {
-    return false;
-  }
+  } else return false;
 }
 
 

@@ -14,6 +14,7 @@ import {
   checkUserToMessage,
   validMessageId,
 } from './helper';
+import HTTPError from 'http-errors';
 
 /**
  * Send and store a DM sent by a given user

@@ -12,10 +12,11 @@ function requestHelper(method: HttpVerb, path: string, payload: object, hashedTo
   } else {
     // PUT/POST
     json = payload;
-    if (hashedToken !== '') {
-      headers = { 'token': hashedToken };
-    } 
   }
+
+  if (hashedToken !== '') {
+    headers = { 'token': hashedToken };
+  } 
   
   const res = request(method, SERVER_URL + path, { qs, json, headers });
 
@@ -29,15 +30,15 @@ function requestHelper(method: HttpVerb, path: string, payload: object, hashedTo
 // AUTH
 
 export function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
-  return requestHelper('POST', '/auth/register/v2', { email, password, nameFirst, nameLast });
+  return requestHelper('POST', '/auth/register/v3', { email, password, nameFirst, nameLast });
 }
 
 export function requestAuthLogin(email: string, password: string) {
-  return requestHelper('POST', '/auth/login/v2', { email, password });
+  return requestHelper('POST', '/auth/login/v3', { email, password });
 }
 
 export function requestAuthLogout(token: string) {
-  return requestHelper('POST', '/auth/logout/v1', {}, token);
+  return requestHelper('POST', '/auth/logout/v2', {}, token);
 }
 
 // OTHER
@@ -49,37 +50,37 @@ export function requestClear() {
 // USER
 
 export function requestUserProfile(token: string, uId: number) {
-  return requestHelper('GET', '/user/profile/v2', { uId }, token);
+  return requestHelper('GET', '/user/profile/v3', { uId }, token);
 }
 
 export function requestUsersAll(token: string) {
-  return requestHelper('GET', '/users/all/v1', {}, token);
+  return requestHelper('GET', '/users/all/v2', {}, token);
 }
 
 export function requestUserProfileSetName(token: string, nameFirst: string, nameLast: string) {
-  return requestHelper('PUT', '/user/profile/setname/v1', { nameFirst, nameLast }, token);
+  return requestHelper('PUT', '/user/profile/setname/v2', { nameFirst, nameLast }, token);
 }
 
 export function requestUserProfileSetEmail(token: string, email: string) {
-  return requestHelper('PUT', '/user/profile/setemail/v1', { email }, token);
+  return requestHelper('PUT', '/user/profile/setemail/v2', { email }, token);
 }
 
 export function requestUserProfileSetHandle(token: string, handleStr: string) {
-  return requestHelper('PUT', '/user/profile/sethandle/v1', { handleStr }, token);
+  return requestHelper('PUT', '/user/profile/sethandle/v2', { handleStr }, token);
 }
 
 // CHANNELS
 
 export function requestChannelsCreate(token: string, name: string, isPublic: boolean) {
-  return requestHelper('POST', '/channels/create/v2', { token, name, isPublic });
+  return requestHelper('POST', '/channels/create/v3', { name, isPublic }, token);
 }
 
 export function requestChannelsList(token: string) {
-  return requestHelper('GET', '/channels/list/v2', { token });
+  return requestHelper('GET', '/channels/list/v3', {}, token);
 }
 
 export function requestChannelsListAll(token: string) {
-  return requestHelper('GET', '/channels/listAll/v2', { token });
+  return requestHelper('GET', '/channels/listAll/v3', {}, token);
 }
 
 // CHANNEL

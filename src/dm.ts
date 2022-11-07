@@ -10,6 +10,7 @@ import {
   checkUserIdtoDm,
   getPublicUser
 } from './helper';
+import HTTPError from 'http-errors';
 
 /**
   * Creates and stores a new DM.
