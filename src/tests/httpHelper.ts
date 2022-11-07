@@ -3,7 +3,7 @@ import { HttpVerb } from 'sync-request';
 import { port, url } from './../config.json';
 const SERVER_URL = `${url}:${port}`;
 
-function requestHelper(method: HttpVerb, path: string, payload: object, hashedToken: number = 0) {
+function requestHelper(method: HttpVerb, path: string, payload: object, hashedToken: string = '') {
   let qs = {};
   let json = {};
   let headers = {};
@@ -12,7 +12,7 @@ function requestHelper(method: HttpVerb, path: string, payload: object, hashedTo
   } else {
     // PUT/POST
     json = payload;
-    if (hashedToken !== 0) {
+    if (hashedToken !== '') {
       headers = { 'token': hashedToken };
     } 
   }
@@ -36,7 +36,7 @@ export function requestAuthLogin(email: string, password: string) {
   return requestHelper('POST', '/auth/login/v2', { email, password });
 }
 
-export function requestAuthLogout(token: number) {
+export function requestAuthLogout(token: string) {
   return requestHelper('POST', '/auth/logout/v1', {}, token);
 }
 
@@ -49,15 +49,15 @@ export function requestClear() {
 // USER
 
 export function requestUserProfile(token: string, uId: number) {
-  return requestHelper('GET', '/user/profile/v2', { token, uId });
+  return requestHelper('GET', '/user/profile/v2', { uId }, token);
 }
 
 export function requestUsersAll(token: string) {
-  return requestHelper('GET', '/users/all/v1', { token });
+  return requestHelper('GET', '/users/all/v1', {}, token);
 }
 
 export function requestUserProfileSetName(token: string, nameFirst: string, nameLast: string) {
-  return requestHelper('PUT', '/user/profile/setname/v1', { token, nameFirst, nameLast });
+  return requestHelper('PUT', '/user/profile/setname/v1', { nameFirst, nameLast }, token);
 }
 
 export function requestUserProfileSetEmail(token: string, email: string) {

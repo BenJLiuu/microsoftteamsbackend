@@ -31,7 +31,7 @@ export type PrivateDm = {
 
 export type Session = {
   authUserId: itf.UId,
-  token: itf.Token | itf.HashedToken,
+  token: itf.Token | HashedToken,
 };
 
 export type Data = {

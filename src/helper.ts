@@ -5,7 +5,7 @@ import {
   ChannelId, DmId, MessageId,
   User, HandleStr, Name,
 } from './interfaceTypes';
-import { PrivateUser, Session, HashedToken } from './internalTypes';
+import { PrivateUser, Session } from './internalTypes';
 import HTTPError from 'http-errors';
 
 
@@ -27,7 +27,8 @@ export function validUserId(uId: UId): boolean {
  */
 export function getUserIdFromToken(token: Token): UId {
   const data = getData();
-  return data.sessions.find(s => hashCode(s.token + 'secret') === token).authUserId;
+  const hashedToken = hashCode(token + 'secret');
+  return data.sessions.find(s => s.token === hashedToken).authUserId;
 }
 
 /**
@@ -36,14 +37,25 @@ export function getUserIdFromToken(token: Token): UId {
  * @param {Token} token - Token to check
  * @returns {boolean} Boolean of whether the session is valid
  */
-export function validToken(token: HashedToken): boolean {
+export function validToken(token: Token): boolean {
   const data = getData();
-  if (data.sessions.some(t => hashCode(t.token + 'secret') === token)) {
+  const hashedToken = hashCode(token + 'secret');
+  if (data.sessions.some(t => t.token === hashedToken)) {
     return true;
   } else {
-    throw HTTPError(403, 'Invalid token'); 
+    return false;
   }
 }
+
+
+/**
+ * 
+ * @param {Token} token - unhashed token to be hashed with global secret
+ * @returns {number} token hashed with global secret.
+ */
+/*export function encodeToken(token: Token): number {
+  return hashCode(token + 'secret');
+}*/
 
 /**
  * Checks whether a channel is valid (whether it exists in the database)
@@ -107,19 +119,23 @@ export function getPublicUser(user: PrivateUser): User {
  */
 export function generateSession(uId: UId): Session {
   const tokenLength = 32;
-  const session = {
-    token: genRandomString(tokenLength),
+  const token = genRandomString(tokenLength)
+  const storedSession = {
+    token: hashCode(token + 'secret'),
     authUserId: uId,
   };
 
   const data = getData();
 
-  data.sessions.push(session);
+  data.sessions.push(storedSession);
   setData(data);
 
-  session.token = hashCode(session.token + 'secret');
+  const returnedSession = {
+    token: token,
+    authUserId: uId,
+  };
 
-  return session;
+  return returnedSession;
 }
 
 /**

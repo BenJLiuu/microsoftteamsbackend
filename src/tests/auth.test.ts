@@ -45,7 +45,7 @@ describe('Test authRegister ', () => {
   test('Successful Registration', () => {
     expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate')).toEqual(
       {
-        token: expect.any(Number),
+        token: expect.any(String),
         authUserId: expect.any(Number)
       }
     );
@@ -80,7 +80,7 @@ describe('Test authRegister ', () => {
   test('Test first name contains numbers', () => {
     expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'J0hnny', 'Mate')).toEqual(
       {
-        token: expect.any(Number),
+        token: expect.any(String),
         authUserId: expect.any(Number)
       }
     );
@@ -89,7 +89,7 @@ describe('Test authRegister ', () => {
   test('Test last name contains numbers', () => {
     expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'J0hnny', 'Mate')).toEqual(
       {
-        token: expect.any(Number),
+        token: expect.any(String),
         authUserId: expect.any(Number)
       }
     );
@@ -108,17 +108,17 @@ describe('Test authLogin ', () => {
     const user2login = requestAuthLogin('aliceP@fmail.au', 'alice123');
     expect(user1login).toStrictEqual({
       authUserId: user1.authUserId,
-      token: expect.any(Number),
+      token: expect.any(String),
     });
     const user3 = requestAuthRegister('jamieS@later.co', '&##@PA', 'Jamie', 'Son');
     const user3login = requestAuthLogin('jamieS@later.co', '&##@PA');
     expect(user2login).toStrictEqual({
       authUserId: user2.authUserId,
-      token: expect.any(Number),
+      token: expect.any(String),
     });
     expect(user3login).toStrictEqual({
       authUserId: user3.authUserId,
-      token: expect.any(Number),
+      token: expect.any(String),
     });
   });
 
@@ -174,9 +174,6 @@ describe('Test authLogout', () => {
     requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user1login1 = requestAuthLogin('johnS@email.com', 'passJohn');
     const user1login2 = requestAuthLogin('johnS@email.com', 'passJohn');
-    console.log(user1login1);
-    console.log(user1login2);
-    console.log(getData().sessions);
     expect(requestAuthLogout(user1login1.token)).toStrictEqual({});
     expect(requestAuthLogout(user1login1.token)).toEqual(403);
     expect(requestAuthLogout(user1login2.token)).toStrictEqual({});

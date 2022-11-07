@@ -89,10 +89,11 @@ export function authRegisterV2(email: Email, password: Password, nameFirst: Name
   * @returns {Error} {error: 'Invalid token'} - if token does not exist in dataStore.
 */
 export function authLogoutV1(token: Token): Empty | Error {
-  validToken(token);
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   const data = getData();
 
-  const sessionIndex = data.sessions.findIndex(session => session.token === token);
+  const hashedToken = hashCode(token + 'secret');
+  const sessionIndex = data.sessions.findIndex(s => s.token === hashedToken);
   data.sessions.splice(sessionIndex, 1);
 
   setData(data);
