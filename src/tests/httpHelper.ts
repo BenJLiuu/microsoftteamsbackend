@@ -3,7 +3,7 @@ import { HttpVerb } from 'sync-request';
 import { port, url } from './../config.json';
 const SERVER_URL = `${url}:${port}`;
 
-function requestHelper(method: HttpVerb, path: string, payload: object, hashedToken: string = '') {
+function requestHelper(method: HttpVerb, path: string, payload: object, hashedToken = '') {
   let qs = {};
   let json = {};
   let headers = {};
@@ -15,9 +15,9 @@ function requestHelper(method: HttpVerb, path: string, payload: object, hashedTo
   }
 
   if (hashedToken !== '') {
-    headers = { 'token': hashedToken };
-  } 
-  
+    headers = { token: hashedToken };
+  }
+
   const res = request(method, SERVER_URL + path, { qs, json, headers });
 
   if (res.statusCode !== 200) {
@@ -86,31 +86,31 @@ export function requestChannelsListAll(token: string) {
 // CHANNEL
 
 export function requestChannelDetails(token: string, channelId: number) {
-  return requestHelper('GET', '/channel/details/v2', { token, channelId });
+  return requestHelper('GET', '/channel/details/v3', { channelId }, token);
 }
 
 export function requestChannelMessages(token: string, channelId: number, start: number) {
-  return requestHelper('GET', '/channel/messages/v2', { token, channelId, start });
+  return requestHelper('GET', '/channel/messages/v3', { channelId, start }, token);
 }
 
 export function requestChannelInvite(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/invite/v2', { token, channelId, uId });
+  return requestHelper('POST', '/channel/invite/v3', { channelId, uId }, token);
 }
 
 export function requestChannelJoin(token: string, channelId: number) {
-  return requestHelper('POST', '/channel/join/v2', { token, channelId });
+  return requestHelper('POST', '/channel/join/v3', { channelId }, token);
 }
 
 export function requestChannelRemoveOwner(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/removeowner/v1', { token, channelId, uId });
+  return requestHelper('POST', '/channel/removeowner/v2', { channelId, uId }, token);
 }
 
 export function requestChannelAddOwner(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/addowner/v1', { token, channelId, uId });
+  return requestHelper('POST', '/channel/addowner/v2', { channelId, uId }, token);
 }
 
 export function requestChannelLeave(token: string, channelId: number) {
-  return requestHelper('POST', '/channel/leave/v1', { token, channelId });
+  return requestHelper('POST', '/channel/leave/v2', { channelId }, token);
 }
 
 // MESSAGE

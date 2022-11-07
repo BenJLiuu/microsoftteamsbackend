@@ -128,7 +128,7 @@ describe('Test UserProfileSetName', () => {
 
   test('invalid session', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfileSetName(user1.token + 'z', 'Jesse', 'Pinkman')).toEqual(403)
+    expect(requestUserProfileSetName(user1.token + 'z', 'Jesse', 'Pinkman')).toEqual(403);
   });
 
   test('successful name change', () => {

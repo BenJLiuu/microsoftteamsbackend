@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { Empty, Email, Password, Name, Token, Error } from './interfaceTypes';
+import { Empty, Email, Password, Name, Token } from './interfaceTypes';
 import { Session } from './internalTypes';
 import HTTPError from 'http-errors';
 import validator from 'validator';
@@ -22,13 +22,12 @@ export function authLoginV3(email: Email, password: Password): Session {
     if (user.email === email) {
       // Found an email match
       if (user.passwordHash === password) return generateSession(user.uId);
-      else throw HTTPError(400, 'Incorrect Password.')
+      else throw HTTPError(400, 'Incorrect Password.');
     }
   }
 
   // If nothing has been returned, user has not been found.
   throw HTTPError(400, 'Email Not Found.');
-  return;
 }
 
 /**

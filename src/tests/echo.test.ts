@@ -1,7 +1,6 @@
-/*test('default', () => {
+/* test('default', () => {
   expect(1).toBe(1);
-});*/
-
+}); */
 
 import request from 'sync-request';
 import config from './../config.json';
@@ -39,13 +38,9 @@ describe('HTTP tests using Jest', () => {
                 }
               }
       );
-      const bodyObj = JSON.parse(res.body as string);
       expect(res.statusCode).toBe(INPUT_ERROR);
-    }
-    catch (err) {
+    } catch (err) {
       expect(err).toStrictEqual({ message: 'BadRequestError: Cannot echo "echo"' });
     }
-
   });
 });
-

@@ -7,7 +7,7 @@ import errorHandler from 'middleware-http-errors';
 
 import { channelsCreateV3, channelsListV3, channelsListAllV3 } from './channels';
 import { authRegisterV3, authLoginV3, authLogoutV2 } from './auth';
-import { channelDetailsV2, channelJoinV2, channelInviteV2, channelMessagesV2, channelLeaveV1, channelRemoveOwnerV1, channelAddOwnerV1 } from './channel';
+import { channelDetailsV3, channelJoinV3, channelInviteV3, channelMessagesV3, channelLeaveV2, channelRemoveOwnerV2, channelAddOwnerV2 } from './channel';
 import { echo } from './echo';
 import { clearV1 } from './other';
 import { userProfileV3, usersAllV2, userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2 } from './users';
@@ -92,47 +92,83 @@ app.get('/channels/listAll/v3', (req: Request, res: Response, next) => {
   } catch (err) {
     next(err);
   }
-
 });
 
 // CHANNEL ROUTES
 
-app.post('/channel/invite/v2', (req: Request, res: Response, next) => {
-  const { token, channelId, uId } = req.body;
-  res.json(channelInviteV2(token, channelId, uId));
+app.post('/channel/invite/v3', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { channelId, uId } = req.body;
+    res.json(channelInviteV3(token, channelId, uId));
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.get('/channel/details/v2', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
-  const channelId = req.query.channelId as string;
-  res.json(channelDetailsV2(token, channelId ? parseInt(channelId) : undefined));
+app.get('/channel/details/v3', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const channelId = req.query.channelId as string;
+    res.json(channelDetailsV3(token, channelId ? parseInt(channelId) : undefined));
+  } catch (err) {
+    next(err);
+  }
+
 });
 
-app.post('/channel/join/v2', (req: Request, res: Response, next) => {
-  const { token, channelId } = req.body;
-  res.json(channelJoinV2(token, channelId));
+app.post('/channel/join/v3', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { channelId } = req.body;
+    res.json(channelJoinV3(token, channelId));
+  } catch (err) {
+    next(err);
+  }
+
 });
 
-app.get('/channel/messages/v2', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
-  const channelId = req.query.channelId as string;
-  const start = req.query.start as string;
-  res.json(channelMessagesV2(token, channelId ? parseInt(channelId) : undefined, start ? parseInt(start) : undefined));
+app.get('/channel/messages/v3', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const channelId = req.query.channelId as string;
+    const start = req.query.start as string;
+    res.json(channelMessagesV3(token, channelId ? parseInt(channelId) : undefined, start ? parseInt(start) : undefined));
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
-  const { token, channelId } = req.body;
-  res.json(channelLeaveV1(token, channelId));
+app.post('/channel/leave/v2', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { channelId } = req.body;
+    res.json(channelLeaveV2(token, channelId));
+  } catch (err) {
+    next(err);
+  }
+
 });
 
-app.post('/channel/removeOwner/V1', (req: Request, res: Response, next) => {
-  const { token, channelId, uId } = req.body;
-  res.json(channelRemoveOwnerV1(token, channelId, uId));
+app.post('/channel/removeOwner/v2', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { channelId, uId } = req.body;
+    res.json(channelRemoveOwnerV2(token, channelId, uId));
+  } catch (err) {
+    next(err);
+  }
+
 });
 
-app.post('/channel/addOwner/V1', (req: Request, res: Response, next) => {
-  const { token, channelId, uId } = req.body;
-  res.json(channelAddOwnerV1(token, channelId, uId));
+app.post('/channel/addOwner/v2', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { channelId, uId } = req.body;
+    res.json(channelAddOwnerV2(token, channelId, uId));
+  } catch (err) {
+    next(err);
+  }
 });
 
 // USER ROUTES

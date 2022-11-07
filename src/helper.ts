@@ -8,7 +8,6 @@ import {
 import { PrivateUser, Session } from './internalTypes';
 import HTTPError from 'http-errors';
 
-
 /**
  * Checks whether a uId exists in the database
  *
@@ -45,15 +44,14 @@ export function validToken(token: Token): boolean {
   } else return false;
 }
 
-
 /**
- * 
+ *
  * @param {Token} token - unhashed token to be hashed with global secret
  * @returns {number} token hashed with global secret.
  */
-/*export function encodeToken(token: Token): number {
+/* export function encodeToken(token: Token): number {
   return hashCode(token + 'secret');
-}*/
+} */
 
 /**
  * Checks whether a channel is valid (whether it exists in the database)
@@ -117,7 +115,7 @@ export function getPublicUser(user: PrivateUser): User {
  */
 export function generateSession(uId: UId): Session {
   const tokenLength = 32;
-  const token = genRandomString(tokenLength)
+  const token = genRandomString(tokenLength);
   const storedSession = {
     token: hashCode(token + 'secret'),
     authUserId: uId,
@@ -137,7 +135,7 @@ export function generateSession(uId: UId): Session {
 }
 
 /**
- * 
+ *
  * @param {string} str - the string to be hashed
  * @returns {string} - the hashed version of the string
  */
@@ -145,7 +143,7 @@ export function hashCode(str: string): number {
   let hash = 0;
   if (str.length === 0) return hash;
   for (let x = 0; x < str.length; x++) {
-    let ch = str.charCodeAt(x);
+    const ch = str.charCodeAt(x);
     hash = ((hash << 5) - hash) + ch;
     hash = hash & hash;
   }
