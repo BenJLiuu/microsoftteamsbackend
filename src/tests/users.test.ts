@@ -9,9 +9,9 @@ describe('Test userProfile', () => {
     requestClear();
   });
 
-  test('authUserId is invalid', () => {
+  test('token is invalid', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfile(user1.token + '1', user1.authUserId)).toEqual(400);
+    expect(requestUserProfile(user1.token + '1', user1.authUserId)).toEqual(403);
   });
 
   test('uId does not refer to a valid user', () => {
@@ -66,7 +66,7 @@ describe('Test userAll', () => {
 
   test('session is invalid', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUsersAll(user1.token + '1')).toEqual(400);
+    expect(requestUsersAll(user1.token + '1')).toEqual(403);
   });
 
   test('return one user', () => {
@@ -168,7 +168,7 @@ describe('Test userProfileSetEmail', () => {
 
   test('invalid session', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfileSetEmail(user1.token + 'w', 'validemail@gmail.com')).toEqual(400);
+    expect(requestUserProfileSetEmail(user1.token + 'w', 'validemail@gmail.com')).toEqual(403);
   });
 
   test('successful email change', () => {
@@ -214,7 +214,7 @@ describe('Test userProfileSetHandle', () => {
 
   test('invalid session', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfileSetHandle(user1.token + 's', 'kevin')).toEqual(400);
+    expect(requestUserProfileSetHandle(user1.token + 's', 'kevin')).toEqual(403);
   });
 
   test('successful handle change', () => {

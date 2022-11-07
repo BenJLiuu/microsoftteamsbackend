@@ -235,7 +235,11 @@ app.delete('/message/remove/V1', (req: Request, res: Response, next) => {
 // OTHER ROUTES
 
 app.delete('/clear/v1', (req: Request, res: Response, next) => {
-  res.json(clearV1());
+  try {
+    res.json(clearV1());
+  } catch (err) {
+    next(err);
+  }
 });
 
 // handles errors nicely

@@ -61,11 +61,11 @@ export function requestUserProfileSetName(token: string, nameFirst: string, name
 }
 
 export function requestUserProfileSetEmail(token: string, email: string) {
-  return requestHelper('PUT', '/user/profile/setemail/v1', { token, email });
+  return requestHelper('PUT', '/user/profile/setemail/v1', { email }, token);
 }
 
 export function requestUserProfileSetHandle(token: string, handleStr: string) {
-  return requestHelper('PUT', '/user/profile/sethandle/v1', { token, handleStr });
+  return requestHelper('PUT', '/user/profile/sethandle/v1', { handleStr }, token);
 }
 
 // CHANNELS
