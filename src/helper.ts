@@ -6,7 +6,6 @@ import {
   User, HandleStr, Name,
 } from './interfaceTypes';
 import { PrivateUser, Session } from './internalTypes';
-import HTTPError from 'http-errors';
 
 /**
  * Checks whether a uId exists in the database

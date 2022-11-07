@@ -2,7 +2,6 @@ import express, { json, Request, Response } from 'express';
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
-import HTTPError from 'http-errors';
 import errorHandler from 'middleware-http-errors';
 
 import { channelsCreateV3, channelsListV3, channelsListAllV3 } from './channels';
@@ -114,7 +113,6 @@ app.get('/channel/details/v3', (req: Request, res: Response, next) => {
   } catch (err) {
     next(err);
   }
-
 });
 
 app.post('/channel/join/v3', (req: Request, res: Response, next) => {
@@ -125,7 +123,6 @@ app.post('/channel/join/v3', (req: Request, res: Response, next) => {
   } catch (err) {
     next(err);
   }
-
 });
 
 app.get('/channel/messages/v3', (req: Request, res: Response, next) => {
@@ -147,7 +144,6 @@ app.post('/channel/leave/v2', (req: Request, res: Response, next) => {
   } catch (err) {
     next(err);
   }
-
 });
 
 app.post('/channel/removeOwner/v2', (req: Request, res: Response, next) => {
@@ -158,7 +154,6 @@ app.post('/channel/removeOwner/v2', (req: Request, res: Response, next) => {
   } catch (err) {
     next(err);
   }
-
 });
 
 app.post('/channel/addOwner/v2', (req: Request, res: Response, next) => {
@@ -232,7 +227,6 @@ app.post('/dm/create/v2', (req: Request, res: Response, next) => {
   } catch (err) {
     next(err);
   }
-
 });
 
 app.get('/dm/list/v2', (req: Request, res: Response, next) => {

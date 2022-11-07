@@ -156,5 +156,3 @@ export function requestDmMessages(token: string, dmId: number, start: number) {
 export function requestDmRemove(token: string, dmId: number) {
   return requestHelper('DELETE', '/dm/remove/v2', { dmId }, token);
 }
-
-

@@ -15,14 +15,14 @@ describe('ChannelMessages', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelMessages(user1.token, channel1.channelId + 1, 0)).toEqual(400); 
+    expect(requestChannelMessages(user1.token, channel1.channelId + 1, 0)).toEqual(400);
   });
 
   test('Start is greater than total messages', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelMessages(user1.token, channel1.channelId, 2)).toEqual(400); 
+    expect(requestChannelMessages(user1.token, channel1.channelId, 2)).toEqual(400);
   });
 
   test('Authorised user is not a channel member', () => {
@@ -30,7 +30,7 @@ describe('ChannelMessages', () => {
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelMessages(user2.token, channel1.channelId, 0)).toEqual(400); 
+    expect(requestChannelMessages(user2.token, channel1.channelId, 0)).toEqual(400);
   });
 
   test('Empty channel', () => {
@@ -53,7 +53,7 @@ describe('ChannelMessages', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     requestMessageSend(user1.token, channel1.channelId, 'hello');
-    expect(requestChannelMessages(user1.token + 'a', channel1.channelId, 0)).toEqual(403); 
+    expect(requestChannelMessages(user1.token + 'a', channel1.channelId, 0)).toEqual(403);
   });
 
   test('Success, less than 50 messages.', () => {
@@ -117,7 +117,7 @@ describe('requestChannelInvite', () => {
 
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
 
-    expect(requestChannelInvite(user1.token, 0, user2.authUserId)).toEqual(400); 
+    expect(requestChannelInvite(user1.token, 0, user2.authUserId)).toEqual(400);
   });
 
   test('Test only invalid user Id', () => {
@@ -135,7 +135,7 @@ describe('requestChannelInvite', () => {
 
     const channel1 = requestChannelsCreate(user2.token, 'channel1', true);
 
-    expect(requestChannelInvite(user1.token, channel1.channelId, user2.authUserId)).toEqual(400); 
+    expect(requestChannelInvite(user1.token, channel1.channelId, user2.authUserId)).toEqual(400);
   });
 
   test('Test only authorised user is not a member', () => {
@@ -157,7 +157,7 @@ describe('requestChannelInvite', () => {
 
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelInvite('test', channel1.channelId, user2.authUserId)).toEqual(403); 
+    expect(requestChannelInvite('test', channel1.channelId, user2.authUserId)).toEqual(403);
   });
 
   // Successful Registration tests
@@ -246,7 +246,7 @@ describe('Test requestChannelDetails', () => {
 
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelDetails(user2.token, channel1.channelId)).toEqual(400); 
+    expect(requestChannelDetails(user2.token, channel1.channelId)).toEqual(400);
   });
 
   test('Test only invalid token', () => {
@@ -254,7 +254,7 @@ describe('Test requestChannelDetails', () => {
 
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
 
-    expect(requestChannelDetails(user1.token + 'a', channel1.channelId)).toEqual(403); 
+    expect(requestChannelDetails(user1.token + 'a', channel1.channelId)).toEqual(403);
   });
 
   // Successful Registration tests
@@ -296,7 +296,7 @@ describe('requestChannelJoin', () => {
   test('Invalid channel id', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
 
-    expect(requestChannelJoin(user1.token, 0)).toEqual(400); 
+    expect(requestChannelJoin(user1.token, 0)).toEqual(400);
   });
 
   test('Authorised user is already a member of the channel', () => {
@@ -412,7 +412,7 @@ describe('requestChannelJoin', () => {
       requestChannelJoin(user2.token, channel1.channelId);
       requestChannelAddOwner(user1.token, channel1.channelId, user2.uId);
 
-      expect(requestChannelRemoveOwner(user1.token, -10, user2.uId)).toEqual(400); 
+      expect(requestChannelRemoveOwner(user1.token, -10, user2.uId)).toEqual(400);
     });
 
     test('Invalid uId', () => {
@@ -431,14 +431,14 @@ describe('requestChannelJoin', () => {
       const channel1 = requestChannelsCreate(user1.token, 'general', true);
       requestChannelJoin(user2.token, channel1.channelId);
 
-      expect(requestChannelRemoveOwner(user1.token, channel1.channelId, user2.uId)).toEqual(400); 
+      expect(requestChannelRemoveOwner(user1.token, channel1.channelId, user2.uId)).toEqual(400);
     });
 
     test('User is the only owner', () => {
       const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
       const channel1 = requestChannelsCreate(user1.token, 'general', true);
 
-      expect(requestChannelRemoveOwner(user1.token, channel1.channelId, user1.uId)).toEqual(400); 
+      expect(requestChannelRemoveOwner(user1.token, channel1.channelId, user1.uId)).toEqual(400);
     });
 
     test('User is not a member of the channel', () => {
@@ -446,7 +446,7 @@ describe('requestChannelJoin', () => {
       const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
       const channel1 = requestChannelsCreate(user1.token, 'general', true);
 
-      expect(requestChannelRemoveOwner(user1.token, channel1.channelId, user2.uId)).toEqual(400); 
+      expect(requestChannelRemoveOwner(user1.token, channel1.channelId, user2.uId)).toEqual(400);
     });
 
     test('User is not authuorised', () => {
@@ -458,7 +458,7 @@ describe('requestChannelJoin', () => {
       requestChannelJoin(user3.token, channel1.channelId);
       requestChannelAddOwner(user1.token, channel1.channelId, user2.uId);
 
-      expect(requestChannelRemoveOwner(user3.token, channel1.channelId, user2.uId)).toEqual(400); 
+      expect(requestChannelRemoveOwner(user3.token, channel1.channelId, user2.uId)).toEqual(400);
     });
 
     test('Invalid token', () => {
@@ -470,7 +470,7 @@ describe('requestChannelJoin', () => {
       requestChannelJoin(user3.token, channel1.channelId);
       requestChannelAddOwner(user1.token, channel1.channelId, user2.uId);
 
-      expect(requestChannelRemoveOwner('test', channel1.channelId, user2.uId)).toEqual(403); 
+      expect(requestChannelRemoveOwner('test', channel1.channelId, user2.uId)).toEqual(403);
     });
     // Sucessful channelRemoveOwner test
     test('Sucessfully removed owner', () => {
@@ -592,7 +592,7 @@ describe('requestChannelJoin', () => {
       requestChannelJoin(user2.token, channel1.channelId);
       requestChannelJoin(user3.token, channel1.channelId);
 
-      expect(requestChannelAddOwner(user2.token, channel1.channelId, user3.uId)).toEqual(400); 
+      expect(requestChannelAddOwner(user2.token, channel1.channelId, user3.uId)).toEqual(400);
     });
 
     test('Invalid token', () => {
@@ -601,7 +601,7 @@ describe('requestChannelJoin', () => {
       const channel1 = requestChannelsCreate(user1.token, 'general', true);
       requestChannelJoin(user2.token, channel1.channelId);
 
-      expect(requestChannelAddOwner('test', channel1.channelId, user2.uId)).toEqual(403); 
+      expect(requestChannelAddOwner('test', channel1.channelId, user2.uId)).toEqual(403);
     });
     // Sucessful ChannelAddOwner test
 
@@ -693,7 +693,7 @@ describe('requestChannelJoin', () => {
     test('Invalid channelId', () => {
       const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
 
-      expect(requestChannelLeave(user1.token, -10)).toEqual(400); 
+      expect(requestChannelLeave(user1.token, -10)).toEqual(400);
     });
 
     test('Invalid channelId', () => {
@@ -701,7 +701,7 @@ describe('requestChannelJoin', () => {
       const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
       const channel1 = requestChannelsCreate(user1.token, 'general', true);
 
-      expect(requestChannelLeave(user2.token, channel1.channelId)).toEqual(400); 
+      expect(requestChannelLeave(user2.token, channel1.channelId)).toEqual(400);
     });
 
     test('Invalid token', () => {

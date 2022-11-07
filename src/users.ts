@@ -29,7 +29,7 @@ import HTTPError from 'http-errors';
 */
 export function userProfileV3 (token: Token, uId: UId): UserObj {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
-  if (!validUserId(uId)) throw new HTTPError(400, 'Invalid User Id.');
+  if (!validUserId(uId)) throw HTTPError(400, 'Invalid User Id.');
 
   const data = getData();
   const user = data.users.find(user => user.uId === uId);
@@ -72,8 +72,8 @@ export function usersAllV2 (token: Token): {users: Users} {
  * @returns {Error} { error: 'Invalid Session Id.' } - If token is invalid.
  */
 export function userProfileSetNameV2 (token: Token, nameFirst: Name, nameLast: Name): Empty {
-  if (nameFirst.length < 1 || nameFirst.length > 50) throw new HTTPError(400, 'Invalid First Name.');
-  if (nameLast.length < 1 || nameLast.length > 50) throw new HTTPError(400, 'Invalid Last Name.');
+  if (nameFirst.length < 1 || nameFirst.length > 50) throw HTTPError(400, 'Invalid First Name.');
+  if (nameLast.length < 1 || nameLast.length > 50) throw HTTPError(400, 'Invalid Last Name.');
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
 
   const data = getData();
@@ -101,9 +101,9 @@ export function userProfileSetNameV2 (token: Token, nameFirst: Name, nameLast: N
  * @returns {Error} { error: 'Invalid Session Id.' } - If token is invalid.
  */
 export function userProfileSetEmailV2 (token: Token, email: Email): Empty {
-  if (!validator.isEmail(email)) throw new HTTPError(400, 'Invalid Email Address.');
+  if (!validator.isEmail(email)) throw HTTPError(400, 'Invalid Email Address.');
   const data = getData();
-  if (data.users.some(user => user.email === email)) throw new HTTPError(400, 'Email Already in Use.');
+  if (data.users.some(user => user.email === email)) throw HTTPError(400, 'Email Already in Use.');
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   const userId = getUserIdFromToken(token);
   data.users.find(user => user.uId === userId).email = email;
@@ -126,10 +126,10 @@ export function userProfileSetEmailV2 (token: Token, email: Email): Empty {
  * @returns {Empty} {} - If user successfully updates handle.
  */
 export function userProfileSetHandleV2 (token: Token, handleStr: HandleStr): Empty {
-  if (handleStr.length < 3 || handleStr.length > 20) throw new HTTPError(400, 'Invalid Handle.');
-  if (handleStr.match(/^[0-9A-Za-z]+$/) === null) throw new HTTPError(400, 'Invalid Handle.');
+  if (handleStr.length < 3 || handleStr.length > 20) throw HTTPError(400, 'Invalid Handle.');
+  if (handleStr.match(/^[0-9A-Za-z]+$/) === null) throw HTTPError(400, 'Invalid Handle.');
   const data = getData();
-  if (data.users.some(user => user.handleStr === handleStr)) throw new HTTPError(400, 'Handle Already in Use.');
+  if (data.users.some(user => user.handleStr === handleStr)) throw HTTPError(400, 'Handle Already in Use.');
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
 
   const userId = getUserIdFromToken(token);

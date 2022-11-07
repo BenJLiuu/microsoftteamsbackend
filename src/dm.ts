@@ -24,11 +24,11 @@ import HTTPError from 'http-errors';
   * @returns {{dmId: DmId}} {dmId: number} - if creation is successfull.
 */
 export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
-  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.'); 
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   for (const i of uIds) {
-    if (!validUserId(i)) throw HTTPError(400, 'Invalid User Id.'); 
+    if (!validUserId(i)) throw HTTPError(400, 'Invalid User Id.');
   }
-  if (uIds.length !== Array.from(new Set(uIds)).length) throw HTTPError(400, 'Duplicate User Id found.'); 
+  if (uIds.length !== Array.from(new Set(uIds)).length) throw HTTPError(400, 'Duplicate User Id found.');
 
   const data = getData();
   const authUserId = getUserIdFromToken(token);
@@ -105,8 +105,7 @@ export function dmListV2(token: Token): DMsObj {
 */
 export function ddmLeaveV2(token: Token, dmId: DmId): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
-  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.'); 
- 
+  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.');
 
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(400, 'Authorised user is not a member of the DM.');
@@ -134,10 +133,10 @@ export function ddmLeaveV2(token: Token, dmId: DmId): Empty {
 */
 export function dmRemoveV2(token: Token, dmId: DmId): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
-  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.'); 
+  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.');
 
   const authUserId = getUserIdFromToken(token);
-  if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(400, 'Authorised user is not a member of the DM.'); 
+  if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(400, 'Authorised user is not a member of the DM.');
 
   const data = getData();
   const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
@@ -162,7 +161,7 @@ export function dmRemoveV2(token: Token, dmId: DmId): Empty {
 */
 export function dmDetailsV2(token: Token, dmId: DmId): DmDetails {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
-  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.'); 
+  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.');
 
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(400, 'Authorised user is not a member of the DM.');
@@ -192,7 +191,7 @@ export function dmDetailsV2(token: Token, dmId: DmId): DmDetails {
 */
 export function dmMessagesV2(token: Token, dmId: DmId, start: Start): MessageList {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
-  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.'); 
+  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.');
 
   const authUserId = getUserIdFromToken(token);
   if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(400, 'Authorised user is not a member of the DM.');
