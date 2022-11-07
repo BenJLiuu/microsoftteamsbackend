@@ -12,7 +12,7 @@ describe('messageSendDm Tests', () => {
   test('Not valid Dm Id', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
 
-    expect(requestMessageSendDm(user1.token, -10, 'hello there')).toStrictEqual({ error: expect.any(String) });
+    expect(requestMessageSendDm(user1.token, -10, 'hello there')).toEqual(400);
   });
 
   test('Message length is less than 1', () => {
@@ -22,7 +22,7 @@ describe('messageSendDm Tests', () => {
     const uIds = [user2.authUserId, user3.authUserId];
     const dmId = requestDmCreate(user1.token, uIds);
 
-    expect(requestMessageSendDm(user1.token, dmId, '')).toStrictEqual({ error: expect.any(String) });
+    expect(requestMessageSendDm(user1.token, dmId, '')).toEqual(400);
   });
 
   test('Message length is more than 1000', () => {
@@ -40,7 +40,7 @@ describe('messageSendDm Tests', () => {
     testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
     testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
     testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest`)).toStrictEqual({ error: expect.any(String) });
+    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest`)).toEqual(400);
   });
 
   test('Invalid Token', () => {
@@ -50,7 +50,7 @@ describe('messageSendDm Tests', () => {
     const uIds = [user2.authUserId, user3.authUserId];
     const dmId = requestDmCreate(user1.token, uIds);
 
-    expect(requestMessageSendDm('Test', dmId, 'Hello there')).toStrictEqual({ error: expect.any(String) });
+    expect(requestMessageSendDm('Test', dmId, 'Hello there')).toEqual(403);
   });
 
   // Sucessful messageSendDm test
@@ -74,14 +74,14 @@ describe('messageSend Tests', () => {
   test('Invalid Channel Id', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
 
-    expect(requestMessageSend(user1.token, -10, 'Hello there')).toStrictEqual({ error: expect.any(String) });
+    expect(requestMessageSend(user1.token, -10, 'Hello there')).toEqual(400);
   });
 
   test('Message length is less than 1', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'general', true);
 
-    expect(requestMessageSend(user1.token, channel1.channelId, '')).toStrictEqual({ error: expect.any(String) });
+    expect(requestMessageSend(user1.token, channel1.channelId, '')).toEqual(400);
   });
 
   test('Message length is more than 1000', () => {
@@ -96,7 +96,7 @@ describe('messageSend Tests', () => {
     testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
     testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
     testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest`)).toStrictEqual({ error: expect.any(String) });
+    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest`)).toEqual(400);
   });
 
   test('User is not a member of the channel', () => {
@@ -104,14 +104,14 @@ describe('messageSend Tests', () => {
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const channel1 = requestChannelsCreate(user1.token, 'general', true);
 
-    expect(requestMessageSend(user2.token, channel1.channelId, 'Hello there')).toStrictEqual({ error: expect.any(String) });
+    expect(requestMessageSend(user2.token, channel1.channelId, 'Hello there')).toEqual(400);
   });
 
   test('Invalid token', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'general', true);
 
-    expect(requestMessageSend('Test', channel1.channelId, 'Hello there')).toStrictEqual({ error: expect.any(String) });
+    expect(requestMessageSend('Test', channel1.channelId, 'Hello there')).toEqual(403);
   });
 
   // Sucessful messageSend test
@@ -144,7 +144,7 @@ describe('requestMessageEdit', () => {
     test test test test test test test test test test test test test test test test test test test test test test test test test test test test 
     test test test test test test test test test test test test test test test test test test test test test test test test test test test test 
     test test test test test test test test test test test test test test test test test test test test test test test test test test test test 
-    test test test test test test test test test test test test test test test test test`)).toStrictEqual({ error: expect.any(String) });
+    test test test test test test test test test test test test test test test test test`)).toEqual(400);
   });
 
   test('Invalid Message Id', () => {
@@ -152,7 +152,7 @@ describe('requestMessageEdit', () => {
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
-    expect(requestMessageEdit(user1.token, message1.messageId + 1, 'test')).toStrictEqual({ error: expect.any(String) });
+    expect(requestMessageEdit(user1.token, message1.messageId + 1, 'test')).toEqual(400);
   });
 
   test('Message was not sent by the authorised user making this request', () => {
@@ -161,7 +161,7 @@ describe('requestMessageEdit', () => {
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
-    expect(requestMessageEdit(user2.token, message1.messageId, 'edited message')).toStrictEqual({ error: expect.any(String) });
+    expect(requestMessageEdit(user2.token, message1.messageId, 'edited message')).toEqual(400);
   });
 
   test('Invalid Token', () => {
@@ -169,7 +169,7 @@ describe('requestMessageEdit', () => {
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
-    expect(requestMessageEdit('test', message1.messageId, 'edited message')).toStrictEqual({ error: expect.any(String) });
+    expect(requestMessageEdit('test', message1.messageId, 'edited message')).toEqual(403);
   });
 
   test('Successful Message Edit to channel', () => {
@@ -264,7 +264,7 @@ describe('requestMessageRemove', () => {
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
-    expect(requestMessageRemove(user1.token, message1.messageId + 1)).toStrictEqual({ error: expect.any(String) });
+    expect(requestMessageRemove(user1.token, message1.messageId + 1)).toEqual(400);
   });
 
   test('Message was not sent by the authorised user making this request', () => {
@@ -273,7 +273,7 @@ describe('requestMessageRemove', () => {
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
-    expect(requestMessageRemove(user2.token, message1.messageId)).toStrictEqual({ error: expect.any(String) });
+    expect(requestMessageRemove(user2.token, message1.messageId)).toEqual(400);
   });
 
   test('Invalid Token', () => {
@@ -281,7 +281,7 @@ describe('requestMessageRemove', () => {
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
-    expect(requestMessageRemove('test', message1.messageId)).toStrictEqual({ error: expect.any(String) });
+    expect(requestMessageRemove('test', message1.messageId)).toEqual(403);
   });
 
   test('Successful Message Remove to channel', () => {

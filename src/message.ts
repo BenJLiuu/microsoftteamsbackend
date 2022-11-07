@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { Error, Token, DmId, ChannelId, Message, Empty } from './interfaceTypes';
+import { Token, DmId, ChannelId, Message, Empty } from './interfaceTypes';
 import { MessageIdObj } from './internalTypes';
 import {
   validChannelId,
@@ -30,13 +30,13 @@ import HTTPError from 'http-errors';
  * @returns {Error} {error: 'Authorised user is not a member of the Dm.'} - The authUserId corresponds to user that is not a member of the Dm.
  * @returns {messageId} messageId - the Id of the stored message
  */
-export function messageSendDmV1(token: Token, dmId: DmId, message: Message): MessageIdObj | Error {
-  if (!validDmId(dmId)) return { error: 'Invalid Dm Id' };
-  if (message.length < 1) return { error: 'Message contains too little characters.' };
-  if (message.length > 1000) return { error: 'Message contains too many characters.' };
-  if (!validToken(token)) return { error: 'Invalid Session' };
+export function messageSendDmV2(token: Token, dmId: DmId, message: Message): MessageIdObj {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
+  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid Dm Id');
+  if (message.length < 1) throw HTTPError(400, 'Message contains too little characters.');
+  if (message.length > 1000) throw HTTPError(400, 'Message contains too many characters.');
   const authUserId = getUserIdFromToken(token);
-  if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the Dm' };
+  if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(400, 'Authorised user is not a member of the Dm');
 
   const messageId = generateMessageId().messageId;
   const data = getData();
@@ -68,13 +68,13 @@ export function messageSendDmV1(token: Token, dmId: DmId, message: Message): Mes
  * @returns {Error} {error: 'Authorised user is not a channel member.'} - The authUserId corresponds to user that is not a member of the channel.
  * @returns {messageId} messageId - the Id of the stored message
  */
-export function messageSendV1(token: Token, channelId: ChannelId, message: Message): MessageIdObj | Error {
-  if (!validChannelId(channelId)) return { error: 'Invalid Channel Id' };
-  if (message.length < 1) return { error: 'Message contains too little characters.' };
-  if (message.length > 1000) return { error: 'Message contains too many characters.' };
-  if (!validToken(token)) return { error: 'Invalid Session.' };
+export function messageSendV2(token: Token, channelId: ChannelId, message: Message): MessageIdObj {
+  if (!validChannelId(channelId)) throw HTTPError(400, 'Invalid Channel Id');
+  if (message.length < 1) throw HTTPError(400, 'Message contains too little characters.');
+  if (message.length > 1000) throw HTTPError(400, 'Message contains too many characters.');
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session.');
   const authUserId = getUserIdFromToken(token);
-  if (!userIsChannelMember(authUserId, channelId)) return { error: 'Authorised user is not a channel member' };
+  if (!userIsChannelMember(authUserId, channelId)) throw HTTPError(400, 'Authorised user is not a channel member');
 
   const messageId = generateMessageId().messageId;
   const data = getData();
@@ -105,12 +105,12 @@ export function messageSendV1(token: Token, channelId: ChannelId, message: Messa
   * @returns {error: 'Message size exceeds limit.'} - message is over 1000 characters long.
   * @returns {} - Message edited successfully.
 */
-export function messageEditV1(token: string, messageId: number, message: string): Empty | Error {
-  if (!validToken(token)) return { error: 'Invalid Token.' };
+export function messageEditV2(token: string, messageId: number, message: string): Empty {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   const authUserId = getUserIdFromToken(token);
-  if (!validMessageId(messageId)) return { error: 'Invalid Message Id.' };
-  if (message.length > 1000) return { error: 'Message size exceeds limit.' };
-  if (!checkUserToMessage(authUserId, messageId)) return { error: 'Message  not sent by authorised user.' };
+  if (!validMessageId(messageId)) throw HTTPError(400, 'Invalid Message Id.');
+  if (message.length > 1000) throw HTTPError(400, 'Message size exceeds limit.');
+  if (!checkUserToMessage(authUserId, messageId)) throw HTTPError(400, 'Message  not sent by authorised user.');
 
   const data = getData();
 
@@ -147,11 +147,11 @@ export function messageEditV1(token: string, messageId: number, message: string)
   * @returns {error: 'Message  not sent by authorised user.'} - the message was not sent by the authorised user making this request.
   * @returns {} - Message removed successfully.
 */
-export function messageRemoveV1(token: string, messageId: number): Empty | Error {
-  if (!validToken(token)) return { error: 'Invalid Token.' };
+export function messageRemoveV2(token: string, messageId: number): Empty {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   const authUserId = getUserIdFromToken(token);
-  if (!validMessageId(messageId)) return { error: 'Invalid Message Id.' };
-  if (!checkUserToMessage(authUserId, messageId)) return { error: 'Message  not sent by authorised user.' };
+  if (!validMessageId(messageId)) throw HTTPError(400, 'Invalid Message Id.');
+  if (!checkUserToMessage(authUserId, messageId)) throw HTTPError(400, 'Message  not sent by authorised user.');
 
   const data = getData();
 

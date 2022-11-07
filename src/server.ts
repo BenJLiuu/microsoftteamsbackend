@@ -12,7 +12,7 @@ import { echo } from './echo';
 import { clearV1 } from './other';
 import { userProfileV3, usersAllV2, userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2 } from './users';
 import { dmCreateV2, dmListV2, ddmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
-import { messageSendDmV1, messageSendV1, messageEditV1, messageRemoveV1 } from './message';
+import { messageSendDmV2, messageSendV2, messageEditV2, messageRemoveV2 } from './message';
 
 // Set up web app
 const app = express();
@@ -287,25 +287,44 @@ app.get('/dm/messages/v2', (req: Request, res: Response, next) => {
 
 // MESSAGE ROUTES
 
-app.post('/message/sendDm/V1', (req: Request, res: Response, next) => {
-  const { token, dmId, message } = req.body;
-  res.json(messageSendDmV1(token, dmId, message));
+app.post('/message/sendDm/v2', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { dmId, message } = req.body;
+    res.json(messageSendDmV2(token, dmId, message));
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.post('/message/send/V1', (req: Request, res: Response, next) => {
-  const { token, channelId, message } = req.body;
-  res.json(messageSendV1(token, channelId, message));
+app.post('/message/send/v2', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { channelId, message } = req.body;
+    res.json(messageSendV2(token, channelId, message));
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.put('/message/edit/V1', (req: Request, res: Response, next) => {
-  const { token, messageId, message } = req.body;
-  res.json(messageEditV1(token, messageId, message));
+app.put('/message/edit/v2', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { messageId, message } = req.body;
+    res.json(messageEditV2(token, messageId, message));
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.delete('/message/remove/V1', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
-  const messageId = req.query.messageId as string;
-  res.json(messageRemoveV1(token, messageId ? parseInt(messageId) : undefined));
+app.delete('/message/remove/v2', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const messageId = req.query.messageId as string;
+    res.json(messageRemoveV2(token, messageId ? parseInt(messageId) : undefined));
+  } catch (err) {
+    next(err);
+  }
 });
 
 // OTHER ROUTES

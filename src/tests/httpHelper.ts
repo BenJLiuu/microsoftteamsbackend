@@ -116,19 +116,19 @@ export function requestChannelLeave(token: string, channelId: number) {
 // MESSAGE
 
 export function requestMessageSend(token: string, channelId: number, message: string) {
-  return requestHelper('POST', '/message/send/V1', { token, channelId, message });
+  return requestHelper('POST', '/message/send/v2', { channelId, message }, token);
 }
 
 export function requestMessageSendDm(token: string, dmId: number, message: string) {
-  return requestHelper('POST', '/message/senddm/v1', { token, dmId, message });
+  return requestHelper('POST', '/message/senddm/v2', { dmId, message }, token);
 }
 
 export function requestMessageEdit(token: string, messageId: number, message: string) {
-  return requestHelper('PUT', '/message/edit/v1', { token, messageId, message });
+  return requestHelper('PUT', '/message/edit/v2', { messageId, message }, token);
 }
 
 export function requestMessageRemove(token: string, messageId: number) {
-  return requestHelper('DELETE', '/message/remove/v1', { token, messageId });
+  return requestHelper('DELETE', '/message/remove/v2', { messageId }, token);
 }
 
 // DM
