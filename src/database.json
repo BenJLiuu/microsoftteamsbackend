@@ -1,1 +1,8 @@
-{"nextMessage":4,"nextUId":1,"users":[{"uId":0,"nameFirst":"Johnny","nameLast":"Lawrence","email":"johnL@gmail.com","handleStr":"johnnylawrence","passwordHash":"password123","globalPermissions":1}],"channels":[],"sessions":[{"token":-1048986782,"authUserId":0}],"dms":[{"dmId":0,"name":"johnnylawrence","members":[{"uId":0,"email":"johnL@gmail.com","nameFirst":"Johnny","nameLast":"Lawrence","handleStr":"johnnylawrence"}],"owner":{"uId":0,"email":"johnL@gmail.com","nameFirst":"Johnny","nameLast":"Lawrence","handleStr":"johnnylawrence"},"messages":[{"messageId":1,"uId":0,"message":"test","timeSent":1667822992979},{"messageId":3,"uId":0,"message":"hello","timeSent":1667822993134}]}]}
+{
+  "nextMessage": 1,
+  "nextUId": 0,
+  "users": [],
+  "channels": [],
+  "sessions": [],
+  "dms": []
+}
