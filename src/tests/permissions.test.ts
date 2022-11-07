@@ -29,7 +29,7 @@ describe('Permissions', () => {
 
   test('channelAddOwnerV1', () => {
     expect(requestChannelAddOwner(user1.token, public12.channelId, user2.authUserId)).toStrictEqual({});
-    expect(requestChannelAddOwner(user2.token, private12.channelId, user1.authUserId)).toStrictEqual({ error: expect.any(String) });
+    expect(requestChannelAddOwner(user2.token, private12.channelId, user1.authUserId)).toEqual(400);
     expect(requestChannelAddOwner(globalOwner.token, public20.channelId, globalOwner.authUserId)).toStrictEqual({});
     expect(requestChannelAddOwner(globalOwner.token, private10.channelId, globalOwner.authUserId)).toStrictEqual({});
   });
@@ -37,8 +37,8 @@ describe('Permissions', () => {
   test('channelRemoveOwnerV1', () => {
     expect(requestChannelAddOwner(user1.token, public12.channelId, user2.authUserId)).toStrictEqual({});
     expect(requestChannelRemoveOwner(user1.token, public12.channelId, user2.authUserId)).toStrictEqual({});
-    expect(requestChannelAddOwner(user2.token, private12.channelId, user1.authUserId)).toStrictEqual({ error: expect.any(String) });
-    expect(requestChannelRemoveOwner(user2.token, private12.channelId, user1.authUserId)).toStrictEqual({ error: expect.any(String) });
+    expect(requestChannelAddOwner(user2.token, private12.channelId, user1.authUserId)).toEqual(400);
+    expect(requestChannelRemoveOwner(user2.token, private12.channelId, user1.authUserId)).toEqual(400);
     expect(requestChannelAddOwner(globalOwner.token, public20.channelId, globalOwner.authUserId)).toStrictEqual({});
     expect(requestChannelAddOwner(globalOwner.token, private10.channelId, globalOwner.authUserId)).toStrictEqual({});
     expect(requestChannelRemoveOwner(user2.token, public20.channelId, globalOwner.authUserId)).toStrictEqual({});

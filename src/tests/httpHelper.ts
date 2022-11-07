@@ -123,32 +123,6 @@ export function requestMessageSendDm(token: string, dmId: number, message: strin
   return requestHelper('POST', '/message/senddm/v1', { token, dmId, message });
 }
 
-// DM
-
-export function requestDmCreate(token: string, uIds: Array<number>) {
-  return requestHelper('POST', '/dm/create/v1', { token, uIds });
-}
-
-export function requestDmList(token: string) {
-  return requestHelper('GET', '/dm/list/v1', { token });
-}
-
-export function requestDmLeave(token: string, dmId: number) {
-  return requestHelper('POST', '/dm/leave/v1', { token, dmId });
-}
-
-export function requestDmDetails(token: string, dmId: number) {
-  return requestHelper('GET', '/dm/details/v1', { token, dmId });
-}
-
-export function requestDmMessages(token: string, dmId: number, start: number) {
-  return requestHelper('GET', '/dm/messages/v1', { token, dmId, start });
-}
-
-export function requestDmRemove(token: string, dmId: number) {
-  return requestHelper('DELETE', '/dm/remove/v1', { token, dmId });
-}
-
 export function requestMessageEdit(token: string, messageId: number, message: string) {
   return requestHelper('PUT', '/message/edit/v1', { token, messageId, message });
 }
@@ -156,3 +130,31 @@ export function requestMessageEdit(token: string, messageId: number, message: st
 export function requestMessageRemove(token: string, messageId: number) {
   return requestHelper('DELETE', '/message/remove/v1', { token, messageId });
 }
+
+// DM
+
+export function requestDmCreate(token: string, uIds: Array<number>) {
+  return requestHelper('POST', '/dm/create/v2', { uIds }, token);
+}
+
+export function requestDmList(token: string) {
+  return requestHelper('GET', '/dm/list/v2', {}, token);
+}
+
+export function requestDmLeave(token: string, dmId: number) {
+  return requestHelper('POST', '/dm/leave/v2', { dmId }, token);
+}
+
+export function requestDmDetails(token: string, dmId: number) {
+  return requestHelper('GET', '/dm/details/v2', { dmId }, token);
+}
+
+export function requestDmMessages(token: string, dmId: number, start: number) {
+  return requestHelper('GET', '/dm/messages/v2', { dmId, start }, token);
+}
+
+export function requestDmRemove(token: string, dmId: number) {
+  return requestHelper('DELETE', '/dm/remove/v2', { dmId }, token);
+}
+
+

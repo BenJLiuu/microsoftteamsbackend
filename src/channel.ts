@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { Empty, Token, ChannelId, UId, Start, Error } from './interfaceTypes';
+import { Empty, Token, ChannelId, UId, Start } from './interfaceTypes';
 import { MessageList, ChannelDetails } from './internalTypes';
 import HTTPError from 'http-errors';
 
@@ -29,7 +29,7 @@ import {
   * @returns {Error} {error : 'Start is greater than total messages'} - If start offset is greater than total messages in channel.
   * @returns {Error} {error : 'Authorised user is not a channel member'} - authUserId is not in channel allMembers array.
 */
-export function channelMessagesV3(token: Token, channelId: ChannelId, start: Start): MessageList | Error {
+export function channelMessagesV3(token: Token, channelId: ChannelId, start: Start): MessageList {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session.');
   if (!validChannelId(channelId)) throw HTTPError(400, 'Not valid channelId');
 
@@ -67,7 +67,7 @@ export function channelMessagesV3(token: Token, channelId: ChannelId, start: Sta
   * @returns {Empty} {} - authUserId successfully leaves the specified channel.
   *
 */
-export function channelLeaveV2(token: Token, channelId: ChannelId): Empty | Error {
+export function channelLeaveV2(token: Token, channelId: ChannelId): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   if (!validChannelId(channelId)) throw HTTPError(400, 'Invalid Channel Id.');
 
@@ -103,7 +103,7 @@ export function channelLeaveV2(token: Token, channelId: ChannelId): Empty | Erro
   * @returns {Empty} {} - authUserId successfully grants another member owner permissions.
   *
 */
-export function channelAddOwnerV2(token: Token, channelId: ChannelId, uId: UId): Empty | Error {
+export function channelAddOwnerV2(token: Token, channelId: ChannelId, uId: UId): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   if (!validChannelId(channelId)) throw HTTPError(400, 'Invalid Channel Id.');
   if (!validUserId(uId)) throw HTTPError(400, 'Invalid User Id.');
@@ -139,7 +139,7 @@ export function channelAddOwnerV2(token: Token, channelId: ChannelId, uId: UId):
   * @returns {Empty} {} - authUserId successfully grants another member owner permissions.
   *
 */
-export function channelRemoveOwnerV2(token: Token, channelId: ChannelId, uId: UId): Empty | Error {
+export function channelRemoveOwnerV2(token: Token, channelId: ChannelId, uId: UId): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   if (!validChannelId(channelId)) throw HTTPError(400, 'Invalid Channel Id.');
   if (!validUserId(uId)) throw HTTPError(400, 'Invalid User Id.');
@@ -174,8 +174,8 @@ export function channelRemoveOwnerV2(token: Token, channelId: ChannelId, uId: UI
   * @returns {Error} {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
   * @returns {Empty} {} - uId has been succesfully invited to corresponding channel.
 */
-export function channelInviteV3(token: Token, channelId: ChannelId, uId: UId): Empty | Error {
-  if (!validToken(token)) throw HTTPError(400, 'Invalid Token.');
+export function channelInviteV3(token: Token, channelId: ChannelId, uId: UId): Empty {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   if (!validChannelId(channelId)) throw HTTPError(400, 'Invalid Channel Id.');
   if (!validUserId(uId)) throw HTTPError(400, 'Invalid User Id.');
   if (userIsChannelMember(uId, channelId)) throw HTTPError(400, 'User is already a member.');
@@ -201,8 +201,8 @@ export function channelInviteV3(token: Token, channelId: ChannelId, uId: UId): E
   * @returns {Error} {error: 'Authorised User is not a member.'} - authUserId does not correspond to a user in channel allMembers array.
   * @returns {ChannelDetails} ChannelDetails - Object containing channel successfully examined by authUserId.
 */
-export function channelDetailsV3(token: Token, channelId: ChannelId): ChannelDetails | Error {
-  if (!validToken(token)) throw HTTPError(400, 'Invalid Session Id.');
+export function channelDetailsV3(token: Token, channelId: ChannelId): ChannelDetails {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session Id.');
   if (!validChannelId(channelId)) throw HTTPError(400, 'Invalid Channel Id.');
   if (!userIsChannelMember(getUserIdFromToken(token), channelId)) throw HTTPError(400, 'Authorised User is not a member.');
 
@@ -232,8 +232,8 @@ export function channelDetailsV3(token: Token, channelId: ChannelId): ChannelDet
   * @returns {Empty} {} - authUserId successfully joins the specified channel.
   *
 */
-export function channelJoinV3(token: Token, channelId: ChannelId): Empty | Error {
-  if (!validToken(token)) throw HTTPError(400, 'Invalid Token.');
+export function channelJoinV3(token: Token, channelId: ChannelId): Empty {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   const data = getData();
 
   if (!validChannelId(channelId)) throw HTTPError(400, 'Invalid Channel Id.');

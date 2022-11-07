@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { Token, Name, IsPublic, ChannelId, Error } from './interfaceTypes';
+import { Token, Name, IsPublic, ChannelId } from './interfaceTypes';
 import { PrivateChannel, ChannelsObj } from './internalTypes';
 import HTTPError from 'http-errors';
 
@@ -20,7 +20,7 @@ import {
   * @returns {ChannelsObj} { channels: [] } - If no channels have been created
   *
 */
-export function channelsListAllV3 (token: Token): ChannelsObj | Error {
+export function channelsListAllV3 (token: Token): ChannelsObj {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session Id.');
   const data = getData();
   const channelList = [];
@@ -44,7 +44,7 @@ export function channelsListAllV3 (token: Token): ChannelsObj | Error {
  * @returns {ChannelsObj} {channels: []} - If the user has not joined any channels
  *
 */
-export function channelsListV3(token: Token): ChannelsObj | Error {
+export function channelsListV3(token: Token): ChannelsObj {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session Id.');
   const data = getData();
   const channelList = [];
@@ -73,7 +73,7 @@ export function channelsListV3(token: Token): ChannelsObj | Error {
   * @returns {Error} {error: 'Invalid user permissions.'} - If user is not a valid user
   * @returns {Error} {error: 'Channel name must be between 1-20 characters.'} - If channel name is too long/short
 */
-export function channelsCreateV3(token: Token, name: Name, isPublic: IsPublic): { channelId: ChannelId } | Error {
+export function channelsCreateV3(token: Token, name: Name, isPublic: IsPublic): { channelId: ChannelId } {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session Id.');
   if (name.length < 1 || name.length > 20) throw HTTPError(400, 'Channel name must be between 1-20 characters.');
 
