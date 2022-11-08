@@ -179,3 +179,20 @@ describe('Test authLogout', () => {
     expect(requestAuthLogout(user1login2.token)).toEqual(403);
   });
 });
+
+describe('Test authPasswordResetRequest', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('invalid email', () => {
+    const user = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    expect(requestAuthPasswordResetRequest('johnSS@email.com')).toStrictEqual({});
+    expect(requestAuthPasswordResetRequest('..abc.def@mail')).toStrictEqual({});
+  });
+
+  test('successful request', () => {
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    expect(requestAuthPasswordResetRequest('johnS@email.com')).toStrictEqual({});
+  });
+});
