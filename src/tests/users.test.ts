@@ -2,7 +2,7 @@ import {
   requestAuthRegister, requestUserProfile, requestUsersAll, requestUserProfileSetName,
   requestUserProfileSetEmail, requestUserProfileSetHandle, requestClear,
   requestChannelsCreate, requestChannelJoin, requestChannelDetails, requestNotificationsGet,
-  requestChannelInvite, requestDmCreate, requestMessageSendDm, requestMessageSend, 
+  requestChannelInvite, requestDmCreate, requestMessageSendDm, requestMessageSend,
   requestMessageEdit
 } from './httpHelper';
 
@@ -498,7 +498,7 @@ describe('Test notificationsGet', () => {
           dmId: dm1.dmId,
           notificationMessage: 'aliceperson added you to aliceperson, johnmate, johnnymate',
         }
-    ],
+      ],
     });
   });
 
@@ -521,7 +521,7 @@ describe('Test notificationsGet', () => {
           dmId: -1,
           notificationMessage: 'aliceperson added you to channel1',
         }
-    ],
+      ],
     });
   });
 
@@ -550,7 +550,7 @@ describe('Test notificationsGet', () => {
           dmId: -1,
           notificationMessage: 'aliceperson added you to channel1',
         }
-    ],
+      ],
     });
   });
 

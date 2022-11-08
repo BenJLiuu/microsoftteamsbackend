@@ -49,17 +49,17 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
     timeSent: Date.now(),
   });
 
-  let usersTagged = checkTag(message);
+  const usersTagged = checkTag(message);
   let notification = {};
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
   const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
   if (usersTagged.amountTagged !== 0) {
     for (let i = 0; i < usersTagged.membersTagged.length; i++) {
-      let userIndex = data.users.findIndex(user => user.uId === usersTagged.membersTagged[i]);
+      const userIndex = data.users.findIndex(user => user.uId === usersTagged.membersTagged[i]);
       notification = {
         channelId: -1,
         dmId: dmId,
-        notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.dms[dmIndex].name +': ' + message.substring(0,20),
+        notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.dms[dmIndex].name + ': ' + message.substring(0, 20),
       };
       data.users[userIndex].notifications.push(notification);
     }
@@ -103,17 +103,17 @@ export function messageSendV2(token: Token, channelId: ChannelId, message: Messa
     timeSent: Date.now(),
   });
 
-  let usersTagged = checkTag(message);
+  const usersTagged = checkTag(message);
   let notification = {};
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
   if (usersTagged.amountTagged !== 0) {
     for (let i = 0; i < usersTagged.membersTagged.length; i++) {
-      let userIndex = data.users.findIndex(user => user.uId === usersTagged.membersTagged[i]);
+      const userIndex = data.users.findIndex(user => user.uId === usersTagged.membersTagged[i]);
       notification = {
         channelId: channelId,
         dmId: -1,
-        notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.channels[channelIndex].name +': ' + message.substring(0,20),
+        notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.channels[channelIndex].name + ': ' + message.substring(0, 20),
       };
       data.users[userIndex].notifications.push(notification);
     }
@@ -148,8 +148,8 @@ export function messageEditV2(token: string, messageId: number, message: string)
   const data = getData();
 
   const isChannel = checkMessageToChannel(messageId);
+  const isDm = checkMessageToDm(messageId);
   if (isChannel === -1) {
-    const isDm = checkMessageToDm(messageId);
     const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
     if (message === '') {
       data.dms[isDm].messages.splice(dmPosition, 1);
@@ -166,23 +166,23 @@ export function messageEditV2(token: string, messageId: number, message: string)
   }
 
   if (message !== '') {
-    let usersTagged = checkTag(message);
+    const usersTagged = checkTag(message);
     let notification = {};
     const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
     if (usersTagged.amountTagged !== 0) {
       for (let i = 0; i < usersTagged.membersTagged.length; i++) {
-        let userIndex = data.users.findIndex(user => user.uId === usersTagged.membersTagged[i]);
+        const userIndex = data.users.findIndex(user => user.uId === usersTagged.membersTagged[i]);
         if (isChannel === -1) {
           notification = {
             channelId: -1,
             dmId: data.dms[isDm].dmId,
-            notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.dms[isDm].name +': ' + message.substring(0,20),
+            notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.dms[isDm].name + ': ' + message.substring(0, 20),
           };
         } else {
           notification = {
             channelId: data.channels[isChannel].channelId,
             dmId: -1,
-            notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.channels[isChannel].name +': ' + message.substring(0,20),
+            notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.channels[isChannel].name + ': ' + message.substring(0, 20),
           };
         }
         data.users[userIndex].notifications.push(notification);

@@ -431,11 +431,10 @@ export function checkChannelOwner(authUserId: number, channelId: number) {
  *
  * @returns tagInfo - object containing number of tags and users tagged
  */
- export function checkTag(message: string): tagInfo {
+export function checkTag(message: string): tagInfo {
   const data = getData();
   let newMessage = message;
-  let usersTagged = [];
-  let taggerInfo = {};
+  const usersTagged = [];
   let tagCount = 0;
 
   for (let i = 0; i < message.length; i++) {
@@ -450,15 +449,15 @@ export function checkChannelOwner(authUserId: number, channelId: number) {
     };
   } else {
     let verifiedTagCount = 0;
-    let verifiedTaggedUsers = [];
+    const verifiedTaggedUsers = [];
     for (let i = 0; i < tagCount; i++) {
       newMessage = newMessage.substring(newMessage.indexOf('@') + 1);
-      let filterTag = newMessage.split(' ')
+      const filterTag = newMessage.split(' ');
       usersTagged.push(filterTag[0]);
     }
     for (let i = 0; i < usersTagged.length; i++) {
       if (data.users.some(user => user.handleStr === usersTagged[i])) {
-        let userIndex = data.users.findIndex(user => user.handleStr === usersTagged[i]);
+        const userIndex = data.users.findIndex(user => user.handleStr === usersTagged[i]);
         verifiedTagCount += 1;
         verifiedTaggedUsers.push(data.users[userIndex].uId);
       }

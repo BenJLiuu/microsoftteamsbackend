@@ -187,7 +187,7 @@ export function channelInviteV3(token: Token, channelId: ChannelId, uId: UId): E
   const userIndex = data.users.findIndex(user => user.uId === uId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
   data.channels[channelIndex].allMembers.push(getPublicUser(data.users[userIndex]));
-  let notification = {
+  const notification = {
     channelId: channelId,
     dmId: -1,
     notificationMessage: data.users[senderIndex].handleStr + ' added you to ' + data.channels[channelIndex].name,

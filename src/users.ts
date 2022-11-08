@@ -149,12 +149,12 @@ export function userProfileSetHandleV2 (token: Token, handleStr: HandleStr): Emp
  * @returns {Error} token - Token of user wanting to change email address.
  * @returns {notifications} - Array of 20 most recent notifications
  */
- export function notificationsGetV1 (token: Token): notifications {
+export function notificationsGetV1 (token: Token): notifications {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   const userId = getUserIdFromToken(token);
   const data = getData();
   const position = data.users.findIndex(user => user.uId === userId);
-  let newNotifications = data.users[position].notifications.reverse();
+  const newNotifications = data.users[position].notifications.reverse();
   newNotifications.splice(20, newNotifications.length);
   return { notifications: newNotifications };
 }

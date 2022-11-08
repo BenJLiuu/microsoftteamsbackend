@@ -62,7 +62,7 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
   };
   if (uIds.length !== 0) {
     for (const uId of uIds) {
-      let userIndex = data.users.findIndex(user => user.uId === uId);
+      const userIndex = data.users.findIndex(user => user.uId === uId);
       notification = {
         channelId: -1,
         dmId: newdmId,
