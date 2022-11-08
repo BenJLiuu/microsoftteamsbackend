@@ -50,13 +50,12 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
   });
 
   const usersTagged = checkTag(message);
-  let notification = {};
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
   const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
   if (usersTagged.amountTagged !== 0) {
     for (let i = 0; i < usersTagged.membersTagged.length; i++) {
       const userIndex = data.users.findIndex(user => user.uId === usersTagged.membersTagged[i]);
-      notification = {
+      const notification = {
         channelId: -1,
         dmId: dmId,
         notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.dms[dmIndex].name + ': ' + message.substring(0, 20),
@@ -104,13 +103,12 @@ export function messageSendV2(token: Token, channelId: ChannelId, message: Messa
   });
 
   const usersTagged = checkTag(message);
-  let notification = {};
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
   if (usersTagged.amountTagged !== 0) {
     for (let i = 0; i < usersTagged.membersTagged.length; i++) {
       const userIndex = data.users.findIndex(user => user.uId === usersTagged.membersTagged[i]);
-      notification = {
+      const notification = {
         channelId: channelId,
         dmId: -1,
         notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.channels[channelIndex].name + ': ' + message.substring(0, 20),
@@ -167,7 +165,7 @@ export function messageEditV2(token: string, messageId: number, message: string)
 
   if (message !== '') {
     const usersTagged = checkTag(message);
-    let notification = {};
+    let notification = { channelId: 0, dmId: 0, notificationMessage: '' };
     const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
     if (usersTagged.amountTagged !== 0) {
       for (let i = 0; i < usersTagged.membersTagged.length; i++) {

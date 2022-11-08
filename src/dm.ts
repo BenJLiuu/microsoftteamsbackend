@@ -34,7 +34,6 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
   const authUserId = getUserIdFromToken(token);
   const names = [];
   const members = [];
-  let notification = {};
 
   names.push(gethandleStrFromId(authUserId));
   members.push(getPublicUser(data.users.find(user => user.uId === authUserId)));
@@ -63,7 +62,7 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
   if (uIds.length !== 0) {
     for (const uId of uIds) {
       const userIndex = data.users.findIndex(user => user.uId === uId);
-      notification = {
+      const notification = {
         channelId: -1,
         dmId: newdmId,
         notificationMessage: data.users[ownerIndex].handleStr + ' added you to ' + name,

@@ -6,9 +6,8 @@ import {
   Token, UId,
   Name, Email,
   HandleStr,
-  notifications,
 } from './interfaceTypes';
-import { UserObj } from './internalTypes';
+import { UserObj, NotificationsObj } from './internalTypes';
 import {
   validToken,
   validUserId,
@@ -149,7 +148,7 @@ export function userProfileSetHandleV2 (token: Token, handleStr: HandleStr): Emp
  * @returns {Error} token - Token of user wanting to change email address.
  * @returns {notifications} - Array of 20 most recent notifications
  */
-export function notificationsGetV1 (token: Token): notifications {
+export function notificationsGetV1 (token: Token): NotificationsObj {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   const userId = getUserIdFromToken(token);
   const data = getData();

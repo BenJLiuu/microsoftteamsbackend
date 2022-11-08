@@ -434,7 +434,7 @@ export function checkChannelOwner(authUserId: number, channelId: number) {
 export function checkTag(message: string): tagInfo {
   const data = getData();
   let newMessage = message;
-  const usersTagged = [];
+  const usersTagged: string[] = [];
   let tagCount = 0;
 
   for (let i = 0; i < message.length; i++) {
