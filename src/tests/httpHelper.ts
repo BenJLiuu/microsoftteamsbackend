@@ -69,6 +69,10 @@ export function requestUserProfileSetHandle(token: string, handleStr: string) {
   return requestHelper('PUT', '/user/profile/sethandle/v2', { handleStr }, token);
 }
 
+export function requestNotificationsGet(token: string) {
+  return requestHelper('GET', '/notifications/get/v1', {}, token);
+}
+
 // CHANNELS
 
 export function requestChannelsCreate(token: string, name: string, isPublic: boolean) {

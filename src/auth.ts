@@ -73,6 +73,7 @@ export function authRegisterV3(email: Email, password: Password, nameFirst: Name
     passwordHash: password,
     // 1 if first UId made, 2 otherwise.
     globalPermissions: newUId === 0 ? 1 : 2,
+    notifications: [],
   });
 
   setData(data);

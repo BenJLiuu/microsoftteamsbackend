@@ -57,3 +57,8 @@ export type Dms = {
 }[];
 
 // ITERATION 3 TYPES
+export type notifications = {
+  channelId: number,
+  dmId: number,
+  notificationMessage: string,
+}[];

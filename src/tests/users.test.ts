@@ -1,7 +1,8 @@
 import {
   requestAuthRegister, requestUserProfile, requestUsersAll, requestUserProfileSetName,
   requestUserProfileSetEmail, requestUserProfileSetHandle, requestClear,
-  requestChannelsCreate, requestChannelJoin, requestChannelDetails
+  requestChannelsCreate, requestChannelJoin, requestChannelDetails, requestNotificationsGet,
+  requestChannelInvite, requestDmCreate
 } from './httpHelper';
 
 describe('Test userProfile', () => {
@@ -421,4 +422,134 @@ describe('Test Updating User Info', () => {
       }
     );
   });
+});
+
+describe('Test notificationsGet', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('token is invalid', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestNotificationsGet(user1.token + '1')).toEqual(403);
+  });
+
+  test('Notification for channel invite', () => {
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    requestChannelInvite(user1.token, channel1.channelId, user2.authUserId);
+    expect(requestNotificationsGet(user2.token)).toStrictEqual({
+      notifications: [{
+        channelId: channel1.channelId,
+        dmId: -1,
+        notificationMessage: 'aliceperson added you to channel1',
+      }],
+    });
+  });
+
+  test('Notification for dm create', () => {
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
+    expect(requestNotificationsGet(user2.token)).toStrictEqual({
+      notifications: [{
+        channelId: -1,
+        dmId: dm1.dmId,
+        notificationMessage: 'aliceperson added you to aliceperson, johnmate',
+      }],
+    });
+  });
+
+  test('Notification for dm create with multiple users', () => {
+    requestClear();
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId, user3.authUserId]);
+    expect(requestNotificationsGet(user3.token)).toStrictEqual({
+      notifications: [{
+        channelId: -1,
+        dmId: dm1.dmId,
+        notificationMessage: 'johnnylawrence added you to aliceperson, johnnylawrence, johnnymate',
+      }],
+    });
+  });
+
+  // test('Notification for tagged in dm', () => {
+  //   requestClear();
+  //   const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+  //   const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+  //   expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
+  //     user: {
+  //       uId: user1.authUserId,
+  //       nameFirst: 'Alice',
+  //       nameLast: 'Person',
+  //       email: 'aliceP@fmail.au',
+  //       handleStr: 'aliceperson',
+  //     },
+  //   });
+  // });
+
+  // test('Notification for tagged in channel', () => {
+  //   requestClear();
+  //   const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+  //   const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+  //   expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
+  //     user: {
+  //       uId: user1.authUserId,
+  //       nameFirst: 'Alice',
+  //       nameLast: 'Person',
+  //       email: 'aliceP@fmail.au',
+  //       handleStr: 'aliceperson',
+  //     },
+  //   });
+  // });
+
+  // test('Notification for message react in dm', () => {
+  //   requestClear();
+  //   const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+  //   const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+  //   expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
+  //     user: {
+  //       uId: user1.authUserId,
+  //       nameFirst: 'Alice',
+  //       nameLast: 'Person',
+  //       email: 'aliceP@fmail.au',
+  //       handleStr: 'aliceperson',
+  //     },
+  //   });
+  // });
+
+  // test('Notification for message react in channel', () => {
+  //   requestClear();
+  //   const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+  //   const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+  //   expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
+  //     user: {
+  //       uId: user1.authUserId,
+  //       nameFirst: 'Alice',
+  //       nameLast: 'Person',
+  //       email: 'aliceP@fmail.au',
+  //       handleStr: 'aliceperson',
+  //     },
+  //   });
+  // });
+
+  // test('Over 20 Notifications', () => {
+  //   requestClear();
+  //   const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+  //   const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+  //   expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
+  //     user: {
+  //       uId: user1.authUserId,
+  //       nameFirst: 'Alice',
+  //       nameLast: 'Person',
+  //       email: 'aliceP@fmail.au',
+  //       handleStr: 'aliceperson',
+  //     },
+  //   });
+  // });
 });

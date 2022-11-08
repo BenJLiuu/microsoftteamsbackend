@@ -34,6 +34,7 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
   const authUserId = getUserIdFromToken(token);
   const names = [];
   const members = [];
+  let notification = {};
 
   names.push(gethandleStrFromId(authUserId));
   members.push(getPublicUser(data.users.find(user => user.uId === authUserId)));
@@ -49,9 +50,9 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
   });
 
   const name = names.join(', ');
+  const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
   let newdmId = 0;
   while (data.dms.some(c => c.dmId === newdmId)) newdmId++;
-  const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
   const newDm: PrivateDm = {
     dmId: newdmId,
     name: name,
@@ -59,6 +60,17 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
     owner: getPublicUser(data.users[ownerIndex]),
     messages: []
   };
+  if (uIds.length !== 0) {
+    for (const uId of uIds) {
+      let userIndex = data.users.findIndex(user => user.uId === uId);
+      notification = {
+        channelId: -1,
+        dmId: newdmId,
+        notificationMessage: data.users[ownerIndex].handleStr + ' added you to ' + name,
+      };
+      data.users[userIndex].notifications.push(notification);
+    }
+  }
 
   data.dms.push(newDm);
   setData(data);
