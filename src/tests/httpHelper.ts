@@ -41,6 +41,10 @@ export function requestAuthLogout(token: string) {
   return requestHelper('POST', '/auth/logout/v2', {}, token);
 }
 
+export function requestAuthPasswordResetRequest(email: string) {
+  return requestHelper('POST', '/auth/passwordreset/request/v1', { email });
+}
+
 // OTHER
 
 export function requestClear() {
