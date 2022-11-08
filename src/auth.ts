@@ -1,9 +1,9 @@
 import { getData, setData } from './dataStore';
-import { Empty, Email, Password, Name, Token, Error } from './interfaceTypes';
+import { Empty, Email, Password, Name, Token } from './interfaceTypes';
 import { Session } from './internalTypes';
-
+import HTTPError from 'http-errors';
 import validator from 'validator';
-import { generateUId, generateSession, generateHandleStr } from './helper';
+import { generateUId, generateSession, generateHandleStr, hashCode, validToken } from './helper';
 
 /**
   * Logs in a user and returns their user Id.
@@ -16,17 +16,18 @@ import { generateUId, generateSession, generateHandleStr } from './helper';
   * @returns {Error} {error : 'Incorrect Password.'} - If email is found, but password is incorrect
   * @returns {Error} {error : 'Email Not Found.'} - If email was not found.
 */
-export function authLoginV2(email: Email, password: Password): Session | Error {
+export function authLoginV3(email: Email, password: Password): Session {
   const data = getData();
   for (const user of data.users) {
     if (user.email === email) {
       // Found an email match
       if (user.passwordHash === password) return generateSession(user.uId);
-      else return { error: 'Incorrect Password.' };
+      else throw HTTPError(400, 'Incorrect Password.');
     }
   }
+
   // If nothing has been returned, user has not been found.
-  return { error: 'Email Not Found.' };
+  throw HTTPError(400, 'Email Not Found.');
 }
 
 /**
@@ -45,19 +46,19 @@ export function authLoginV2(email: Email, password: Password): Session | Error {
   * @returns {Error} {error: Invalid First Name.'} - if first name is too short/long
   * @returns {Error} {error: Invalid Last Name.'} - if last name is too short/long
 */
-export function authRegisterV2(email: Email, password: Password, nameFirst: Name, nameLast: Name): Session | Error {
+export function authRegisterV3(email: Email, password: Password, nameFirst: Name, nameLast: Name): Session {
   let data = getData();
 
-  if (!validator.isEmail(email)) return { error: 'Invalid Email Address.' };
-  if (data.users.some(user => user.email === email)) return { error: 'Email Already in Use.' };
+  if (!validator.isEmail(email)) throw HTTPError(400, 'Invalid Email Address.');
+  if (data.users.some(user => user.email === email)) throw HTTPError(400, 'Invalid Email Address.');
 
-  if (password.length < 6) return { error: 'Password too Short.' };
+  if (password.length < 6) throw HTTPError(400, 'Password too Short.');
 
-  if (nameFirst.length < 1 || nameFirst.length > 50) return { error: 'Invalid First Name.' };
-  if (nameLast.length < 1 || nameLast.length > 50) return { error: 'Invalid Last Name.' };
+  if (nameFirst.length < 1 || nameFirst.length > 50) throw HTTPError(400, 'Invalid First Name.');
+  if (nameLast.length < 1 || nameLast.length > 50) throw HTTPError(400, 'Invalid Last Name.');
 
-  if (/[^a-zA-Z0-9]/.test(nameFirst)) return { error: 'Invalid First Name.' };
-  if (/[^a-zA-Z0-9]/.test(nameLast)) return { error: 'Invalid Last Name.' };
+  if (/[^a-zA-Z0-9]/.test(nameFirst)) throw HTTPError(400, 'Invalid First Name.');
+  if (/[^a-zA-Z0-9]/.test(nameLast)) throw HTTPError(400, 'Invalid Last Name.');
 
   const newUId = generateUId().uId;
   const handleStr = generateHandleStr(nameFirst, nameLast);
@@ -85,11 +86,12 @@ export function authRegisterV2(email: Email, password: Password, nameFirst: Name
   *
   * @returns {Error} {error: 'Invalid token'} - if token does not exist in dataStore.
 */
-export function authLogoutV1(token: Token): Empty | Error {
+export function authLogoutV2(token: Token): Empty {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   const data = getData();
-  if (!(data.sessions.some(session => session.token === token))) return { error: 'Invalid token' };
 
-  const sessionIndex = data.sessions.findIndex(session => session.token === token);
+  const hashedToken = hashCode(token + 'secret');
+  const sessionIndex = data.sessions.findIndex(s => s.token === hashedToken);
   data.sessions.splice(sessionIndex, 1);
 
   setData(data);

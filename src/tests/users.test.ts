@@ -9,14 +9,14 @@ describe('Test userProfile', () => {
     requestClear();
   });
 
-  test('authUserId is invalid', () => {
+  test('token is invalid', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfile(user1.token + '1', user1.authUserId)).toStrictEqual({ error: 'Invalid Session Id.' });
+    expect(requestUserProfile(user1.token + '1', user1.authUserId)).toEqual(403);
   });
 
   test('uId does not refer to a valid user', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfile(user1.token, user1.authUserId + 1)).toStrictEqual({ error: 'Invalid User Id.' });
+    expect(requestUserProfile(user1.token, user1.authUserId + 1)).toEqual(400);
   });
 
   test('Returns user object for a valid user', () => {
@@ -66,7 +66,7 @@ describe('Test userAll', () => {
 
   test('session is invalid', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUsersAll(user1.token + '1')).toStrictEqual({ error: 'Invalid Session Id.' });
+    expect(requestUsersAll(user1.token + '1')).toEqual(403);
   });
 
   test('return one user', () => {
@@ -116,19 +116,19 @@ describe('Test UserProfileSetName', () => {
 
   test('invalid first name', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfileSetName(user1.token, '', 'Last')).toStrictEqual({ error: 'Invalid First Name.' });
-    expect(requestUserProfileSetName(user1.token, 'nameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', 'Last')).toStrictEqual({ error: 'Invalid First Name.' });
+    expect(requestUserProfileSetName(user1.token, '', 'Last')).toEqual(400);
+    expect(requestUserProfileSetName(user1.token, 'nameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', 'Last')).toEqual(400);
   });
 
   test('invalid last name', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfileSetName(user1.token, 'First', '')).toStrictEqual({ error: 'Invalid Last Name.' });
-    expect(requestUserProfileSetName(user1.token, 'First', 'nameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')).toStrictEqual({ error: 'Invalid Last Name.' });
+    expect(requestUserProfileSetName(user1.token, 'First', '')).toEqual(400);
+    expect(requestUserProfileSetName(user1.token, 'First', 'nameeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')).toEqual(400);
   });
 
   test('invalid session', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfileSetName(user1.token + 'z', 'Jesse', 'Pinkman')).toStrictEqual({ error: 'Invalid Session Id.' });
+    expect(requestUserProfileSetName(user1.token + 'z', 'Jesse', 'Pinkman')).toEqual(403);
   });
 
   test('successful name change', () => {
@@ -156,19 +156,19 @@ describe('Test userProfileSetEmail', () => {
 
   test('invalid email', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfileSetEmail(user1.token, '.invalid@@..gmail.au.')).toStrictEqual({ error: 'Invalid Email Address.' });
+    expect(requestUserProfileSetEmail(user1.token, '.invalid@@..gmail.au.')).toEqual(400);
   });
 
   test('email in use by another user', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user2 = requestAuthRegister('bcs@gmail.com', 'bcs123', 'Saul', 'Goodman');
-    expect(requestUserProfileSetEmail(user1.token, 'bcs@gmail.com')).toStrictEqual({ error: 'Email Already in Use.' });
-    expect(requestUserProfileSetEmail(user2.token, 'aliceP@fmail.au')).toStrictEqual({ error: 'Email Already in Use.' });
+    expect(requestUserProfileSetEmail(user1.token, 'bcs@gmail.com')).toEqual(400);
+    expect(requestUserProfileSetEmail(user2.token, 'aliceP@fmail.au')).toEqual(400);
   });
 
   test('invalid session', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfileSetEmail(user1.token + 'w', 'validemail@gmail.com')).toStrictEqual({ error: 'Invalid Session Id.' });
+    expect(requestUserProfileSetEmail(user1.token + 'w', 'validemail@gmail.com')).toEqual(403);
   });
 
   test('successful email change', () => {
@@ -196,25 +196,25 @@ describe('Test userProfileSetHandle', () => {
 
   test('invalid handle (too short/long)', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfileSetHandle(user1.token, 'hi')).toStrictEqual({ error: 'Invalid Handle.' });
-    expect(requestUserProfileSetHandle(user1.token, 'aliceeeeeeeeeeeeeeeeeeeeeeeee')).toStrictEqual({ error: 'Invalid Handle.' });
+    expect(requestUserProfileSetHandle(user1.token, 'hi')).toEqual(400);
+    expect(requestUserProfileSetHandle(user1.token, 'aliceeeeeeeeeeeeeeeeeeeeeeeee')).toEqual(400);
   });
 
   test('invalid handle (contains non-alphanumeric)', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfileSetHandle(user1.token, 'alice!@!')).toStrictEqual({ error: 'Invalid Handle.' });
+    expect(requestUserProfileSetHandle(user1.token, 'alice!@!')).toEqual(400);
   });
 
   test('handle in use by another user', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     requestUserProfileSetHandle(user1.token, 'newname');
     const user2 = requestAuthRegister('michael@gmail.com', 'dm123', 'Michael', 'Scott');
-    expect(requestUserProfileSetHandle(user2.token, 'newname')).toStrictEqual({ error: 'Handle Already in Use.' });
+    expect(requestUserProfileSetHandle(user2.token, 'newname')).toEqual(400);
   });
 
   test('invalid session', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    expect(requestUserProfileSetHandle(user1.token + 's', 'kevin')).toStrictEqual({ error: 'Invalid Session Id.' });
+    expect(requestUserProfileSetHandle(user1.token + 's', 'kevin')).toEqual(403);
   });
 
   test('successful handle change', () => {

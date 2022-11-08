@@ -10,9 +10,9 @@ describe('Test clearV1 ', () => {
     requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     requestAuthRegister('jamieS@later.co', '&##@P', 'Jamie', 'Son');
     requestClear();
-    expect(requestAuthLogin('johnS@email.com', 'passJohn')).toStrictEqual({ error: 'Email Not Found.' });
-    expect(requestAuthLogin('aliceP@fmail.au', 'alice123')).toStrictEqual({ error: 'Email Not Found.' });
-    expect(requestAuthLogin('jamieS@later.co', '&##@P')).toStrictEqual({ error: 'Email Not Found.' });
+    expect(requestAuthLogin('johnS@email.com', 'passJohn')).toEqual(400);
+    expect(requestAuthLogin('aliceP@fmail.au', 'alice123')).toEqual(400);
+    expect(requestAuthLogin('jamieS@later.co', '&##@P')).toEqual(400);
   });
 
   /* test('channelListAll error, channel data cleared', () => {

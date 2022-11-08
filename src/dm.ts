@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { Empty, Error, DmId, Start, Token, UIds } from './interfaceTypes';
+import { Empty, DmId, Start, Token, UIds } from './interfaceTypes';
 import { DmDetails, MessageList, DMsObj, PrivateDm } from './internalTypes';
 import {
   validUserId,
@@ -10,6 +10,7 @@ import {
   checkUserIdtoDm,
   getPublicUser
 } from './helper';
+import HTTPError from 'http-errors';
 
 /**
   * Creates and stores a new DM.
@@ -22,12 +23,12 @@ import {
   * @returns {Error} {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {{dmId: DmId}} {dmId: number} - if creation is successfull.
 */
-export function dmCreateV1(token: Token, uIds: UIds): {dmId: DmId} | Error {
-  if (!validToken(token)) return { error: 'Invalid Token.' };
+export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   for (const i of uIds) {
-    if (!validUserId(i)) return { error: 'Invalid User Id given.' };
+    if (!validUserId(i)) throw HTTPError(400, 'Invalid User Id.');
   }
-  if (uIds.length !== Array.from(new Set(uIds)).length) return { error: 'Duplicate User Id found.' };
+  if (uIds.length !== Array.from(new Set(uIds)).length) throw HTTPError(400, 'Duplicate User Id found.');
 
   const data = getData();
   const authUserId = getUserIdFromToken(token);
@@ -73,8 +74,8 @@ export function dmCreateV1(token: Token, uIds: UIds): {dmId: DmId} | Error {
   * @returns {Error} {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {DMsObj} dms - array of objects containing information about each dm.
 */
-export function dmListV1(token: Token): DMsObj | Error {
-  if (!validToken(token)) return { error: 'Invalid Token.' };
+export function dmListV2(token: Token): DMsObj {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
 
   const data = getData();
   const dmList = [];
@@ -102,12 +103,12 @@ export function dmListV1(token: Token): DMsObj | Error {
   * @returns {Error} {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {Empty} {} - DM has been succesfully left.
 */
-export function dmLeaveV1(token: Token, dmId: DmId): Empty | Error {
-  if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
-  if (!validToken(token)) return { error: 'Invalid Token.' };
+export function ddmLeaveV2(token: Token, dmId: DmId): Empty {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
+  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.');
 
   const authUserId = getUserIdFromToken(token);
-  if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
+  if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(400, 'Authorised user is not a member of the DM.');
 
   const data = getData();
   const position = data.dms.findIndex(dm => dm.dmId === dmId);
@@ -130,16 +131,16 @@ export function dmLeaveV1(token: Token, dmId: DmId): Empty | Error {
   * @returns {Error} {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {Empty} {} - DM has been succesfully left.
 */
-export function dmRemoveV1(token: Token, dmId: DmId): Empty | Error {
-  if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
-  if (!validToken(token)) return { error: 'Invalid Token.' };
+export function dmRemoveV2(token: Token, dmId: DmId): Empty {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
+  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.');
 
   const authUserId = getUserIdFromToken(token);
-  if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
+  if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(400, 'Authorised user is not a member of the DM.');
 
   const data = getData();
   const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
-  if (authUserId !== data.dms[dmIndex].owner.uId) return { error: 'Authorised user is not creator of DM' };
+  if (authUserId !== data.dms[dmIndex].owner.uId) throw HTTPError(400, 'Authorised user is not owner of DM.');
 
   data.dms.splice(dmIndex, 1);
   setData(data);
@@ -158,12 +159,12 @@ export function dmRemoveV1(token: Token, dmId: DmId): Empty | Error {
   * @returns {Error} {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {DmDetails} DmDetails if Dm exists and user is a valid candidate to view its details.
 */
-export function dmDetailsV1(token: Token, dmId: DmId): DmDetails | Error {
-  if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
-  if (!validToken(token)) return { error: 'Invalid Token.' };
+export function dmDetailsV2(token: Token, dmId: DmId): DmDetails {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
+  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.');
 
   const authUserId = getUserIdFromToken(token);
-  if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
+  if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(400, 'Authorised user is not a member of the DM.');
 
   const data = getData();
   const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
@@ -188,16 +189,16 @@ export function dmDetailsV1(token: Token, dmId: DmId): DmDetails | Error {
   * @returns {Error} {error: 'Start is greater than total messages'} - start offset is higher than total messages.
   * @returns {MessageList} DM messages if valid.
 */
-export function dmMessagesV1(token: Token, dmId: DmId, start: Start): MessageList | Error {
-  if (!validDmId(dmId)) return { error: 'Invalid DM Id.' };
-  if (!validToken(token)) return { error: 'Invalid Token.' };
+export function dmMessagesV2(token: Token, dmId: DmId, start: Start): MessageList {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
+  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.');
 
   const authUserId = getUserIdFromToken(token);
-  if (!checkUserIdtoDm(authUserId, dmId)) return { error: 'Authorised user is not a member of the DM.' };
+  if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(400, 'Authorised user is not a member of the DM.');
 
   const data = getData();
   const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
-  if (start > data.dms[dmIndex].messages.length) return { error: 'Start is greater than total messages' };
+  if (start > data.dms[dmIndex].messages.length) throw HTTPError(400, 'Start is greater than total messages');
 
   let end = Math.min(data.dms[dmIndex].messages.length, start + 50);
 

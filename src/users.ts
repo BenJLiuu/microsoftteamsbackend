@@ -1,7 +1,7 @@
 import { getData, setData } from './dataStore';
 import validator from 'validator';
 import {
-  Empty, Error,
+  Empty,
   Users,
   Token, UId,
   Name, Email,
@@ -15,6 +15,7 @@ import {
   getUserIdFromToken,
   updateUserDetails,
 } from './helper';
+import HTTPError from 'http-errors';
 
 /**
   * For a valid user, returns information about a requested valid user profile
@@ -26,9 +27,9 @@ import {
   * @returns {Error} {error: 'uId does not refer to a valid user.'}  - uId does not correspond to an existing user.
   * @returns {User} User profile, without password key.
 */
-export function userProfileV2 (token: Token, uId: UId): UserObj | Error {
-  if (!validToken(token)) return { error: 'Invalid Session Id.' };
-  if (!validUserId(uId)) return { error: 'Invalid User Id.' };
+export function userProfileV3 (token: Token, uId: UId): UserObj {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
+  if (!validUserId(uId)) throw HTTPError(400, 'Invalid User Id.');
 
   const data = getData();
   const user = data.users.find(user => user.uId === uId);
@@ -45,8 +46,8 @@ export function userProfileV2 (token: Token, uId: UId): UserObj | Error {
  * @returns {Users} {users: [...]} - All users, with passwords removed.
  * @returns {Error} { error: 'Invalid Session Id.' } if token is invalid
  */
-export function usersAllV1 (token: Token): {users: Users} | Error {
-  if (!validToken(token)) return { error: 'Invalid Session Id.' };
+export function usersAllV2 (token: Token): {users: Users} {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   const data = getData();
   const users = [];
   for (const user of data.users) {
@@ -70,10 +71,10 @@ export function usersAllV1 (token: Token): {users: Users} | Error {
  * @returns {Error} { error: 'Invalid Last Name.' } - If last name is too short/long.
  * @returns {Error} { error: 'Invalid Session Id.' } - If token is invalid.
  */
-export function userProfileSetNameV1 (token: Token, nameFirst: Name, nameLast: Name): Empty | Error {
-  if (nameFirst.length < 1 || nameFirst.length > 50) return { error: 'Invalid First Name.' };
-  if (nameLast.length < 1 || nameLast.length > 50) return { error: 'Invalid Last Name.' };
-  if (!validToken(token)) return { error: 'Invalid Session Id.' };
+export function userProfileSetNameV2 (token: Token, nameFirst: Name, nameLast: Name): Empty {
+  if (nameFirst.length < 1 || nameFirst.length > 50) throw HTTPError(400, 'Invalid First Name.');
+  if (nameLast.length < 1 || nameLast.length > 50) throw HTTPError(400, 'Invalid Last Name.');
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
 
   const data = getData();
 
@@ -99,11 +100,11 @@ export function userProfileSetNameV1 (token: Token, nameFirst: Name, nameLast: N
  * @returns {Error} { error: 'Email Already in Use.' } - If email to be changed to is already in user by another user.
  * @returns {Error} { error: 'Invalid Session Id.' } - If token is invalid.
  */
-export function userProfileSetEmailV1 (token: Token, email: Email): Empty | Error {
-  if (!validator.isEmail(email)) return { error: 'Invalid Email Address.' };
+export function userProfileSetEmailV2 (token: Token, email: Email): Empty {
+  if (!validator.isEmail(email)) throw HTTPError(400, 'Invalid Email Address.');
   const data = getData();
-  if (data.users.some(user => user.email === email)) return { error: 'Email Already in Use.' };
-  if (!validToken(token)) return { error: 'Invalid Session Id.' };
+  if (data.users.some(user => user.email === email)) throw HTTPError(400, 'Email Already in Use.');
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   const userId = getUserIdFromToken(token);
   data.users.find(user => user.uId === userId).email = email;
 
@@ -124,12 +125,12 @@ export function userProfileSetEmailV1 (token: Token, email: Email): Empty | Erro
  * @returns {Error} { error: 'Invalid Session Id. } - If token is invalid.
  * @returns {Empty} {} - If user successfully updates handle.
  */
-export function userProfileSetHandleV1 (token: Token, handleStr: HandleStr): Empty | Error {
-  if (handleStr.length < 3 || handleStr.length > 20) return { error: 'Invalid Handle.' };
-  if (handleStr.match(/^[0-9A-Za-z]+$/) === null) return { error: 'Invalid Handle.' };
+export function userProfileSetHandleV2 (token: Token, handleStr: HandleStr): Empty {
+  if (handleStr.length < 3 || handleStr.length > 20) throw HTTPError(400, 'Invalid Handle.');
+  if (handleStr.match(/^[0-9A-Za-z]+$/) === null) throw HTTPError(400, 'Invalid Handle.');
   const data = getData();
-  if (data.users.some(user => user.handleStr === handleStr)) return { error: 'Handle Already in Use.' };
-  if (!validToken(token)) return { error: 'Invalid Session Id.' };
+  if (data.users.some(user => user.handleStr === handleStr)) throw HTTPError(400, 'Handle Already in Use.');
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
 
   const userId = getUserIdFromToken(token);
   data.users.find(user => user.uId === userId).handleStr = handleStr;

@@ -14,7 +14,7 @@ describe('requestDmCreate', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
 
-    expect(requestDmCreate(user1.token, [user2.authUserId + 1])).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmCreate(user1.token, [user2.authUserId + 1])).toEqual(400);
   });
 
   test('Invalid user id with multiple user', () => {
@@ -22,7 +22,7 @@ describe('requestDmCreate', () => {
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
 
-    expect(requestDmCreate(user1.token, [user2.authUserId, user2.authUserId + 1, user3.authUserId])).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmCreate(user1.token, [user2.authUserId, user2.authUserId + 1, user3.authUserId])).toEqual(400);
   });
 
   test('Duplicate user id', () => {
@@ -30,13 +30,13 @@ describe('requestDmCreate', () => {
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
 
-    expect(requestDmCreate(user1.token, [user2.authUserId, user3.authUserId, user3.authUserId])).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmCreate(user1.token, [user2.authUserId, user3.authUserId, user3.authUserId])).toEqual(400);
   });
 
   test('Invalid Token', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
 
-    expect(requestDmCreate('test', [user1.authUserId])).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmCreate('test', [user1.authUserId])).toEqual(403);
   });
 
   test('Successful create', () => {
@@ -69,7 +69,7 @@ describe('requestDmList', () => {
   test('Invalid Token', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
 
-    expect(requestDmList(user1.token + 1)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmList(user1.token + 1)).toEqual(403);
   });
 
   test('Successful create with multiple dms', () => {
@@ -115,7 +115,7 @@ describe('requestDmLeave', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const dm1 = requestDmCreate(user1.token, []);
 
-    expect(requestDmLeave(user1.token, dm1.dmId + 1)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmLeave(user1.token, dm1.dmId + 1)).toEqual(400);
   });
 
   test('Authorised user is not a member of the DM', () => {
@@ -123,14 +123,14 @@ describe('requestDmLeave', () => {
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const dm1 = requestDmCreate(user1.token, []);
 
-    expect(requestDmLeave(user2.token, dm1.dmId)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmLeave(user2.token, dm1.dmId)).toEqual(400);
   });
 
   test('Invalid Token', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const dm1 = requestDmCreate(user1.token, []);
 
-    expect(requestDmLeave('test', dm1.dmId)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmLeave('test', dm1.dmId)).toEqual(403);
   });
 
   test('Successful leave', () => {
@@ -166,20 +166,20 @@ describe('requestDmDetails', () => {
   test('Invalid DM id', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const dm1 = requestDmCreate(user1.token, []);
-    expect(requestDmDetails(user1.token, dm1.dmId + 1)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmDetails(user1.token, dm1.dmId + 1)).toEqual(400);
   });
 
   test('Authorised user is not a member of the DM', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const dm1 = requestDmCreate(user1.token, []);
-    expect(requestDmDetails(user2.token, dm1.dmId)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmDetails(user2.token, dm1.dmId)).toEqual(400);
   });
 
   test('Invalid Token', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const dm1 = requestDmCreate(user1.token, []);
-    expect(requestDmDetails('test', dm1.dmId)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmDetails('test', dm1.dmId)).toEqual(403);
   });
 
   test('Successful details', () => {
@@ -205,26 +205,26 @@ describe('requestDmMessages', () => {
   test('Invalid DM id', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const dm1 = requestDmCreate(user1.token, []);
-    expect(requestDmMessages(user1.token, dm1.dmId + 1, 0)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmMessages(user1.token, dm1.dmId + 1, 0)).toEqual(400);
   });
 
   test('Authorised user is not a member of the DM', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const dm1 = requestDmCreate(user1.token, []);
-    expect(requestDmMessages(user2.token, dm1.dmId, 0)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmMessages(user2.token, dm1.dmId, 0)).toEqual(400);
   });
 
   test('Invalid Token', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const dm1 = requestDmCreate(user1.token, []);
-    expect(requestDmMessages('test', dm1.dmId, 0)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmMessages('test', dm1.dmId, 0)).toEqual(403);
   });
 
   test('Start is greater than total messages', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const dm1 = requestDmCreate(user1.token, []);
-    expect(requestDmMessages(user1.token, dm1.dmId, 10)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmMessages(user1.token, dm1.dmId, 10)).toEqual(400);
   });
 
   test('Successful messages', () => {
@@ -250,27 +250,27 @@ describe('requestDmRemove', () => {
   test('Invalid DM id', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const dm1 = requestDmCreate(user1.token, []);
-    expect(requestDmRemove(user1.token, dm1.dmId + 1)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmRemove(user1.token, dm1.dmId + 1)).toEqual(400);
   });
 
   test('Authorised user is not a member of the DM', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const dm1 = requestDmCreate(user1.token, []);
-    expect(requestDmRemove(user2.token, dm1.dmId)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmRemove(user2.token, dm1.dmId)).toEqual(400);
   });
 
   test('Authorised user is in the DM, but not the creator', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const dm1 = requestDmCreate(user1.token, [user2.token]);
-    expect(requestDmRemove(user2.token, dm1.dmId)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmRemove(user2.token, dm1.dmId)).toEqual(400);
   });
 
   test('Invalid Token', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const dm1 = requestDmCreate(user1.token, []);
-    expect(requestDmRemove('test', dm1.dmId)).toStrictEqual({ error: expect.any(String) });
+    expect(requestDmRemove('test', dm1.dmId)).toEqual(403);
   });
 
   test('Successful removal', () => {

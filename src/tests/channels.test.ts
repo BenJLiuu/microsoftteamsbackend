@@ -52,9 +52,7 @@ describe('Test channelsCreateV1', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     requestClear();
     const channel1 = requestChannelsCreate(user1.token, 'General', false);
-    expect(channel1).toStrictEqual({
-      error: 'Invalid Session Id.',
-    });
+    expect(channel1).toEqual(403);
   });
 
   test('channel name too short/long', () => {
@@ -62,12 +60,8 @@ describe('Test channelsCreateV1', () => {
     const channel1 = requestChannelsCreate(user1.token, '', true);
     const channel2 = requestChannelsCreate(user1.token, 'ABCDEFGHIJKLMNOPQRSTU', true);
     const channel3 = requestChannelsCreate(user1.token, 'ABCDEFGHIJKLMNOPQRST', true);
-    expect(channel1).toStrictEqual({
-      error: 'Channel name must be between 1-20 characters.',
-    });
-    expect(channel2).toStrictEqual({
-      error: 'Channel name must be between 1-20 characters.',
-    });
+    expect(channel1).toEqual(400);
+    expect(channel2).toEqual(400);
     expect(channel3).toStrictEqual({
       channelId: channel3.channelId,
     });
@@ -133,9 +127,7 @@ describe('Test channelsListAllv2 ', () => {
   test('invalid token', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     requestChannelsCreate(user1.token, 'general', true);
-    expect(requestChannelsListAll(user1.token + 'x')).toStrictEqual({
-      error: 'Invalid Session Id.'
-    });
+    expect(requestChannelsListAll(user1.token + 'x')).toEqual(403);
   });
 });
 
@@ -186,6 +178,6 @@ describe('Test channelsListV2 ', () => {
     const user2 = requestAuthRegister('aliceP@email.com', 'alice123', 'Alice', 'Person');
     const channel1 = requestChannelsCreate(user1.token, 'general', true);
     requestChannelJoin(user2.token, channel1.channelId);
-    expect(requestChannelsList('example')).toStrictEqual({ error: 'Invalid Session Id.' });
+    expect(requestChannelsList('example')).toEqual(403);
   });
 });

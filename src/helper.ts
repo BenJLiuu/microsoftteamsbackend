@@ -4,9 +4,9 @@ import {
   UId, Token,
   ChannelId, DmId, MessageId,
   User, HandleStr, Name,
-
 } from './interfaceTypes';
 import { PrivateUser, Session } from './internalTypes';
+
 /**
  * Checks whether a uId exists in the database
  *
@@ -25,7 +25,8 @@ export function validUserId(uId: UId): boolean {
  */
 export function getUserIdFromToken(token: Token): UId {
   const data = getData();
-  return data.sessions.find(s => s.token === token).authUserId;
+  const hashedToken = hashCode(token + 'secret');
+  return data.sessions.find(s => s.token === hashedToken).authUserId;
 }
 
 /**
@@ -36,8 +37,20 @@ export function getUserIdFromToken(token: Token): UId {
  */
 export function validToken(token: Token): boolean {
   const data = getData();
-  return data.sessions.some(t => t.token === token);
+  const hashedToken = hashCode(token + 'secret');
+  if (data.sessions.some(t => t.token === hashedToken)) {
+    return true;
+  } else return false;
 }
+
+/**
+ *
+ * @param {Token} token - unhashed token to be hashed with global secret
+ * @returns {number} token hashed with global secret.
+ */
+/* export function encodeToken(token: Token): number {
+  return hashCode(token + 'secret');
+} */
 
 /**
  * Checks whether a channel is valid (whether it exists in the database)
@@ -101,16 +114,39 @@ export function getPublicUser(user: PrivateUser): User {
  */
 export function generateSession(uId: UId): Session {
   const tokenLength = 32;
-  const session = {
-    token: genRandomString(tokenLength),
+  const token = genRandomString(tokenLength);
+  const storedSession = {
+    token: hashCode(token + 'secret'),
     authUserId: uId,
   };
 
   const data = getData();
 
-  data.sessions.push(session);
+  data.sessions.push(storedSession);
   setData(data);
-  return session;
+
+  const returnedSession = {
+    token: token,
+    authUserId: uId,
+  };
+
+  return returnedSession;
+}
+
+/**
+ *
+ * @param {string} str - the string to be hashed
+ * @returns {string} - the hashed version of the string
+ */
+export function hashCode(str: string): number {
+  let hash = 0;
+  if (str.length === 0) return hash;
+  for (let x = 0; x < str.length; x++) {
+    const ch = str.charCodeAt(x);
+    hash = ((hash << 5) - hash) + ch;
+    hash = hash & hash;
+  }
+  return hash;
 }
 
 /**
@@ -170,6 +206,7 @@ function genRandomString(length: number): string {
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * charLength));
   }
+
   return result;
 }
 
