@@ -2,7 +2,8 @@ import {
   requestAuthRegister, requestUserProfile, requestUsersAll, requestUserProfileSetName,
   requestUserProfileSetEmail, requestUserProfileSetHandle, requestClear,
   requestChannelsCreate, requestChannelJoin, requestChannelDetails, requestNotificationsGet,
-  requestChannelInvite, requestDmCreate
+  requestChannelInvite, requestDmCreate, requestMessageSendDm, requestMessageSend, 
+  requestMessageEdit
 } from './httpHelper';
 
 describe('Test userProfile', () => {
@@ -478,35 +479,80 @@ describe('Test notificationsGet', () => {
     });
   });
 
-  // test('Notification for tagged in dm', () => {
-  //   requestClear();
-  //   const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-  //   const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
-  //   expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
-  //     user: {
-  //       uId: user1.authUserId,
-  //       nameFirst: 'Alice',
-  //       nameLast: 'Person',
-  //       email: 'aliceP@fmail.au',
-  //       handleStr: 'aliceperson',
-  //     },
-  //   });
-  // });
+  test('Notification for tagged in dm', () => {
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId, user3.authUserId]);
+    requestMessageSendDm(user1.token, dm1.dmId, 'hello @johnmate');
+    expect(requestNotificationsGet(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage: 'aliceperson tagged you in aliceperson, johnmate, johnnymate: hello @johnmate',
+        },
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage: 'aliceperson added you to aliceperson, johnmate, johnnymate',
+        }
+    ],
+    });
+  });
 
-  // test('Notification for tagged in channel', () => {
-  //   requestClear();
-  //   const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-  //   const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
-  //   expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
-  //     user: {
-  //       uId: user1.authUserId,
-  //       nameFirst: 'Alice',
-  //       nameLast: 'Person',
-  //       email: 'aliceP@fmail.au',
-  //       handleStr: 'aliceperson',
-  //     },
-  //   });
-  // });
+  test('Notification for tagged in channel', () => {
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    requestChannelInvite(user1.token, channel1.channelId, user2.authUserId);
+    requestMessageSend(user1.token, channel1.channelId, 'hello @johnmate how is it going today?');
+    expect(requestNotificationsGet(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage: 'aliceperson tagged you in channel1: hello @johnmate how ',
+        },
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage: 'aliceperson added you to channel1',
+        }
+    ],
+    });
+  });
+
+  test('Notification for tagged in edited message to channel', () => {
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    requestChannelInvite(user1.token, channel1.channelId, user2.authUserId);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'hello @johnmate');
+    requestMessageEdit(user1.token, message1.messageId, 'bye @johnmate');
+    expect(requestNotificationsGet(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage: 'aliceperson tagged you in channel1: bye @johnmate',
+        },
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage: 'aliceperson tagged you in channel1: hello @johnmate',
+        },
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage: 'aliceperson added you to channel1',
+        }
+    ],
+    });
+  });
 
   // test('Notification for message react in dm', () => {
   //   requestClear();

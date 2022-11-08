@@ -62,3 +62,8 @@ export type notifications = {
   dmId: number,
   notificationMessage: string,
 }[];
+
+export type tagInfo = {
+  amountTagged: number,
+  membersTagged: UId[],
+};

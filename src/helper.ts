@@ -3,7 +3,7 @@ import {
   Empty, Error,
   UId, Token,
   ChannelId, DmId, MessageId,
-  User, HandleStr, Name,
+  User, HandleStr, Name, tagInfo,
 } from './interfaceTypes';
 import { PrivateUser, Session } from './internalTypes';
 
@@ -422,4 +422,50 @@ export function checkChannelOwner(authUserId: number, channelId: number) {
     }
   }
   return false;
+}
+
+/**
+ * Checks a message for any users tagged
+ *
+ * @param message - the message to check
+ *
+ * @returns tagInfo - object containing number of tags and users tagged
+ */
+ export function checkTag(message: string): tagInfo {
+  const data = getData();
+  let newMessage = message;
+  let usersTagged = [];
+  let taggerInfo = {};
+  let tagCount = 0;
+
+  for (let i = 0; i < message.length; i++) {
+    if (message[i] === '@') {
+      tagCount += 1;
+    }
+  }
+  if (tagCount === 0) {
+    return {
+      amountTagged: 0,
+      membersTagged: [],
+    };
+  } else {
+    let verifiedTagCount = 0;
+    let verifiedTaggedUsers = [];
+    for (let i = 0; i < tagCount; i++) {
+      newMessage = newMessage.substring(newMessage.indexOf('@') + 1);
+      let filterTag = newMessage.split(' ')
+      usersTagged.push(filterTag[0]);
+    }
+    for (let i = 0; i < usersTagged.length; i++) {
+      if (data.users.some(user => user.handleStr === usersTagged[i])) {
+        let userIndex = data.users.findIndex(user => user.handleStr === usersTagged[i]);
+        verifiedTagCount += 1;
+        verifiedTaggedUsers.push(data.users[userIndex].uId);
+      }
+    }
+    return {
+      amountTagged: verifiedTagCount,
+      membersTagged: verifiedTaggedUsers,
+    };
+  }
 }
