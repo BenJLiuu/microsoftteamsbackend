@@ -70,3 +70,5 @@ export type tagInfo = {
   amountTagged: number,
   membersTagged: UId[],
 };
+
+export type ResetCode = string;

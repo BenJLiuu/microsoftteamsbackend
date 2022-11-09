@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { Empty, Email, Password, Name, Token } from './interfaceTypes';
+import { Empty, Email, Password, Name, Token, ResetCode } from './interfaceTypes';
 import { Session } from './internalTypes';
 import HTTPError from 'http-errors';
 import validator from 'validator';
@@ -148,7 +148,7 @@ export function authPasswordResetRequestV1(email: Email): Empty {
   return {};
 }
 
-export function authPasswordResetResetV1(resetCode: string, newPassword: string): Empty {
+export function authPasswordResetResetV1(resetCode: ResetCode, newPassword: Password): Empty {
   if (newPassword.length < 6) throw HTTPError(400, 'New password is too short');
   if (!validResetCode(resetCode)) throw HTTPError(400, 'Invalid Reset Code.');
   const data = getData();
