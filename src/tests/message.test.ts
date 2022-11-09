@@ -1,7 +1,7 @@
 import {
   requestAuthRegister, requestDmMessages, requestMessageSendDm, requestMessageSend,
   requestClear, requestDmCreate, requestChannelsCreate, requestMessageEdit,
-  requestMessageRemove, requestChannelMessages, requestMessageShare
+  requestMessageRemove, requestChannelMessages, requestMessageShare, requestChannelJoin
 } from './httpHelper';
 
 describe('messageSendDm Tests', () => {
@@ -339,21 +339,6 @@ describe('requestMessageRemove', () => {
   });
 });
 
-// messageShare testing
-describe('requestMessageShare', () => {
-  beforeEach(() => {
-    requestClear();
-  });
-
-  test('Invalid Message Id', () => {
-    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
-    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
-
-    expect(requestMessageRemove(user1.token, message1.messageId + 1)).toEqual(400);
-  });
-});
-
 
 // messageShare testing
 
@@ -450,4 +435,33 @@ describe('requestMessageShare', () => {
 
     expect(requestMessageShare(user1.token, message1.messageId, '', channel2.channelId, -1)).toEqual(403);
   });
+
+  // Successful test
+  test('shared message through channel', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    requestChannelJoin(user2.token, channel1.channelId);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    const channel2 = requestChannelsCreate(user2.token, 'channel2', true);
+    requestMessageShare(user2.token, message1.messageId, 'shared', channel2.channelId, -1);
+
+    const messageInfo = requestChannelMessages(user1.token, channel2.channelId, 0);
+    expect(messageInfo.messages[0].message).toStrictEqual('test shared');
+  });
+
+  test('shared message through dm', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const uIds = [user2.authUserId, user3.authUserId];
+    const dm1 = requestDmCreate(user1.token, uIds);
+    const channel1 = requestChannelsCreate(user2.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    requestMessageShare(user1.token, message1.messageId, 'shared', -1, dm1.dmId);
+
+    const messageInfo = requestDmMessages(user1.token, dm1.dmId, 0);
+    expect(messageInfo.messages[0].message).toStrictEqual('test shared');
+  });
+  
 });
