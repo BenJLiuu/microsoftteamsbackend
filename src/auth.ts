@@ -3,7 +3,7 @@ import { Empty, Email, Password, Name, Token } from './interfaceTypes';
 import { Session } from './internalTypes';
 import HTTPError from 'http-errors';
 import validator from 'validator';
-import { generateUId, generateSession, generateHandleStr, hashCode, validToken } from './helper';
+import { generateUId, generateSession, generateHandleStr, hashCode, validToken, getUserFromEmail } from './helper';
 
 /**
   * Logs in a user and returns their user Id.
@@ -94,6 +94,46 @@ export function authLogoutV2(token: Token): Empty {
   const sessionIndex = data.sessions.findIndex(s => s.token === hashedToken);
   data.sessions.splice(sessionIndex, 1);
 
+  setData(data);
+  return {};
+}
+
+export function authPasswordResetRequestV1(email: Email): Empty {
+  if (!validator.isEmail(email)) return {};
+  const data = getData();
+  if (!data.users.find((e) => e.email === email)) return {};
+  const resetCode = String(Math.floor(100000 + Math.random() * 900000));
+  const nodemailer = require('nodemailer');
+
+  const transporter = nodemailer.createTransport({
+    service: 'outlook',
+    auth: {
+      user: 'aero.passwordreset@outlook.com',
+      pass: 'aero123!'
+    }
+  });
+  const mailOptions = {
+    from: 'aero.passwordreset@outlook.com',
+    to: email,
+    subject: 'Reset your password!',
+    text: resetCode,
+  };
+  transporter.sendMail(mailOptions, function(error: any, info: any) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+
+  const user = getUserFromEmail(email);
+  const uId = user.uId;
+  // logs out user from all sessions
+  for (let i = data.sessions.length - 1; i >= 0; --i) {
+    if (data.sessions[i].authUserId === uId) {
+      data.sessions.splice(i, 1);
+    }
+  }
   setData(data);
   return {};
 }

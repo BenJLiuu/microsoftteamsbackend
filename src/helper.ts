@@ -423,3 +423,9 @@ export function checkChannelOwner(authUserId: number, channelId: number) {
   }
   return false;
 }
+
+export function getUserFromEmail(email: string): User {
+  const data = getData();
+  const userObject = data.users.find((userEmail) => userEmail.email === email);
+  return userObject;
+}
