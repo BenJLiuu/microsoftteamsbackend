@@ -1,11 +1,11 @@
-import { 
-  requestAuthRegister, 
-  requestAuthLogin, 
-  requestClear, 
-  requestUserProfile, 
-  requestAuthLogout, 
-  requestAuthPasswordResetRequest, 
-  requestAuthPasswordResetReset 
+import {
+  requestAuthRegister,
+  requestAuthLogin,
+  requestClear,
+  requestUserProfile,
+  requestAuthLogout,
+  requestAuthPasswordResetRequest,
+  requestAuthPasswordResetReset,
 } from './httpHelper';
 
 describe('Test authRegister ', () => {
