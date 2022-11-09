@@ -99,13 +99,21 @@ export function authLogoutV2(token: Token): Empty {
   return {};
 }
 
+/**
+  * Given an email address, if the email address belongs to a registered user, sends them an email containing a secret password reset code.
+  * Logs a user out of all current sessions when they request a password reset.
+  * 
+  * @param {Email} email - email to send the reset code to
+  *
+  * @returns {Empty} {} - in all cases.
+*/
 export function authPasswordResetRequestV1(email: Email): Empty {
   if (!validator.isEmail(email)) return {};
   const data = getData();
   if (!data.users.find((e) => e.email === email)) return {};
   const resetCode = String(Math.floor(100000 + Math.random() * 900000));
-  const nodemailer = require('nodemailer');
 
+  const nodemailer = require('nodemailer');
   const transporter = nodemailer.createTransport({
     service: 'outlook',
     auth: {
