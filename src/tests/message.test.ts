@@ -482,7 +482,7 @@ describe('requestMessageReact', () => {
     expect(requestMessageReact(test, message1.messageId, 1)).toEqual(403);
   });
 
-  test('ogMessageId is invalid ', () => {
+  test('MessageId is invalid ', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     
     expect(requestMessageReact(user1.token, -100, 1)).toEqual(400);
@@ -543,7 +543,7 @@ describe('requestMessageUnreact', () => {
     expect(requestMessageUnreact(test, message1.messageId, 1)).toEqual(403);
   });
 
-  test('ogMessageId is invalid ', () => {
+  test('MessageId is invalid ', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     
     expect(requestMessageUnreact(user1.token, -100, 1)).toEqual(400);
@@ -587,4 +587,65 @@ describe('requestMessageUnreact', () => {
     expect(messageInfo.messages[0].reacts[0]).toStrictEqual([]);
   });
   
+});
+
+// messagePin tests
+describe('requestMessageUnreact', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  // error tests
+  test('Invalid token', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+
+    expect(requestMessagePin(test, message1.messageId)).toEqual(403);
+  });
+
+  test('MessageId is invalid ', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    
+    expect(requestMessagePin(user1.token, -100)).toEqual(400);
+  });
+
+  test('Unathorised user ', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+
+    expect(requestMessagePin(user2.token, message1.messageId)).toEqual(400);
+  });
+
+  test('Already pinned', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    requestMessagePin(user1.token, message1.messageId);
+
+    expect(requestMessagePin(user1.token, message1.messageId)).toEqual(400);
+  });
+
+  test('Not owner', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    requestChannelJoin(user2.token, channel1.channelId);
+    
+    expect(requestMessagePin(user2.token, message1.messageId)).toEqual(403);
+  });
+
+  // Successful tests
+  test('Successful pin', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    requestMessagePin(user1.token, message1.messageId);
+    
+    const messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
+    expect(messageInfo.messages[0].isPinned).toStrictEqual(true);
+  });
 });
