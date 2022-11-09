@@ -1,4 +1,4 @@
-import { requestAuthRegister, requestAuthLogin, requestClear, requestUserProfile, requestAuthLogout } from './httpHelper';
+import { requestAuthRegister, requestAuthLogin, requestClear, requestUserProfile, requestAuthLogout, requestAuthPasswordResetRequest } from './httpHelper';
 
 describe('Test authRegister ', () => {
   beforeEach(() => {
@@ -186,7 +186,7 @@ describe('Test authPasswordResetRequest', () => {
   });
 
   test('invalid email', () => {
-    const user = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     expect(requestAuthPasswordResetRequest('johnSS@email.com')).toStrictEqual({});
     expect(requestAuthPasswordResetRequest('..abc.def@mail')).toStrictEqual({});
   });
