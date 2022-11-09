@@ -1,7 +1,7 @@
 import {
   requestAuthRegister, requestDmMessages, requestMessageSendDm, requestMessageSend,
   requestClear, requestDmCreate, requestChannelsCreate, requestMessageEdit,
-  requestMessageRemove, requestChannelMessages
+  requestMessageRemove, requestChannelMessages, requestMessageShare
 } from './httpHelper';
 
 describe('messageSendDm Tests', () => {
@@ -336,5 +336,118 @@ describe('requestMessageRemove', () => {
       start: 0,
       end: -1,
     });
+  });
+});
+
+// messageShare testing
+describe('requestMessageShare', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('Invalid Message Id', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+
+    expect(requestMessageRemove(user1.token, message1.messageId + 1)).toEqual(400);
+  });
+});
+
+
+// messageShare testing
+
+// error tests
+describe('requestMessageShare', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+  test('Invalid token', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    const channel2 = requestChannelsCreate(user1.token, 'channel2', true);
+
+    expect(requestMessageShare(test, message1.messageId, '', channel2.channelId, -1)).toEqual(403);
+  });
+  
+  test('Invalid Channel and Dm Id', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    
+
+    expect(requestMessageShare(user1.token, message1.messageId, '', -100, -100)).toEqual(400);
+  });
+
+  test('Did no specify channel or dm', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const uIds = [user2.authUserId, user3.authUserId];
+    const dm1 = requestDmCreate(user1.token, uIds);
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const channel2 = requestChannelsCreate(user1.token, 'channel2', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+
+    expect(requestMessageShare(user1.token, message1.messageId, '', channel2.channelId, dm1.dmId)).toEqual(400);
+  });
+
+
+  test('ogMessageId is invalid ', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    
+    expect(requestMessageShare(user1.token, -100, '', channel1.channelId, -1)).toEqual(400);
+  });
+
+  test('Unathorised user ', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    const channel2 = requestChannelsCreate(user2.token, 'channel2', true);
+    
+
+    expect(requestMessageShare(user2.token, message1.messageId, '', channel2.channelId, -1)).toEqual(400);
+  });
+
+  test('message is more than 1000 characters', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    const channel2 = requestChannelsCreate(user1.token, 'channel2', true);
+
+    expect(requestMessageShare(user1.token, message1.messageId, `test test test test test test test test test test test
+    test test test test test test test test test test test test test test test test test test test test test
+    test test test test test test test test test test test test test test test test test test test test test
+    test test test test test test test test test test test test test test test test test test test test test
+    test test test test test test test test test test test test test test test test test test test test test
+    test test test test test test test test test test test test test test test test test test test test test
+    test test test test test test test test test test test test test test test test test test test test test
+    test test test test test test test test test test test test test test test test test test test test test
+    test test test test test test test test test test test test test test test test test test test test test
+    test test test test test test test test test test test test test test test test test test test test test t`, channel2.channelId, -1)).toEqual(400);
+  });
+
+  test('Unathorised user ', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    
+
+    expect(requestMessageShare(user2.token, message1.messageId, '', channel1.channelId, -1)).toEqual(400);
+  });
+
+  test('Unathorised user not apart of the new channel ', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    const channel2 = requestChannelsCreate(user2.token, 'channel2', true);
+    
+
+    expect(requestMessageShare(user1.token, message1.messageId, '', channel2.channelId, -1)).toEqual(403);
   });
 });
