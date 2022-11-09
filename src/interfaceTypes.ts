@@ -21,13 +21,6 @@ export type IsPublic = boolean;
 export type Length = number;
 export type Time = number;
 export type MessageId = number;
-
-export type MessageData = {
-  messageId: MessageId,
-  uId: UId,
-  message: Message,
-  timeSent: Time,
-}
 export type Messages = MessageData[];
 
 export type Channel = {
@@ -57,3 +50,13 @@ export type Dms = {
 }[];
 
 // ITERATION 3 TYPES
+export type React = number;
+export type isPinned = boolean;
+export type MessageData = {
+  messageId: MessageId,
+  uId: UId,
+  message: Message,
+  timeSent: Time,
+  reacts: React[],
+  isPinned: isPinned
+}

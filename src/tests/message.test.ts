@@ -1,7 +1,8 @@
 import {
   requestAuthRegister, requestDmMessages, requestMessageSendDm, requestMessageSend,
   requestClear, requestDmCreate, requestChannelsCreate, requestMessageEdit,
-  requestMessageRemove, requestChannelMessages, requestMessageShare, requestChannelJoin
+  requestMessageRemove, requestChannelMessages, requestMessageShare, requestChannelJoin,
+  requestMessageReact
 } from './httpHelper';
 
 describe('messageSendDm Tests', () => {
@@ -462,6 +463,66 @@ describe('requestMessageShare', () => {
 
     const messageInfo = requestDmMessages(user1.token, dm1.dmId, 0);
     expect(messageInfo.messages[0].message).toStrictEqual('test shared');
+  });
+  
+});
+
+// messageReact tests
+describe('requestMessageReact', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  // error tests
+  test('Invalid token', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+
+    expect(requestMessageReact(test, message1.messageId, 1)).toEqual(403);
+  });
+
+  test('ogMessageId is invalid ', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    
+    expect(requestMessageReact(user1.token, -100, 1)).toEqual(400);
+  });
+
+  test('Unathorised user ', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    
+    expect(requestMessageReact(user2.token, message1.messageId, 1)).toEqual(400);
+  });
+
+  test('Invalid react ', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    
+    expect(requestMessageReact(user1.token, message1.messageId, -10)).toEqual(400);
+  });
+
+  test('Already reacted ', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    requestMessageReact(user1.token, message1.messageId, 1);
+    
+    expect(requestMessageReact(user1.token, message1.messageId, 1)).toEqual(400);
+  });
+
+  // successful tests
+  test('Already reacted ', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    requestMessageReact(user1.token, message1.messageId, 1);
+    
+    const messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
+    expect(messageInfo.messages[0].reacts[0]).toStrictEqual(user1.uId);
   });
   
 });
