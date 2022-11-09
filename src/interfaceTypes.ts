@@ -44,6 +44,7 @@ export type User = {
   nameLast: Name,
   email: Email,
   handleStr: HandleStr,
+  resetCode?: string,
 };
 export type Users = User[];
 

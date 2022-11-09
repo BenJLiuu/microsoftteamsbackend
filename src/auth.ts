@@ -3,7 +3,7 @@ import { Empty, Email, Password, Name, Token } from './interfaceTypes';
 import { Session } from './internalTypes';
 import HTTPError from 'http-errors';
 import validator from 'validator';
-import { generateUId, generateSession, generateHandleStr, hashCode, validToken, getUserFromEmail } from './helper';
+import { generateUId, generateSession, generateHandleStr, hashCode, validToken, getUserFromEmail, validResetCode } from './helper';
 
 /**
   * Logs in a user and returns their user Id.
@@ -74,6 +74,7 @@ export function authRegisterV3(email: Email, password: Password, nameFirst: Name
     // 1 if first UId made, 2 otherwise.
     globalPermissions: newUId === 0 ? 1 : 2,
     notifications: [],
+    resetCode: '',
   });
 
   setData(data);
@@ -102,7 +103,7 @@ export function authLogoutV2(token: Token): Empty {
 /**
   * Given an email address, if the email address belongs to a registered user, sends them an email containing a secret password reset code.
   * Logs a user out of all current sessions when they request a password reset.
-  * 
+  *
   * @param {Email} email - email to send the reset code to
   *
   * @returns {Empty} {} - in all cases.
@@ -112,7 +113,6 @@ export function authPasswordResetRequestV1(email: Email): Empty {
   const data = getData();
   if (!data.users.find((e) => e.email === email)) return {};
   const resetCode = String(Math.floor(100000 + Math.random() * 900000));
-
   const nodemailer = require('nodemailer');
   const transporter = nodemailer.createTransport({
     service: 'outlook',
@@ -137,12 +137,24 @@ export function authPasswordResetRequestV1(email: Email): Empty {
 
   const user = getUserFromEmail(email);
   const uId = user.uId;
+  user.resetCode = resetCode;
   // logs out user from all sessions
   for (let i = data.sessions.length - 1; i >= 0; --i) {
     if (data.sessions[i].authUserId === uId) {
       data.sessions.splice(i, 1);
     }
   }
+  setData(data);
+  return {};
+}
+
+export function authPasswordResetResetV1(resetCode: string, newPassword: string): Empty {
+  if (newPassword.length < 6) throw HTTPError(400, 'New password is too short');
+  if (!validResetCode(resetCode)) throw HTTPError(400, 'Invalid Reset Code.');
+  const data = getData();
+  const user = data.users.find(user => user.resetCode === resetCode);
+  user.passwordHash = newPassword;
+  user.resetCode = '';
   setData(data);
   return {};
 }

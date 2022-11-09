@@ -473,3 +473,7 @@ export function checkTag(message: string): tagInfo {
     };
   }
 }
+
+export function validResetCode(resetCode: string): boolean {
+  return getData().users.some(user => user.resetCode === resetCode);
+}
