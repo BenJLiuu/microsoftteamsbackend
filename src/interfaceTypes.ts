@@ -57,3 +57,15 @@ export type Dms = {
 }[];
 
 // ITERATION 3 TYPES
+
+export type Notification = {
+  channelId: number,
+  dmId: number,
+  notificationMessage: string,
+};
+export type Notifications = Notification[];
+
+export type tagInfo = {
+  amountTagged: number,
+  membersTagged: UId[],
+};
