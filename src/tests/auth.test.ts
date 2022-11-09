@@ -196,3 +196,27 @@ describe('Test authPasswordResetRequest', () => {
     expect(requestAuthPasswordResetRequest('johnS@email.com')).toStrictEqual({});
   });
 });
+
+describe('Test authPasswordResetReset', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('New password is too short', () => {
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    requestAuthPasswordResetRequest('johnS@email.com');
+    expect(requestAuthPasswordResetReset('valid', 'short')).toEqual(400);
+  });
+
+  test('Invalid reset code', () => {
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    requestAuthPasswordResetRequest('johnS@email.com');
+    expect(requestAuthPasswordResetReset('!', 'password')).toEqual(400);
+  });
+
+  test('successful reset', () => {
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    requestAuthPasswordResetRequest('johnS@email.com');
+    expect(requestAuthPasswordResetReset('validcode', 'validpass')).toStrictEqual({});
+  });
+})
