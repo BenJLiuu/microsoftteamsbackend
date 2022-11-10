@@ -139,6 +139,10 @@ export function requestMessageSendlater(token: string, channelId: number, messag
   return requestHelper('POST', '/message/sendlater/v1', { channelId, message, timeSent }, token);
 }
 
+export function requestMessageSendlaterDm(token: string, dmId: number, message: string, timeSent: number) {
+  return requestHelper('POST', '/message/sendlater/v1', { dmId, message, timeSent }, token);
+}
+
 // DM
 
 export function requestDmCreate(token: string, uIds: Array<number>) {

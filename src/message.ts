@@ -254,3 +254,23 @@ export function messageSendlaterV1(token: Token, channelId: ChannelId, message: 
   const newMessage = messageSendV2(token, channelId, message);
   return { messageId: newMessage.messageId };
 }
+
+/**
+  * Sends a message to a channel after a specified amount of time.
+  *
+  * @param {string} token - Token of user sending the message.
+  * @param {ChannelId} channelId - the channel the message was sent in
+  * @param {Message} message - the message to be sent
+  * @param {number} timeSent - Id of message to be removed.
+  *
+  * @returns {Error} {error: 'Invalid Channel Id.'} - channel does not exist.
+  * @returns {Error} {error: 'Message contains too little characters.'} - Message has less than 1 character.
+  * @returns {Error} {error: 'Message contains too many characters.'} - Message has more than 1000 characters.
+  * @returns {Error} {error: 'Invalid Session.'} - Token does not correspond to an existing user.
+  * @returns {Error} {error: 'Authorised user is not a channel member.'} - The authUserId corresponds to user that is not a member of the channel.
+  * @returns {Error} {error: 'Invalid time given!'} - timestamp given is in the past.
+  * @returns {messageId} messageId - the Id of the stored message
+*/
+export function messageSendlaterDmV1(token: Token, channelId: ChannelId, message: Message, timeSent: number): MessageIdObj {
+  return { messageId: 0 };
+}
