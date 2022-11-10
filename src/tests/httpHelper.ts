@@ -135,6 +135,10 @@ export function requestMessageRemove(token: string, messageId: number) {
   return requestHelper('DELETE', '/message/remove/v2', { messageId }, token);
 }
 
+export function requestMessageSendlater(token: string, channelId: number, message: string, timeSent: number) {
+  return requestHelper('POST', '/message/sendlater/v1', { channelId, message, timeSent }, token);
+}
+
 // DM
 
 export function requestDmCreate(token: string, uIds: Array<number>) {

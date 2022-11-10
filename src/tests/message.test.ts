@@ -1,7 +1,7 @@
 import {
   requestAuthRegister, requestDmMessages, requestMessageSendDm, requestMessageSend,
   requestClear, requestDmCreate, requestChannelsCreate, requestMessageEdit,
-  requestMessageRemove, requestChannelMessages
+  requestMessageRemove, requestChannelMessages, requestMessageSendlater
 } from './httpHelper';
 
 describe('messageSendDm Tests', () => {
@@ -31,16 +31,8 @@ describe('messageSendDm Tests', () => {
     const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
     const uIds = [user2.authUserId, user3.authUserId];
     const dmId = requestDmCreate(user1.token, uIds);
-
-    expect(requestMessageSendDm(user1.token, dmId, `testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest`)).toEqual(400);
+    const testString = 'a'
+    expect(requestMessageSendDm(user1.token, dmId, testString.repeat(1001))).toEqual(400);
   });
 
   test('Invalid Token', () => {
@@ -87,16 +79,8 @@ describe('messageSend Tests', () => {
   test('Message length is more than 1000', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'general', true);
-
-    expect(requestMessageSend(user1.token, channel1.channelId, `testtesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-    testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest`)).toEqual(400);
+    const testString = 'a';
+    expect(requestMessageSend(user1.token, channel1.channelId, testString.repeat(1001))).toEqual(400);
   });
 
   test('User is not a member of the channel', () => {
@@ -136,15 +120,8 @@ describe('requestMessageEdit', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
-
-    expect(requestMessageEdit(user1.token, message1.messageId, `test test test test test test test test test test test test test test test test 
-    test test test test test test test test test test test test test test test test test test test test test test test test test test test test 
-    test test test test test test test test test test test test test test test test test test test test test test test test test test test test 
-    test test test test test test test test test test test test test test test test test test test test test test test test test test test test 
-    test test test test test test test test test test test test test test test test test test test test test test test test test test test test 
-    test test test test test test test test test test test test test test test test test test test test test test test test test test test test 
-    test test test test test test test test test test test test test test test test test test test test test test test test test test test test 
-    test test test test test test test test test test test test test test test test test`)).toEqual(400);
+    const testString = 'a';
+    expect(requestMessageEdit(user1.token, message1.messageId, testString.repeat(1001))).toEqual(400);
   });
 
   test('Invalid Message Id', () => {
@@ -330,6 +307,94 @@ describe('requestMessageRemove', () => {
           messageId: message1.messageId,
           uId: user1.authUserId,
           message: 'test',
+          timeSent: expect.any(Number),
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+  });
+});
+
+function generateTimeStamp() {
+  return Math.floor((new Date()).getTime() / 1000);
+}
+
+describe('messageSendlater Tests', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+  // messageSend error tests
+  test('Invalid Channel Id', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const currentTime = generateTimeStamp();
+    expect(requestMessageSendlater(user1.token, -10, 'Hello there', currentTime + 5)).toEqual(400);
+  });
+
+  test('Message length is less than 1', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
+    const currentTime = generateTimeStamp();
+    expect(requestMessageSendlater(user1.token, channel1.channelId, '', currentTime + 5)).toEqual(400);
+  });
+
+  test('Message length is more than 1000', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
+    const testString = 'a'; 
+    const currentTime = generateTimeStamp();
+    expect(requestMessageSendlater(user1.token, channel1.channelId, testString.repeat(1001), currentTime + 5)).toEqual(400);
+  });
+
+  test('User is not a member of the channel', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
+    const currentTime = generateTimeStamp();
+    expect(requestMessageSendlater(user2.token, channel1.channelId, 'Hello there', currentTime + 5)).toEqual(403);
+  });
+
+  test('Invalid token', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
+    const currentTime = generateTimeStamp();
+    expect(requestMessageSendlater('Test', channel1.channelId, 'Hello there', currentTime + 5)).toEqual(403);
+  });
+
+  test('Invalid time', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
+    const currentTime = generateTimeStamp();
+    expect(requestMessageSendlater(user1.token, channel1.channelId, 'Hello there', currentTime - 5)).toEqual(400);
+  });
+
+  // Sucessful messageSend test
+
+  test('Succesfully sent message', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
+    const currentTime = generateTimeStamp();
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test message');
+    const message2 = requestMessageSend(user1.token, channel1.channelId, 'second test message');
+    const message3 = requestMessageSendlater(user1.token, channel1.channelId, 'third test message', currentTime + 5);
+    expect(requestChannelMessages(user1.token, channel1.channelId, 0)).toEqual({
+      messages: [
+        {
+          messageId: message3.messageId,
+          uId: user1.authUserId,
+          message: 'third test message',
+          timeSent: expect.any(Number),
+        },
+        {
+          messageId: message2.messageId,
+          uId: user1.authUserId,
+          message: 'second test message',
+          timeSent: expect.any(Number),
+        },
+        {
+          messageId: message1.messageId,
+          uId: user1.authUserId,
+          message: 'test message',
           timeSent: expect.any(Number),
         },
       ],

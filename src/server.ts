@@ -11,7 +11,7 @@ import { echo } from './echo';
 import { clearV1 } from './other';
 import { userProfileV3, usersAllV2, userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2, notificationsGetV1 } from './users';
 import { dmCreateV2, dmListV2, ddmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
-import { messageSendDmV2, messageSendV2, messageEditV2, messageRemoveV2 } from './message';
+import { messageSendDmV2, messageSendV2, messageEditV2, messageRemoveV2, messageSendlaterV1 } from './message';
 
 // Set up web app
 const app = express();
@@ -316,6 +316,16 @@ app.delete('/message/remove/v2', (req: Request, res: Response, next) => {
     const token = req.header('token') as string;
     const messageId = req.query.messageId as string;
     res.json(messageRemoveV2(token, messageId ? parseInt(messageId) : undefined));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/message/sendlater/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { channelId, message, timeSent } = req.body;
+    res.json(messageSendlaterV1(token, channelId, message, timeSent));
   } catch (err) {
     next(err);
   }
