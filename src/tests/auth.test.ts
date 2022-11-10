@@ -1,4 +1,12 @@
-import { requestAuthRegister, requestAuthLogin, requestClear, requestUserProfile, requestAuthLogout } from './httpHelper';
+import {
+  requestAuthRegister,
+  requestAuthLogin,
+  requestClear,
+  requestUserProfile,
+  requestAuthLogout,
+  // requestAuthPasswordResetRequest,
+  // requestAuthPasswordResetReset,
+} from './httpHelper';
 
 describe('Test authRegister ', () => {
   beforeEach(() => {
@@ -179,3 +187,39 @@ describe('Test authLogout', () => {
     expect(requestAuthLogout(user1login2.token)).toEqual(403);
   });
 });
+/*
+describe('Test authPasswordResetRequest', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('invalid email', () => {
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    expect(requestAuthPasswordResetRequest('johnSS@email.com')).toStrictEqual({});
+    expect(requestAuthPasswordResetRequest('..abc.def@mail')).toStrictEqual({});
+  });
+
+  test('successful request', () => {
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    expect(requestAuthPasswordResetRequest('johnS@email.com')).toStrictEqual({});
+  });
+});
+
+describe('Test authPasswordResetReset', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('New password is too short', () => {
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    requestAuthPasswordResetRequest('johnS@email.com');
+    expect(requestAuthPasswordResetReset('valid', 'short')).toEqual(400);
+  });
+
+  test('successful reset', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    requestAuthPasswordResetRequest('johnS@email.com');
+    expect(requestAuthLogout(user1.token)).toEqual(403);
+  });
+});
+*/

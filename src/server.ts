@@ -5,7 +5,7 @@ import cors from 'cors';
 import errorHandler from 'middleware-http-errors';
 
 import { channelsCreateV3, channelsListV3, channelsListAllV3 } from './channels';
-import { authRegisterV3, authLoginV3, authLogoutV2 } from './auth';
+import { authRegisterV3, authLoginV3, authLogoutV2, authPasswordResetRequestV1, authPasswordResetResetV1 } from './auth';
 import { channelDetailsV3, channelJoinV3, channelInviteV3, channelMessagesV3, channelLeaveV2, channelRemoveOwnerV2, channelAddOwnerV2 } from './channel';
 import { echo } from './echo';
 import { clearV1 } from './other';
@@ -61,6 +61,16 @@ app.post('/auth/logout/v2', (req: Request, res: Response, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+app.post('/auth/passwordreset/request/v1', (req: Request, res: Response, next) => {
+  const { email } = req.body;
+  res.json(authPasswordResetRequestV1(email));
+});
+
+app.post('/auth/passwordreset/reset/v1', (req: Request, res: Response, next) => {
+  const { resetCode, newPassword } = req.body;
+  res.json(authPasswordResetResetV1(resetCode, newPassword));
 });
 
 // CHANNELS ROUTES
