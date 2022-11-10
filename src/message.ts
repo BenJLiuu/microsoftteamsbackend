@@ -242,5 +242,15 @@ export function messageRemoveV2(token: string, messageId: number): Empty {
   * @returns {messageId} messageId - the Id of the stored message
 */
 export function messageSendlaterV1(token: Token, channelId: ChannelId, message: Message, timeSent: number): MessageIdObj {
-  return { messageId: 0 };
+  if (!validChannelId(channelId)) throw HTTPError(400, 'Invalid Channel Id');
+  if (message.length < 1) throw HTTPError(400, 'Message contains too little characters.');
+  if (message.length > 1000) throw HTTPError(400, 'Message contains too many characters.');
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session.');
+  const authUserId = getUserIdFromToken(token);
+  if (!userIsChannelMember(authUserId, channelId)) throw HTTPError(403, 'Authorised user is not a channel member');
+  const currentTime = Math.floor((new Date()).getTime() / 1000);
+  if (currentTime > timeSent) throw HTTPError(400, 'Invalid time given!');
+  while (Math.floor((new Date()).getTime() / 1000) !== timeSent) {}
+  const newMessage = messageSendV2(token, channelId, message);
+  return { messageId: newMessage.messageId };
 }
