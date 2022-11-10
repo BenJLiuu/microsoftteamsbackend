@@ -424,6 +424,11 @@ export function checkChannelOwner(authUserId: number, channelId: number) {
   return false;
 }
 
+export function getUserFromEmail(email: string): User {
+  const data = getData();
+  const userObject = data.users.find((userEmail) => userEmail.email === email);
+  return userObject;
+}
 /**
  * Checks a message for any users tagged
  *
@@ -467,4 +472,14 @@ export function checkTag(message: string): tagInfo {
       membersTagged: verifiedTaggedUsers,
     };
   }
+}
+
+/**
+ * Checks if resetCode exists in data
+ *
+ * @param {string} resetCode - a resetCode emailed to the user
+ * @returns {boolean} - true/false whether resetCode is valid/exists
+ */
+export function validResetCode(resetCode: string): boolean {
+  return getData().users.some(user => user.resetCode === resetCode);
 }

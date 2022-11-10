@@ -44,6 +44,7 @@ export type User = {
   nameLast: Name,
   email: Email,
   handleStr: HandleStr,
+  resetCode?: string,
 };
 export type Users = User[];
 
@@ -69,3 +70,5 @@ export type tagInfo = {
   amountTagged: number,
   membersTagged: UId[],
 };
+
+export type ResetCode = string;
