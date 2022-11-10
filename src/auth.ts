@@ -148,6 +148,15 @@ export function authPasswordResetRequestV1(email: Email): Empty {
   return {};
 }
 
+/**
+ * Given a reset code for a user, sets that user's new password to the password provided.
+ * Once a reset code has been used, it is then invalidated.
+ *
+ * @param {ResetCode} resetCode - reset code that user received in email
+ * @param {Password} newPassword - new password that user wishes to use
+ * @returns {Empty} {} - if no error
+ * @throws 400 Error - if resetCode is invalid or password is too short
+ */
 export function authPasswordResetResetV1(resetCode: ResetCode, newPassword: Password): Empty {
   if (newPassword.length < 6) throw HTTPError(400, 'New password is too short');
   if (!validResetCode(resetCode)) throw HTTPError(400, 'Invalid Reset Code.');

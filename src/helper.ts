@@ -474,6 +474,12 @@ export function checkTag(message: string): tagInfo {
   }
 }
 
+/**
+ * Checks if resetCode exists in data
+ *
+ * @param {string} resetCode - a resetCode emailed to the user
+ * @returns {boolean} - true/false whether resetCode is valid/exists
+ */
 export function validResetCode(resetCode: string): boolean {
   return getData().users.some(user => user.resetCode === resetCode);
 }
