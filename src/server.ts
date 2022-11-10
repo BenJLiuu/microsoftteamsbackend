@@ -11,8 +11,7 @@ import { echo } from './echo';
 import { clearV1 } from './other';
 import { userProfileV3, usersAllV2, userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2 } from './users';
 import { dmCreateV2, dmListV2, ddmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
-import { messageSendDmV2, messageSendV2, messageEditV2, messageRemoveV2, //messageUnreactV1, messageReactV1, messageShareV1, messagePinV1, messageUnpinV1 
-} from './message';
+import { messageSendDmV2, messageSendV2, messageEditV2, messageRemoveV2 } from './message';
 
 // Set up web app
 const app = express();
@@ -321,7 +320,7 @@ app.delete('/message/remove/v2', (req: Request, res: Response, next) => {
     next(err);
   }
 });
-
+/*
 app.post('/message/react/v1', (req: Request, res: Response, next) => {
   try {
     const token = req.header('token') as string;
@@ -371,7 +370,7 @@ app.post('/message/unpin/v1', (req: Request, res: Response, next) => {
     next(err);
   }
 });
-
+*/
 // OTHER ROUTES
 
 app.delete('/clear/v1', (req: Request, res: Response, next) => {
