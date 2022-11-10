@@ -248,9 +248,11 @@ export function messageSendlaterV1(token: Token, channelId: ChannelId, message: 
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session.');
   const authUserId = getUserIdFromToken(token);
   if (!userIsChannelMember(authUserId, channelId)) throw HTTPError(403, 'Authorised user is not a channel member');
-  const currentTime = Math.floor((new Date()).getTime() / 1000);
+  let currentTime = Math.floor((new Date()).getTime() / 1000);
   if (currentTime > timeSent) throw HTTPError(400, 'Invalid time given!');
-  while (Math.floor((new Date()).getTime() / 1000) !== timeSent) {}
+  while (Math.floor((new Date()).getTime() / 1000) !== timeSent) {
+    currentTime = Math.floor((new Date()).getTime() / 1000);
+  }
   const newMessage = messageSendV2(token, channelId, message);
   return { messageId: newMessage.messageId };
 }
@@ -271,6 +273,18 @@ export function messageSendlaterV1(token: Token, channelId: ChannelId, message: 
   * @returns {Error} {error: 'Invalid time given!'} - timestamp given is in the past.
   * @returns {messageId} messageId - the Id of the stored message
 */
-export function messageSendlaterDmV1(token: Token, channelId: ChannelId, message: Message, timeSent: number): MessageIdObj {
-  return { messageId: 0 };
+export function messageSendlaterDmV1(token: Token, dmId: DmId, message: Message, timeSent: number): MessageIdObj {
+  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid Dm Id');
+  if (message.length < 1) throw HTTPError(400, 'Message contains too little characters.');
+  if (message.length > 1000) throw HTTPError(400, 'Message contains too many characters.');
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session.');
+  const authUserId = getUserIdFromToken(token);
+  if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(403, 'Authorised user is not a member of the Dm');
+  let currentTime = Math.floor((new Date()).getTime() / 1000);
+  if (currentTime > timeSent) throw HTTPError(400, 'Invalid time given!');
+  while (Math.floor((new Date()).getTime() / 1000) !== timeSent) {
+    currentTime = Math.floor((new Date()).getTime() / 1000);
+  }
+  const newMessage = messageSendDmV2(token, dmId, message);
+  return { messageId: newMessage.messageId };
 }

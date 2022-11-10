@@ -140,7 +140,7 @@ export function requestMessageSendlater(token: string, channelId: number, messag
 }
 
 export function requestMessageSendlaterDm(token: string, dmId: number, message: string, timeSent: number) {
-  return requestHelper('POST', '/message/sendlater/v1', { dmId, message, timeSent }, token);
+  return requestHelper('POST', '/message/sendlaterdm/v1', { dmId, message, timeSent }, token);
 }
 
 // DM

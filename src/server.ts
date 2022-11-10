@@ -341,8 +341,6 @@ app.post('/message/sendlaterdm/v1', (req: Request, res: Response, next) => {
   }
 });
 
-messageSendlaterDmV1
-
 app.get('/notifications/get/v1', (req: Request, res: Response, next) => {
   try {
     const token = req.header('token') as string;

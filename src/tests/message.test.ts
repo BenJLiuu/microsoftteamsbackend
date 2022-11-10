@@ -1,7 +1,7 @@
 import {
   requestAuthRegister, requestDmMessages, requestMessageSendDm, requestMessageSend,
   requestClear, requestDmCreate, requestChannelsCreate, requestMessageEdit,
-  requestMessageRemove, requestChannelMessages, requestMessageSendlater, 
+  requestMessageRemove, requestChannelMessages, requestMessageSendlater,
   requestMessageSendlaterDm
 } from './httpHelper';
 
@@ -32,7 +32,7 @@ describe('messageSendDm Tests', () => {
     const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
     const uIds = [user2.authUserId, user3.authUserId];
     const dmId = requestDmCreate(user1.token, uIds);
-    const testString = 'a'
+    const testString = 'a';
     expect(requestMessageSendDm(user1.token, dmId, testString.repeat(1001))).toEqual(400);
   });
 
@@ -342,7 +342,7 @@ describe('messageSendlater Tests', () => {
   test('Message length is more than 1000', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'general', true);
-    const testString = 'a'; 
+    const testString = 'a';
     const currentTime = generateTimeStamp();
     expect(requestMessageSendlater(user1.token, channel1.channelId, testString.repeat(1001), currentTime + 5)).toEqual(400);
   });
@@ -410,10 +410,6 @@ describe('messageSendlaterDm Tests', () => {
 
   test('Invalid Dm Id', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
-    const uIds = [user2.authUserId, user3.authUserId];
-    const dmId = requestDmCreate(user1.token, uIds);
     const currentTime = generateTimeStamp();
     expect(requestMessageSendlaterDm(user1.token, -10, 'Hello there', currentTime + 5)).toEqual(400);
   });
@@ -434,7 +430,7 @@ describe('messageSendlaterDm Tests', () => {
     const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
     const uIds = [user2.authUserId, user3.authUserId];
     const dm1 = requestDmCreate(user1.token, uIds);
-    const testString = 'a'; 
+    const testString = 'a';
     const currentTime = generateTimeStamp();
     expect(requestMessageSendlaterDm(user1.token, dm1.dmId, testString.repeat(1001), currentTime + 5)).toEqual(400);
   });
