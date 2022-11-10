@@ -354,7 +354,7 @@ describe('requestMessageShare', () => {
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
     const channel2 = requestChannelsCreate(user1.token, 'channel2', true);
 
-    expect(requestMessageShare(test, message1.messageId, '', channel2.channelId, -1)).toEqual(403);
+    expect(requestMessageShare('test', message1.messageId, '', channel2.channelId, -1)).toEqual(403);
   });
   
   test('Invalid Channel and Dm Id', () => {
@@ -479,7 +479,7 @@ describe('requestMessageReact', () => {
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
-    expect(requestMessageReact(test, message1.messageId, 1)).toEqual(403);
+    expect(requestMessageReact('test', message1.messageId, 1)).toEqual(403);
   });
 
   test('MessageId is invalid ', () => {
@@ -540,7 +540,7 @@ describe('requestMessageReact', () => {
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
     requestMessageReact(user1.token, message1.messageId, 1);
 
-    expect(requestMessageUnreact(test, message1.messageId, 1)).toEqual(403);
+    expect(requestMessageUnreact('test', message1.messageId, 1)).toEqual(403);
   });
 
   test('MessageId is invalid ', () => {
@@ -601,7 +601,7 @@ describe('requestMessagePin', () => {
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
-    expect(requestMessagePin(test, message1.messageId)).toEqual(403);
+    expect(requestMessagePin('test', message1.messageId)).toEqual(403);
   });
 
   test('MessageId is invalid ', () => {
@@ -661,7 +661,7 @@ describe('messageUnpin', () => {
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
-    expect(requestMessageUnpin(test, message1.messageId)).toEqual(403);
+    expect(requestMessageUnpin('test', message1.messageId)).toEqual(403);
   });
 
   test('MessageId is invalid ', () => {

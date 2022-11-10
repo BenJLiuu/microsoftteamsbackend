@@ -51,12 +51,13 @@ export type Dms = {
 
 // ITERATION 3 TYPES
 export type React = number;
-export type isPinned = boolean;
+export type IsPinned = boolean;
+export type SharedMessageId = number;
 export type MessageData = {
   messageId: MessageId,
   uId: UId,
   message: Message,
   timeSent: Time,
   reacts: React[],
-  isPinned: isPinned
+  isPinned: IsPinned
 }

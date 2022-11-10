@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { Token, DmId, ChannelId, Message, Empty } from './interfaceTypes';
+import { Token, DmId, ChannelId, Message, Empty, SharedMessageId } from './interfaceTypes';
 import { MessageIdObj } from './internalTypes';
 import {
   validChannelId,
@@ -36,7 +36,7 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
   if (message.length < 1) throw HTTPError(400, 'Message contains too little characters.');
   if (message.length > 1000) throw HTTPError(400, 'Message contains too many characters.');
   const authUserId = getUserIdFromToken(token);
-  if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(400, 'Authorised user is not a member of the Dm');
+  if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(403, 'Authorised user is not a member of the Dm');
 
   const messageId = generateMessageId().messageId;
   const data = getData();
@@ -46,6 +46,8 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
     uId: authUserId,
     message: message,
     timeSent: Date.now(),
+    reacts: [],
+    isPinned: false
   });
 
   setData(data);
@@ -74,7 +76,7 @@ export function messageSendV2(token: Token, channelId: ChannelId, message: Messa
   if (message.length > 1000) throw HTTPError(400, 'Message contains too many characters.');
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session.');
   const authUserId = getUserIdFromToken(token);
-  if (!userIsChannelMember(authUserId, channelId)) throw HTTPError(400, 'Authorised user is not a channel member');
+  if (!userIsChannelMember(authUserId, channelId)) throw HTTPError(403, 'Authorised user is not a channel member');
 
   const messageId = generateMessageId().messageId;
   const data = getData();
@@ -84,6 +86,8 @@ export function messageSendV2(token: Token, channelId: ChannelId, message: Messa
     uId: authUserId,
     message: message,
     timeSent: Date.now(),
+    reacts: [],
+    isPinned: false
   });
 
   setData(data);
@@ -167,4 +171,41 @@ export function messageRemoveV2(token: string, messageId: number): Empty {
 
   setData(data);
   return {};
+}
+
+export function messageShareV1(token: string, ogMessageId: number, message: string, channelId: number, dmId: number): sharedMessageId {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
+  if (channelId !== -1 && dmId !== -1) throw HTTPError(400, 'Can only share to one channel/dm');
+  if (!validMessageId(ogMessageId)) throw HTTPError(400, 'Invalid message');
+  if (message.length > 1000) throw HTTPError(400, 'Message contains too many characters.');
+
+  const data = getData();
+  const uId = getUserIdFromToken(token);
+  let foundMessage = false;
+  if (channelId !== -1) {
+    for (let i = 0; foundMessage === false; i++) {
+      if (data.channels[i].messages.find(message => message.messageId === ogMessageId)){
+        const sharedMessage = data.channels[i].messages.find(message => message.messageId === ogMessageId).message;
+        if (!userIsChannelMember(uId, channelId)) throw HTTPError(400, 'Not a member of the channel');
+        const sharedMessageId = messageSendV2(token, channelId, sharedMessage + message);
+        foundMessage = true;
+      }
+    }
+  } else if (dmId !== -1) {
+    for (let i = 0; foundMessage === false; i++) {
+      if (data.dms[i].messages.find(message => message.messageId === ogMessageId)){
+        const sharedMessage = data.dms[i].messages.find(message => message.messageId === ogMessageId).message;
+        if (!checkUserIdtoDm(uId, dmId)) throw HTTPError(400, 'Not a member of the channel');
+        const sharedMessageId = messageSendDmV2(token, dmId, sharedMessage + message);
+        foundMessage = true;
+      }
+    }
+  } else {
+    throw HTTPError (400, 'error');
+  }
+  setData(data);
+
+  return {
+    sharedMessageId: haredMessageId.messageId
+  };
 }

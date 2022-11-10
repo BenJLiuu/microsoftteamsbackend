@@ -76,3 +76,7 @@ export type MessageIdObj = {
 export type DMsObj = {
   dms: itf.Dms,
 }
+
+export type SharedMessageIdObj = {
+  sharedMessageId: itf.SharedMessageId
+}
