@@ -117,12 +117,12 @@ export function authPasswordResetRequestV1(email: Email): Empty {
   const transporter = nodemailer.createTransport({
     service: 'outlook',
     auth: {
-      user: 'aero.passwordreset@outlook.com',
+      user: 'beansreset@outlook.com',
       pass: 'aero123!'
     }
   });
   const mailOptions = {
-    from: 'aero.passwordreset@outlook.com',
+    from: 'beansreset@outlook.com',
     to: email,
     subject: 'Reset your password!',
     text: resetCode,
