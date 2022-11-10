@@ -217,8 +217,8 @@ describe('Test authPasswordResetReset', () => {
   });
 
   test('successful reset', () => {
-    const user1 = requestAuthRegister('viditarora08@gmail.com', 'passJohn', 'John', 'Smith');
-    requestAuthPasswordResetRequest('viditarora08@gmail.com');
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    requestAuthPasswordResetRequest('johnS@email.com');
     expect(requestAuthLogout(user1.token)).toEqual(403);
   });
 });
