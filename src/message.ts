@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import { Token, DmId, ChannelId, Message, Empty, SharedMessageId } from './interfaceTypes';
-import { MessageIdObj } from './internalTypes';
+import { MessageIdObj, SharedMessageIdObj } from './internalTypes';
 import {
   validChannelId,
   validToken,
@@ -172,7 +172,7 @@ export function messageRemoveV2(token: string, messageId: number): Empty {
   setData(data);
   return {};
 }
-/*
+
 export function messageShareV1(token: string, ogMessageId: number, message: string, channelId: number, dmId: number): SharedMessageIdObj {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
   if (channelId !== -1 && dmId !== -1) throw HTTPError(400, 'Can only share to one channel/dm');
@@ -181,25 +181,30 @@ export function messageShareV1(token: string, ogMessageId: number, message: stri
 
   const data = getData();
   const uId = getUserIdFromToken(token);
+  let sharedMessageId = {messageId: 0};
 
   if (channelId !== -1) {
-    const sharedMessage =  data.channels.find(channel => channel.messages.find(message => message.messageId === ogMessageId).message);
+    const isChannel = checkMessageToChannel(ogMessageId);
+    const position = data.channels[isChannel].messages.findIndex(message => message.messageId === ogMessageId);
+    const sharedMessage = data.channels[isChannel].messages[position].message;
     if (!userIsChannelMember(uId, channelId)) throw HTTPError(400, 'Not a member of the channel');
-    const sharedMessageId = messageSendV2(token, channelId, sharedMessage + message);
+    sharedMessageId = messageSendV2(token, channelId, sharedMessage + message);
   } else if (dmId !== -1) {
-    const sharedMessage =  data.dms.find(dm => dm.messages.find(message => message.messageId === ogMessageId).message);
+    const isDm = checkMessageToDm(ogMessageId);
+    const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === ogMessageId);
+    const sharedMessage = data.dms[isDm].messages[dmPosition].message;
     if (!checkUserIdtoDm(uId, dmId)) throw HTTPError(400, 'Not a member of the channel');
-    const sharedMessageId = messageSendDmV2(token, dmId, sharedMessage + message);
+    sharedMessageId = messageSendDmV2(token, dmId, sharedMessage + message);
   } else {
     throw HTTPError (400, 'error');
   }
   setData(data);
 
   return {
-    sharedMessageId: sharedMessageId.messageId
+    sharedMessageId: sharedMessageId.messageId,
   };
 }
-*/
+
 export function messageReactV1(token: string, messageId: number, reactId: number): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
   if (!validMessageId(messageId)) throw HTTPError(400, 'Invalid message');
@@ -208,12 +213,19 @@ export function messageReactV1(token: string, messageId: number, reactId: number
   const UserId = getUserIdFromToken(token);
   const data = getData();
 
-  data.channels.find(channel => channel.messages.find(message => message.messageId === messageId).reacts.push(UserId));
-
+  const isChannel = checkMessageToChannel(messageId);
+  if (isChannel === -1) {
+    const isDm = checkMessageToDm(messageId);
+    const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
+    data.dms[isDm].messages[dmPosition].reacts.push(UserId);
+  } else {
+    const position = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
+    data.channels[isChannel].messages[position].reacts.push(UserId);
+  }
 
   return {};
 }
-/*
+
 export function messageUnreactV1(token: string, messageId: number, reactId: number): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
   if (!validMessageId(messageId)) throw HTTPError(400, 'Invalid message');
@@ -222,9 +234,57 @@ export function messageUnreactV1(token: string, messageId: number, reactId: numb
   const UserId = getUserIdFromToken(token);
   const data = getData();
 
-  data.channels.find(channel => channel.messages.find(message => message.messageId === messageId).reacts.splice(UserId,1));
-
+  const isChannel = checkMessageToChannel(messageId);
+  if (isChannel === -1) {
+    const isDm = checkMessageToDm(messageId);
+    const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
+    const userIdIndex = data.dms[isDm].messages[dmPosition].reacts.findIndex(reacts => reacts === UserId);
+    data.dms[isDm].messages[dmPosition].reacts.splice(userIdIndex, 1);
+  } else {
+    const position = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
+    const userIdIndex = data.channels[isChannel].messages[position].reacts.findIndex(reacts => reacts === UserId);
+    data.channels[isChannel].messages[position].reacts.splice(userIdIndex, 1);
+  }
 
   return {};
 }
-*/
+
+export function messagePinV1(token: string, messageId: number): Empty {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
+  if (!validMessageId(messageId)) throw HTTPError(400, 'Invalid message');
+  
+
+  const data = getData();
+
+  const isChannel = checkMessageToChannel(messageId);
+  if (isChannel === -1) {
+    const isDm = checkMessageToDm(messageId);
+    const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
+    data.dms[isDm].messages[dmPosition].isPinned = true;
+  } else {
+    const position = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
+    data.channels[isChannel].messages[position].isPinned = true;
+  }
+  setData(data);
+  return {};
+}
+
+export function messageUnpinV1(token: string, messageId: number): Empty {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
+  if (!validMessageId(messageId)) throw HTTPError(400, 'Invalid message');
+ 
+  const UserId = getUserIdFromToken(token);
+  const data = getData();
+
+  const isChannel = checkMessageToChannel(messageId);
+  if (isChannel === -1) {
+    const isDm = checkMessageToDm(messageId);
+    const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
+    data.dms[isDm].messages[dmPosition].isPinned = false;
+  } else {
+    const position = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
+    data.channels[isChannel].messages[position].isPinned = false;
+  }
+  setData(data);
+  return {};
+}

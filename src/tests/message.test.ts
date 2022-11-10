@@ -340,7 +340,7 @@ describe('requestMessageRemove', () => {
   });
 });
 
-/*
+
 // messageShare testing
 
 // error tests
@@ -466,7 +466,7 @@ describe('requestMessageShare', () => {
   });
   
 });
-*/
+
 // messageReact tests
 describe('requestMessageReact', () => {
   beforeEach(() => {
@@ -526,7 +526,7 @@ describe('requestMessageReact', () => {
   });
   
 });
-/*
+
 // messageUnreact tests
 describe('requestMessageUnreact', () => {
   beforeEach(() => {
@@ -584,7 +584,7 @@ describe('requestMessageUnreact', () => {
     requestMessageUnreact(user1.token, message1.messageId, 1);
     
     const messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
-    expect(messageInfo.messages[0].reacts[0]).toStrictEqual([]);
+    expect(messageInfo.messages[0].reacts[0]).toStrictEqual(undefined);
   });
   
 });
@@ -709,4 +709,3 @@ describe('messageUnpin', () => {
     expect(messageInfo.messages[0].isPinned).toStrictEqual(false);
   });
 });
-*/

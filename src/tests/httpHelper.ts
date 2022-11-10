@@ -41,6 +41,14 @@ export function requestAuthLogout(token: string) {
   return requestHelper('POST', '/auth/logout/v2', {}, token);
 }
 
+export function requestAuthPasswordResetRequest(email: string) {
+  return requestHelper('POST', '/auth/passwordreset/request/v1', { email });
+}
+
+export function requestAuthPasswordResetReset(resetCode: string, newPassword: string) {
+  return requestHelper('POST', '/auth/passwordreset/reset/v1', { resetCode, newPassword });
+}
+
 // OTHER
 
 export function requestClear() {
@@ -67,6 +75,10 @@ export function requestUserProfileSetEmail(token: string, email: string) {
 
 export function requestUserProfileSetHandle(token: string, handleStr: string) {
   return requestHelper('PUT', '/user/profile/sethandle/v2', { handleStr }, token);
+}
+
+export function requestNotificationsGet(token: string) {
+  return requestHelper('GET', '/notifications/get/v1', {}, token);
 }
 
 // CHANNELS
