@@ -1,6 +1,9 @@
 import { getData, setData } from './dataStore';
-import { Token, DmId, ChannelId, Message, Empty, SharedMessageId } from './interfaceTypes';
-import { MessageIdObj, SharedMessageIdObj } from './internalTypes';
+import { Token, DmId, ChannelId, Message, Empty } from './interfaceTypes';
+import {
+  MessageIdObj,
+  // SharedMessageIdObj
+} from './internalTypes';
 import {
   validChannelId,
   validToken,
@@ -46,8 +49,8 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
     uId: authUserId,
     message: message,
     timeSent: Date.now(),
-    reacts: [],
-    isPinned: false
+    // reacts: [],
+    // isPinned: false
   });
 
   setData(data);
@@ -86,8 +89,8 @@ export function messageSendV2(token: Token, channelId: ChannelId, message: Messa
     uId: authUserId,
     message: message,
     timeSent: Date.now(),
-    reacts: [],
-    isPinned: false
+    // reacts: [],
+    // isPinned: false
   });
 
   setData(data);
@@ -172,7 +175,7 @@ export function messageRemoveV2(token: string, messageId: number): Empty {
   setData(data);
   return {};
 }
-
+/*
 export function messageShareV1(token: string, ogMessageId: number, message: string, channelId: number, dmId: number): SharedMessageIdObj {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
   if (channelId !== -1 && dmId !== -1) throw HTTPError(400, 'Can only share to one channel/dm');
@@ -181,7 +184,7 @@ export function messageShareV1(token: string, ogMessageId: number, message: stri
 
   const data = getData();
   const uId = getUserIdFromToken(token);
-  let sharedMessageId = {messageId: 0};
+  let sharedMessageId = { messageId: 0 };
 
   if (channelId !== -1) {
     const isChannel = checkMessageToChannel(ogMessageId);
@@ -196,7 +199,7 @@ export function messageShareV1(token: string, ogMessageId: number, message: stri
     if (!checkUserIdtoDm(uId, dmId)) throw HTTPError(400, 'Not a member of the channel');
     sharedMessageId = messageSendDmV2(token, dmId, sharedMessage + message);
   } else {
-    throw HTTPError (400, 'error');
+    throw HTTPError(400, 'error');
   }
   setData(data);
 
@@ -230,7 +233,7 @@ export function messageUnreactV1(token: string, messageId: number, reactId: numb
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
   if (!validMessageId(messageId)) throw HTTPError(400, 'Invalid message');
   if (reactId !== 1) throw HTTPError(400, 'Invalid reactId');
-  
+
   const UserId = getUserIdFromToken(token);
   const data = getData();
 
@@ -252,7 +255,6 @@ export function messageUnreactV1(token: string, messageId: number, reactId: numb
 export function messagePinV1(token: string, messageId: number): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
   if (!validMessageId(messageId)) throw HTTPError(400, 'Invalid message');
-  
 
   const data = getData();
 
@@ -272,8 +274,7 @@ export function messagePinV1(token: string, messageId: number): Empty {
 export function messageUnpinV1(token: string, messageId: number): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
   if (!validMessageId(messageId)) throw HTTPError(400, 'Invalid message');
- 
-  const UserId = getUserIdFromToken(token);
+
   const data = getData();
 
   const isChannel = checkMessageToChannel(messageId);
@@ -288,3 +289,4 @@ export function messageUnpinV1(token: string, messageId: number): Empty {
   setData(data);
   return {};
 }
+*/

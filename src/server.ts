@@ -354,7 +354,7 @@ app.post('/message/unreact/v1', (req: Request, res: Response, next) => {
 app.post('/message/pin/v1', (req: Request, res: Response, next) => {
   try {
     const token = req.header('token') as string;
-    const { messageId} = req.body;
+    const { messageId } = req.body;
     res.json(messagePinV1(token, messageId));
   } catch (err) {
     next(err);
@@ -364,7 +364,7 @@ app.post('/message/pin/v1', (req: Request, res: Response, next) => {
 app.post('/message/unpin/v1', (req: Request, res: Response, next) => {
   try {
     const token = req.header('token') as string;
-    const { messageId} = req.body;
+    const { messageId } = req.body;
     res.json(messageUnpinV1(token, messageId));
   } catch (err) {
     next(err);

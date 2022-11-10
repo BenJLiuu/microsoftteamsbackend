@@ -21,6 +21,14 @@ export type IsPublic = boolean;
 export type Length = number;
 export type Time = number;
 export type MessageId = number;
+export type MessageData = {
+  messageId: MessageId,
+  uId: UId,
+  message: Message,
+  timeSent: Time,
+  // reacts: React[],
+  // isPinned: IsPinned
+}
 export type Messages = MessageData[];
 
 export type Channel = {
@@ -54,14 +62,6 @@ export type Dms = {
 export type React = number;
 export type IsPinned = boolean;
 export type SharedMessageId = number;
-export type MessageData = {
-  messageId: MessageId,
-  uId: UId,
-  message: Message,
-  timeSent: Time,
-  reacts: React[],
-  isPinned: IsPinned
-}
 export type Notification = {
   channelId: number,
   dmId: number,
