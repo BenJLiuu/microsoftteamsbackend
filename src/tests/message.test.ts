@@ -340,7 +340,7 @@ describe('requestMessageRemove', () => {
   });
 });
 
-
+/*
 // messageShare testing
 
 // error tests
@@ -466,7 +466,7 @@ describe('requestMessageShare', () => {
   });
   
 });
-
+*/
 // messageReact tests
 describe('requestMessageReact', () => {
   beforeEach(() => {
@@ -526,9 +526,9 @@ describe('requestMessageReact', () => {
   });
   
 });
-
-// messageReact tests
-describe('requestMessageReact', () => {
+/*
+// messageUnreact tests
+describe('requestMessageUnreact', () => {
   beforeEach(() => {
     requestClear();
   });
@@ -709,3 +709,4 @@ describe('messageUnpin', () => {
     expect(messageInfo.messages[0].isPinned).toStrictEqual(false);
   });
 });
+*/

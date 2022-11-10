@@ -172,8 +172,8 @@ export function messageRemoveV2(token: string, messageId: number): Empty {
   setData(data);
   return {};
 }
-
-export function messageShareV1(token: string, ogMessageId: number, message: string, channelId: number, dmId: number): sharedMessageId {
+/*
+export function messageShareV1(token: string, ogMessageId: number, message: string, channelId: number, dmId: number): SharedMessageIdObj {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
   if (channelId !== -1 && dmId !== -1) throw HTTPError(400, 'Can only share to one channel/dm');
   if (!validMessageId(ogMessageId)) throw HTTPError(400, 'Invalid message');
@@ -181,31 +181,50 @@ export function messageShareV1(token: string, ogMessageId: number, message: stri
 
   const data = getData();
   const uId = getUserIdFromToken(token);
-  let foundMessage = false;
+
   if (channelId !== -1) {
-    for (let i = 0; foundMessage === false; i++) {
-      if (data.channels[i].messages.find(message => message.messageId === ogMessageId)){
-        const sharedMessage = data.channels[i].messages.find(message => message.messageId === ogMessageId).message;
-        if (!userIsChannelMember(uId, channelId)) throw HTTPError(400, 'Not a member of the channel');
-        const sharedMessageId = messageSendV2(token, channelId, sharedMessage + message);
-        foundMessage = true;
-      }
-    }
+    const sharedMessage =  data.channels.find(channel => channel.messages.find(message => message.messageId === ogMessageId).message);
+    if (!userIsChannelMember(uId, channelId)) throw HTTPError(400, 'Not a member of the channel');
+    const sharedMessageId = messageSendV2(token, channelId, sharedMessage + message);
   } else if (dmId !== -1) {
-    for (let i = 0; foundMessage === false; i++) {
-      if (data.dms[i].messages.find(message => message.messageId === ogMessageId)){
-        const sharedMessage = data.dms[i].messages.find(message => message.messageId === ogMessageId).message;
-        if (!checkUserIdtoDm(uId, dmId)) throw HTTPError(400, 'Not a member of the channel');
-        const sharedMessageId = messageSendDmV2(token, dmId, sharedMessage + message);
-        foundMessage = true;
-      }
-    }
+    const sharedMessage =  data.dms.find(dm => dm.messages.find(message => message.messageId === ogMessageId).message);
+    if (!checkUserIdtoDm(uId, dmId)) throw HTTPError(400, 'Not a member of the channel');
+    const sharedMessageId = messageSendDmV2(token, dmId, sharedMessage + message);
   } else {
     throw HTTPError (400, 'error');
   }
   setData(data);
 
   return {
-    sharedMessageId: haredMessageId.messageId
+    sharedMessageId: sharedMessageId.messageId
   };
 }
+*/
+export function messageReactV1(token: string, messageId: number, reactId: number): Empty {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
+  if (!validMessageId(messageId)) throw HTTPError(400, 'Invalid message');
+  if (reactId !== 1) throw HTTPError(400, 'Invalid reactId');
+
+  const UserId = getUserIdFromToken(token);
+  const data = getData();
+
+  data.channels.find(channel => channel.messages.find(message => message.messageId === messageId).reacts.push(UserId));
+
+
+  return {};
+}
+/*
+export function messageUnreactV1(token: string, messageId: number, reactId: number): Empty {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
+  if (!validMessageId(messageId)) throw HTTPError(400, 'Invalid message');
+  if (reactId !== 1) throw HTTPError(400, 'Invalid reactId');
+  
+  const UserId = getUserIdFromToken(token);
+  const data = getData();
+
+  data.channels.find(channel => channel.messages.find(message => message.messageId === messageId).reacts.splice(UserId,1));
+
+
+  return {};
+}
+*/
