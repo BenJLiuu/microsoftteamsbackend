@@ -2,7 +2,7 @@ import {
   requestAuthRegister, requestDmMessages, requestMessageSendDm, requestMessageSend,
   requestClear, requestDmCreate, requestChannelsCreate, requestMessageEdit,
   requestMessageRemove, requestChannelMessages, requestMessageSendlater,
-  requestMessageSendlaterDm
+  requestMessageSendlaterDm, requestSearch
 } from './httpHelper';
 
 describe('messageSendDm Tests', () => {
@@ -498,6 +498,74 @@ describe('messageSendlaterDm Tests', () => {
       ],
       start: 0,
       end: -1,
+    });
+  });
+});
+
+describe('Search Tests', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('Message length is less than 1', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    expect(requestSearch(user1.token, '')).toEqual(400);
+  });
+
+  test('Message length is more than 1000', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const testString = 'a';
+    expect(requestSearch(user1.token, testString.repeat(1001))).toEqual(400);
+  });
+
+  test('Invalid token', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test message');
+    expect(requestSearch('Test', 'test')).toEqual(403);
+  });
+
+  test('Succesfully search message to channel', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'Test message channel');
+    expect(requestSearch(user1.token, 'test')).toEqual({
+      messages: [
+        {
+          messageId: message1.messageId,
+          uId: user1.authUserId,
+          message: 'Test message channel',
+          timeSent: expect.any(Number),
+        },
+      ]
+    });
+  });
+
+  test('Succesfully search message to dm', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId, user3.authUserId]);
+    const message1 = requestMessageSendDm(user1.token, dm1.dmId, 'tEst message dm');
+    expect(requestSearch(user1.token, 'teSt')).toEqual({
+      messages: [
+        {
+          messageId: message1.messageId,
+          uId: user1.authUserId,
+          message: 'tEst message dm',
+          timeSent: expect.any(Number),
+        },
+      ]
+    });
+  });
+
+  test('Succesfully search only messages in users channels', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const channel1 = requestChannelsCreate(user1.token, 'general', true);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test message');
+    expect(requestSearch(user2.token, 'test')).toEqual({
+      messages: []
     });
   });
 });

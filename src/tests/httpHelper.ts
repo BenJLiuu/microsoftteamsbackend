@@ -151,6 +151,10 @@ export function requestMessageSendlaterDm(token: string, dmId: number, message: 
   return requestHelper('POST', '/message/sendlaterdm/v1', { dmId, message, timeSent }, token);
 }
 
+export function requestSearch(token: string, queryStr: string) {
+  return requestHelper('GET', '/search/v1', { queryStr }, token);
+}
+
 // DM
 
 export function requestDmCreate(token: string, uIds: Array<number>) {

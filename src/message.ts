@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { Token, DmId, ChannelId, Message, Empty } from './interfaceTypes';
+import { Token, DmId, ChannelId, Message, Empty, Messages } from './interfaceTypes';
 import { MessageIdObj } from './internalTypes';
 import {
   validChannelId,
@@ -287,4 +287,19 @@ export function messageSendlaterDmV1(token: Token, dmId: DmId, message: Message,
   }
   const newMessage = messageSendDmV2(token, dmId, message);
   return { messageId: newMessage.messageId };
+}
+
+/**
+  * Takes in a query string and returns all messages containing the query.
+  *
+  * @param {string} token - Token of user sending the message.
+  * @param {string} queryStr - the query to be checked.
+  *
+  * @returns {Error} {error: 'Query contains too little characters.'} - Query has less than 1 character.
+  * @returns {Error} {error: 'Query contains too many characters.'} - Query has more than 1000 characters.
+  * @returns {Error} {error: 'Invalid Session.'} - Token does not correspond to an existing user.
+  * @returns {messages} Messages - array of all messages containing the query.
+*/
+export function searchV1(token: Token, queryStr: string): Messages {
+  return { messages: [] };
 }
