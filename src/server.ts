@@ -12,6 +12,7 @@ import { clearV1 } from './other';
 import { userProfileV3, usersAllV2, userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2, notificationsGetV1 } from './users';
 import { dmCreateV2, dmListV2, ddmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
 import { messageSendDmV2, messageSendV2, messageEditV2, messageRemoveV2 } from './message';
+import { standupStartV1, standupActiveV1, standupSendV1 } from './standup';
 
 // Set up web app
 const app = express();
