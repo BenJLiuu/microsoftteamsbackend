@@ -82,3 +82,7 @@ export type DMsObj = {
 export type NotificationsObj = {
   notifications: itf.Notifications,
 };
+
+export type messages = {
+  messages: itf.Messages,
+};

@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
-import { Token, DmId, ChannelId, Message, Empty, Messages } from './interfaceTypes';
-import { MessageIdObj } from './internalTypes';
+import { Token, DmId, ChannelId, Message, Empty } from './interfaceTypes';
+import { MessageIdObj, messages } from './internalTypes';
 import {
   validChannelId,
   validToken,
@@ -300,7 +300,7 @@ export function messageSendlaterDmV1(token: Token, dmId: DmId, message: Message,
   * @returns {Error} {error: 'Invalid Session.'} - Token does not correspond to an existing user.
   * @returns {messages} Messages - array of all messages containing the query.
 */
-export function searchV1(token: Token, queryStr: string): Messages {
+export function searchV1(token: Token, queryStr: string): messages {
   if (queryStr.length < 1) throw HTTPError(400, 'Query contains too little characters.');
   if (queryStr.length > 1000) throw HTTPError(400, 'Query contains too many characters.');
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session.');

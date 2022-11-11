@@ -519,9 +519,7 @@ describe('Search Tests', () => {
   });
 
   test('Invalid token', () => {
-    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    const channel1 = requestChannelsCreate(user1.token, 'general', true);
-    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test message');
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     expect(requestSearch('Test', 'test')).toEqual(403);
   });
 
@@ -563,7 +561,7 @@ describe('Search Tests', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const channel1 = requestChannelsCreate(user1.token, 'general', true);
-    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test message');
+    requestMessageSend(user1.token, channel1.channelId, 'test message');
     expect(requestSearch(user2.token, 'test')).toEqual({
       messages: []
     });
