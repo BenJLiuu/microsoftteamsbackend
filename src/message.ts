@@ -301,5 +301,41 @@ export function messageSendlaterDmV1(token: Token, dmId: DmId, message: Message,
   * @returns {messages} Messages - array of all messages containing the query.
 */
 export function searchV1(token: Token, queryStr: string): Messages {
-  return { messages: [] };
+  if (queryStr.length < 1) throw HTTPError(400, 'Query contains too little characters.');
+  if (queryStr.length > 1000) throw HTTPError(400, 'Query contains too many characters.');
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session.');
+  const authUserId = getUserIdFromToken(token);
+  const data = getData();
+  const channelsArray = [];
+  for (let i = 0; i < data.channels.length; i++) {
+    if (userIsChannelMember(authUserId, data.channels[i].channelId)) {
+      channelsArray.push(data.channels[i]);
+    }
+  }
+  const dmsArray = [];
+  for (let i = 0; i < data.dms.length; i++) {
+    if (checkUserIdtoDm(authUserId, data.dms[i].dmId)) {
+      dmsArray.push(data.dms[i]);
+    }
+  }
+
+  const messagesArray = [];
+  const query = queryStr.toLowerCase();
+  for (let i = 0; i < channelsArray.length; i++) {
+    for (let j = 0; j < channelsArray[i].messages.length; j++) {
+      const message = channelsArray[i].messages[j].message.toLowerCase();
+      if (message.includes(query)) {
+        messagesArray.push(channelsArray[i].messages[j]);
+      }
+    }
+  }
+  for (let i = 0; i < dmsArray.length; i++) {
+    for (let j = 0; j < dmsArray[i].messages.length; j++) {
+      const message = dmsArray[i].messages[j].message.toLowerCase();
+      if (message.includes(query)) {
+        messagesArray.push(dmsArray[i].messages[j]);
+      }
+    }
+  }
+  return { messages: messagesArray };
 }
