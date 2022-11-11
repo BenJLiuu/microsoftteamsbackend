@@ -21,6 +21,7 @@ export type PrivateChannel = {
   ownerMembers: itf.Users,
   allMembers: itf.Users,
   messages: itf.Messages,
+  standup: itf.Standup
 };
 
 export type PrivateDm = {
@@ -82,3 +83,8 @@ export type DMsObj = {
 export type NotificationsObj = {
   notifications: itf.Notifications,
 };
+
+export type ActiveStandupObj = {
+  isActive: itf.IsActive,
+  timeFinish: itf.TimeFinish
+}

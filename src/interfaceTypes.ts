@@ -72,3 +72,11 @@ export type tagInfo = {
 };
 
 export type ResetCode = string;
+export type IsActive = boolean;
+export type TimeFinish = number;
+
+export type Standup = {
+  isActive: boolean,
+  timeFinish: number,
+  standupMessage: string
+}
