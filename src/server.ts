@@ -340,6 +340,39 @@ app.get('/notifications/get/v1', (req: Request, res: Response, next) => {
   }
 });
 
+// STANDUP ROUTES
+
+app.post('/standup/start/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { channelId, length } = req.body;
+    res.json(standupStartV1(token, channelId, length));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/standup/active/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const channelId = req.query.channelId as string;
+    res.json(standupActiveV1(token, parseInt(channelId)));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('standup/send/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { channelId, message } = req.body;
+    res.json(standupSendV1(token, channelId, message));
+  } catch (err) {
+    next(err);
+  }
+});
+
+
 // OTHER ROUTES
 
 app.delete('/clear/v1', (req: Request, res: Response, next) => {
