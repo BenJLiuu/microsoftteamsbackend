@@ -81,3 +81,44 @@ describe('standupActiveV1 tests', () => {
     expect(requestStandupActive(user.token, channel.channelId)).toStrictEqual({ isActive: false, timeFinish: timeNow + 1 });
   });
 });
+
+describe('standupSendV1 tests', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('error: invalid token', () => {
+    const user = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
+    const channel = requestChannelsCreate(user.token, 'Example', true);
+    expect(requestStandupSend(user.token + 'x', channel.channelId, 'hello')).toEqual(403);
+  });
+  test('error: invalid channel', () => {
+    const user = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
+    const channel = requestChannelsCreate(user.token, 'Example', true);
+    expect(requestStandupSend(user.token, channel.channelId + 69, 'hello')).toEqual(400);
+  });
+  test('error: message is over 1000 characters', () => {
+    const user = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
+    const channel = requestChannelsCreate(user.token, 'Example', true);
+    requestStandupStart(user.token, channel.channelId, 1);
+    expect(requestStandupSend(user.token, channel.channelId, 'ernncggcenccinrnneiiergenrgincgnceegcrgegeicecccrneerecericgnigreincnncrrieicnecgnnergrginnrgciinreggcerrcnciccccrriigegigniniecgigiccgeegiiegicggergnenegeeigcgcrggigrnniiienccgrccgicriireeicerniecenicgrrinrcigneierneegncrrccggricerciecgeirgicrgnnirgcnegiecgeggreciegcrieiigrcgecrergngiirrcncneereinncrcerrcnerrgrcngegrgrrcrccieigeeceggerineiingreerginieircrirrrgrercgircnriggrinrrngeienccgieicnreccreningcnrerceiigeineenrrrerirrinininririecirrecigiiginrngiirrcrgcigggcrginiiigcngrrncinnrcrrcngrgninrrrncecngiriiccegirinnnggcnnceenigergceeengicncgggrgeccncireineenniciinengeigcegnigenrnncneececgngcggnrrieicrnnnrninenrrrececiecirnergrcigcreeennereeggggiicirerecgenenieeeciccrnneegcgnngcccgnrncecrgneggregrgencineiccngnineicgnnircigrrnggggrriiirreegreencgcceeigcgrgecnngineiiicrreernecngggeiireengreicciigircgincncceregniiecggreignncrgcrccginennggicncinccregierciinrcgicrrrcgnicgicinngiegrcnninrencrrreegggnerngeigrrceggreriecicrgeererinencingcgiengieggeigegenngiggrngerccgieccccigeggreccnigircrininrrreeei')).toEqual(400);
+  });
+  test('error: an active standup is not currently running in the channel', () => {
+    const user = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
+    const channel = requestChannelsCreate(user.token, 'Example', true);
+    expect(requestStandupSend(user.token, channel.channelId, 'hello')).toEqual(400);
+  });
+  test('error: channelId is valid and the authorised user is not a member of the channel', () => {
+    const user1 = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
+    const user2 = requestAuthRegister('creed@gmail.com', 'creed123', 'Creed', 'Bratton');
+    const channel = requestChannelsCreate(user1.token, 'Example', true);
+    requestStandupStart(user1.token, channel.channelId, 1);
+    expect(requestStandupSend(user2.token, channel.channelId, 'fail')).toEqual(403);
+  });
+  test('success', () => {
+    const user = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
+    const channel = requestChannelsCreate(user.token, 'Example', true);
+    requestStandupStart(user1.token, channel.channelId, 1);
+    expect(requestStandupSend(user.token, channel.channelId, 'yay')).toStrictEqual({});
+  });
+});
