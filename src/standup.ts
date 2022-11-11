@@ -54,9 +54,10 @@ export function standupSendV1(token: Token, channelId: ChannelId, message: Messa
   const userUId = getUserIdFromToken(token);
   const user = data.users.find(currentUser => currentUser.uId === userUId);
   const oneStandupMessage = String(user.handleStr + ': ' + message + '\n');
-  data.channels[channelIndex].channel.standup.standupMessage = data.channels[channelIndex].channel.standup.standupMessage + oneStandupMessage;
+  data.channels[channelIndex].standup.standupMessage = data.channels[channelIndex].standup.standupMessage + oneStandupMessage;
   setData(data);
   return {};
 }
+
 
 
