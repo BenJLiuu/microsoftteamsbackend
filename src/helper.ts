@@ -505,6 +505,8 @@ export function endStandup(token: Token, channelId: ChannelId): Empty {
       uId: getUserIdFromToken(token),
       message: standupMessage,
       timeSent: Date.now(),
+      // ADD reacts
+      // ADD pinned
     });
   }
   data.channels[standupChannelIndex].activeStandup = false;

@@ -15,7 +15,7 @@ export function standupStartV1(token: Token, channelId: ChannelId, length: Lengt
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session.');
   if (!validChannelId(channelId)) throw HTTPError(400, 'Invalid Channel.');
   if (length < 0) throw HTTPError(400, 'Length must be greater than 0 seconds');
-  if (getChannelFromChannelId(channelId).activeStandup === true) throw HTTPError(400, 'An active standup is already running.'); // update types
+  if (getChannelFromChannelId(channelId).activeStandup === true) throw HTTPError(400, 'An active standup is already running.');
   if (validChannelId(channelId) && !userIsChannelMember(getUserIdFromToken(token), channelId)) throw HTTPError(403, 'User is not a member of the channel.');
 
   const data = getData();
@@ -26,7 +26,7 @@ export function standupStartV1(token: Token, channelId: ChannelId, length: Lengt
   data.channels[channelIndex].standupTimeFinish = newTimeFinish;
   setTimeout(function() {
     endStandup(token, channelId);
-  }, lengthInMs); // maybe instead try to use MessageSendLater jk
+  }, lengthInMs);
   setData(data);
   return { timeFinish: newTimeFinish };
 }
