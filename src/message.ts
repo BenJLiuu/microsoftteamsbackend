@@ -49,7 +49,7 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
     timeSent: Date.now(),
   });
 
-  const usersTagged = checkTag(message);
+  const usersTagged = checkTag(message, -1, dmId);
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
   const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
   if (usersTagged.amountTagged !== 0) {
@@ -102,7 +102,7 @@ export function messageSendV2(token: Token, channelId: ChannelId, message: Messa
     timeSent: Date.now(),
   });
 
-  const usersTagged = checkTag(message);
+  const usersTagged = checkTag(message, channelId, -1);
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
   if (usersTagged.amountTagged !== 0) {
@@ -164,7 +164,12 @@ export function messageEditV2(token: string, messageId: number, message: string)
   }
 
   if (message !== '') {
-    const usersTagged = checkTag(message);
+    let usersTagged = { amountTagged: 0, membersTagged: [0] };
+    if (isChannel === -1) {
+      usersTagged = checkTag(message, -1, data.dms[isDm].dmId);
+    } else {
+      usersTagged = checkTag(message, data.channels[isChannel].channelId, -1);
+    }
     let notification = { channelId: 0, dmId: 0, notificationMessage: '' };
     const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
     if (usersTagged.amountTagged !== 0) {
