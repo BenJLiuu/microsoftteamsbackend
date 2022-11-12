@@ -6,8 +6,8 @@ W13A_AERO
 
 | Team Member | Contributions                                                |
 | ----------- | ------------------------------------------------------------ |
-| Mitchell    | `auth/register`, `auth/logout`, `channel/details`, `channel/messages`, `dm/details`, `dm/remove`, `dm/messages`<br />server + conversion of all iter1 code to HTTP<br />TS (with Jay)<br />frontend testing (with Jay) |
-| Jayden      | `auth/login`, `channels/create`, `user/profile`, `users/all`<br />persistence<br />linting<br />TS (with Mitch)<br />frontend testing (with Mitch)<br />issue board management |
+| Mitchell    | `auth/register`, `auth/logout`, `channel/details`, `channel/messages`, `dm/details`, `dm/remove`, `dm/messages`<br />server + conversion of all iter1 code to HTTP<br />persistence<br />TS (with Jay)<br />frontend testing (with Jay) |
+| Jayden      | `auth/login`, `channels/create`, `user/profile`, `users/all`<br />linting<br />issue board management<br />TS (with Mitch)<br />frontend testing (with Mitch) |
 | Cedric      | `channel/invite`, `channel/join`, `dm/create`, `dm/list`, `dm/leave`, `message/edit`, `message/remove` |
 | Vidit       | `user/*`,`channels/list`, `channels/listall`   |
 | Ben         | `channel/leave`, `channel/addowner`, `channel/removeowner`, `message/send`, `message/senddm` |
@@ -184,7 +184,7 @@ Extra
     *   typically, if implementation code has no tests that cover it, we can/should assume that that code does not work
 *   `message/remove`: tests and implementation committed in separate commits but at the same time
 *   `message/send` and `message/senddm`: only error tests committed before full implementation, meaning limited confidence in the routes' ability to correctly handle valid behaviour at the time of the implementation commit
-*   `channel/leave`, `channel/addowner`, `channel/removeowner`: similar to above, only error tests committed before full implementation; success case tests not committed until later
+*   `channel/leave`, `channel/addowner`, `channel/removeowner`: similar to above, only error tests committed before full implementation; success case tests not committed until several days later
 
 ### Task Board  
 
