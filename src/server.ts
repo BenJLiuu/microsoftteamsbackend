@@ -363,7 +363,7 @@ app.get('/standup/active/v1', (req: Request, res: Response, next) => {
   }
 });
 
-app.post('standup/send/v1', (req: Request, res: Response, next) => {
+app.post('/standup/send/v1', (req: Request, res: Response, next) => {
   try {
     const token = req.header('token') as string;
     const { channelId, message } = req.body;
@@ -372,7 +372,6 @@ app.post('standup/send/v1', (req: Request, res: Response, next) => {
     next(err);
   }
 });
-
 
 // OTHER ROUTES
 

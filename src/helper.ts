@@ -5,7 +5,7 @@ import {
   ChannelId, DmId, MessageId,
   User, HandleStr, Name, tagInfo,
 } from './interfaceTypes';
-import { PrivateUser, Session } from './internalTypes';
+import { PrivateUser, Session, PrivateChannel } from './internalTypes';
 
 /**
  * Checks whether a uId exists in the database
@@ -413,7 +413,7 @@ export function validMessageId(messageId : number) : boolean {
  *
  * @returns boolean - whether the user has owner permissions or not
  */
-export function checkChannelOwner(authUserId: number, channelId: number) {
+export function checkChannelOwner(authUserId: number, channelId: number): boolean {
   const data = getData();
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
   for (let i = 0; i < data.channels[channelIndex].ownerMembers.length; i++) {
@@ -482,4 +482,34 @@ export function checkTag(message: string): tagInfo {
  */
 export function validResetCode(resetCode: string): boolean {
   return getData().users.some(user => user.resetCode === resetCode);
+}
+
+export function getChannelFromChannelId(channelId: ChannelId): PrivateChannel {
+  const data = getData();
+  const channel = data.channels.find(x => x.channelId === channelId);
+  return channel;
+}
+
+// Then, at the end of the standup, all buffered messages are packaged into one message,
+// and this packaged message is sent to the channel from the user who started the standup: see section 6.13. for more details.
+// If no standup messages are sent during the standup, no message should be sent at the end.
+export function endStandup(token: Token, channelId: ChannelId): Empty {
+  const data = getData();
+  const standupChannelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  const standupMessage = data.channels[standupChannelIndex].standupMessage.replace(/\n$/, ''); // removes last newline
+  // basically messageSendV2(token, channelId, message) WITHOUT NOTIFICATIONS
+  const standupMessageId = generateMessageId().messageId;
+  if (data.channels[standupChannelIndex].standupMessage !== '') {
+    data.channels.find(channel => channel.channelId === channelId).messages.push({
+      messageId: standupMessageId,
+      uId: getUserIdFromToken(token),
+      message: standupMessage,
+      timeSent: Date.now(),
+    });
+  }
+  data.channels[standupChannelIndex].activeStandup = false;
+  data.channels[standupChannelIndex].standupTimeFinish = null;
+  data.channels[standupChannelIndex].standupMessage = '';
+  setData(data);
+  return {};
 }
