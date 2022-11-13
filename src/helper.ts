@@ -4,7 +4,7 @@ import {
   UId, Token,
   ChannelId, DmId, MessageId,
   User, HandleStr, Name,
-  Password, Email
+  Password
 } from './interfaceTypes';
 import { PrivateUser, Session, HashedPassword } from './internalTypes';
 
@@ -46,7 +46,7 @@ export function validToken(token: Token): boolean {
 
 /**
  * Checks whether a password is valid
- * 
+ *
  * @param {Password} password - password to check
  * @returns {boolean} Boolean of whether the password is valid
  */
