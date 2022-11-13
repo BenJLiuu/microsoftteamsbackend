@@ -6,7 +6,7 @@ import {
   User, HandleStr, Name,
   Password, Email
 } from './interfaceTypes';
-import { PrivateUser, Session } from './internalTypes';
+import { PrivateUser, Session, HashedPassword } from './internalTypes';
 
 /**
  * Checks whether a uId exists in the database
@@ -50,10 +50,9 @@ export function validToken(token: Token): boolean {
  * @param {Password} password - password to check
  * @returns {boolean} Boolean of whether the password is valid
  */
-export function validPassword(intendedUser: PrivateUser, password: Password): boolean {
-  const data = getData();
-  const hashedPassword = hashCode(password + 'secret');
-  if (intendedUser.passwordHash === hashedPassword) {
+export function validPassword(storedPassword: HashedPassword, attemptedPassword: Password): boolean {
+  const hashedAttempt = hashCode(attemptedPassword + 'secret');
+  if (storedPassword === hashedAttempt) {
     return true;
   } else return false;
 }

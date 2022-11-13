@@ -19,11 +19,11 @@ import { generateUId, generateSession, generateHandleStr, hashCode, validToken, 
 export function authLoginV3(email: Email, password: Password): Session {
   const data = getData();
   const intendedUser = data.users.find(u => u.email === email);
-  if (validPassword(intendedUser, password)) return generateSession(intendedUser.uId);
-  else throw HTTPError(400, 'Incorrect Password.');
-
   // If nothing has been returned, user has not been found.
-  throw HTTPError(400, 'Email Not Found.');
+  if (!intendedUser) throw HTTPError(400, 'Email Not Found.');
+
+  if (validPassword(intendedUser.passwordHash, password)) return generateSession(intendedUser.uId);
+  else throw HTTPError(400, 'Incorrect Password.');
 }
 
 /**
