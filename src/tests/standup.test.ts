@@ -5,10 +5,11 @@ import {
   requestChannelsCreate,
   requestStandupStart,
   requestStandupActive,
-  requestStandupSend
+  requestStandupSend,
+  requestChannelMessages
 } from './httpHelper';
 
-describe('standupSendV1 tests', () => {
+describe('standupStartV1 tests', () => {
   beforeEach(() => {
     requestClear();
   });
@@ -71,22 +72,39 @@ describe('standupActiveV1 tests', () => {
     const channel = requestChannelsCreate(user1.token, 'Example', true);
     expect(requestStandupActive(user2.token, channel.channelId)).toEqual(403);
   });
-}); // temp
-/*
-  test('success: no standup is active', () => {
+
+  test('successful call - active standup', () => {
+    const expectedTimeFinish = Math.floor(Date.now() / 1000) + 90;
     const user = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
     const channel = requestChannelsCreate(user.token, 'Example', true);
-    expect(requestStandupActive(user.token, channel.channelId)).toStrictEqual({ isActive: false, timeFinish: null });
+    requestStandupStart(user.token, channel.channelId, 90);
+
+    const standup = requestStandupActive(user.token, channel.channelId);
+    expect(standup).toEqual({
+      isActive: true,
+      timeFinish: expect.any(Number)
+    });
+
+    expect(
+      standup.timeFinish >= expectedTimeFinish &&
+      standup.timeFinish <= expectedTimeFinish + 1
+    ).toEqual(true);
   });
-  test('success: standup is active', () => {
+
+  test('successful call - inactive standup', () => {
+    const expectedTimeFinish = Math.floor(Date.now() / 1000) + 90;
     const user = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
     const channel = requestChannelsCreate(user.token, 'Example', true);
-    const timeNow = (Math.floor((new Date()).getTime() / 1000));
-    requestStandupStart(user.token, channel.channelId, 0.1);
-    expect(requestStandupActive(user.token, channel.channelId)).toStrictEqual({ isActive: false, timeFinish: timeNow + 0.1 });
+
+    const standup = requestStandupActive(user.token, channel.channelId);
+    expect(standup).toEqual({
+      isActive: false,
+      timeFinish: null
+    });
   });
-});
-*/
+
+}); 
+
 describe('standupSendV1 tests', () => {
   beforeEach(() => {
     requestClear();
@@ -120,13 +138,24 @@ describe('standupSendV1 tests', () => {
     requestStandupStart(user1.token, channel.channelId, 0.1);
     expect(requestStandupSend(user2.token, channel.channelId, 'fail')).toEqual(403);
   });
-}); // temp
-/*
-  test('success', () => {
+
+  test('successful call - active standup', () => {
+    const expectedTimeFinish = Math.floor(Date.now() / 1000) + 90;
     const user = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
     const channel = requestChannelsCreate(user.token, 'Example', true);
     requestStandupStart(user.token, channel.channelId, 0.1);
-    expect(requestStandupSend(user.token, channel.channelId, 'yay')).toStrictEqual({});
+
+    const message1 = requestStandupSend(user.token, channel.channelId, 'hello1');
+    const message2 = requestStandupSend(user.token, channel.channelId, 'hello2');
+    const message3 = requestStandupSend(user.token, channel.channelId, 'hello3');
+    const message4 = requestStandupSend(user.token, channel.channelId, 'hello4');
+
+    setTimeout(() => {
+      expect(requestChannelMessages(user.token, channel.token, 0)).toEqual({
+        messages: ['[kevinmalone]: hello1 \n [kevinmalone]: hello2 \n [kevinmalone]: hello3 \n [kevinmalone]: hello4'],
+        start: 0,
+        end: 1
+      })
+    }, 7000);
   });
-});
-*/
+}); 
