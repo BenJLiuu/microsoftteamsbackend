@@ -41,6 +41,14 @@ export function requestAuthLogout(token: string) {
   return requestHelper('POST', '/auth/logout/v2', {}, token);
 }
 
+export function requestAuthPasswordResetRequest(email: string) {
+  return requestHelper('POST', '/auth/passwordreset/request/v1', { email });
+}
+
+export function requestAuthPasswordResetReset(resetCode: string, newPassword: string) {
+  return requestHelper('POST', '/auth/passwordreset/reset/v1', { resetCode, newPassword });
+}
+
 // OTHER
 
 export function requestClear() {
@@ -67,6 +75,10 @@ export function requestUserProfileSetEmail(token: string, email: string) {
 
 export function requestUserProfileSetHandle(token: string, handleStr: string) {
   return requestHelper('PUT', '/user/profile/sethandle/v2', { handleStr }, token);
+}
+
+export function requestNotificationsGet(token: string) {
+  return requestHelper('GET', '/notifications/get/v1', {}, token);
 }
 
 // CHANNELS
@@ -129,6 +141,18 @@ export function requestMessageEdit(token: string, messageId: number, message: st
 
 export function requestMessageRemove(token: string, messageId: number) {
   return requestHelper('DELETE', '/message/remove/v2', { messageId }, token);
+}
+
+export function requestMessageSendlater(token: string, channelId: number, message: string, timeSent: number) {
+  return requestHelper('POST', '/message/sendlater/v1', { channelId, message, timeSent }, token);
+}
+
+export function requestMessageSendlaterDm(token: string, dmId: number, message: string, timeSent: number) {
+  return requestHelper('POST', '/message/sendlaterdm/v1', { dmId, message, timeSent }, token);
+}
+
+export function requestSearch(token: string, queryStr: string) {
+  return requestHelper('GET', '/search/v1', { queryStr }, token);
 }
 
 // DM

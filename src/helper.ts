@@ -4,7 +4,7 @@ import {
   UId, Token,
   ChannelId, DmId, MessageId,
   User, HandleStr, Name,
-  Password
+  Password, tagInfo
 } from './interfaceTypes';
 import { PrivateUser, Session, HashedPassword } from './internalTypes';
 
@@ -436,4 +436,86 @@ export function checkChannelOwner(authUserId: number, channelId: number) {
     }
   }
   return false;
+}
+
+export function getUserFromEmail(email: string): User {
+  const data = getData();
+  const userObject = data.users.find((userEmail) => userEmail.email === email);
+  return userObject;
+}
+
+/**
+ * Checks a message for any users tagged
+ *
+ * @param message - the message to check
+ *
+ * @returns tagInfo - object containing number of tags and users tagged
+ */
+export function checkTag(message: string, channelId: number, dmId: number): tagInfo {
+  function checkAlreadyTagged(uId: UId, taggedUsers: UId[]): boolean {
+    return taggedUsers.includes(uId);
+  }
+  const data = getData();
+  let channelIndex = 0;
+  let dmIndex = 0;
+  let isDm = false;
+  if (channelId === -1) {
+    dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
+    isDm = true;
+  } else {
+    channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  }
+  let newMessage = message;
+  const usersTagged: string[] = [];
+  let tagCount = 0;
+
+  for (let i = 0; i < message.length; i++) {
+    if (message[i] === '@') {
+      tagCount += 1;
+    }
+  }
+  if (tagCount === 0) {
+    return {
+      amountTagged: 0,
+      membersTagged: [],
+    };
+  } else {
+    let verifiedTagCount = 0;
+    const verifiedTaggedUsers = [];
+    for (let i = 0; i < tagCount; i++) {
+      newMessage = newMessage.substring(newMessage.indexOf('@') + 1);
+      const filterTag = newMessage.split(' ');
+      usersTagged.push(filterTag[0]);
+    }
+    for (let i = 0; i < usersTagged.length; i++) {
+      if (data.users.some(user => user.handleStr === usersTagged[i])) {
+        const userIndex = data.users.findIndex(user => user.handleStr === usersTagged[i]);
+        if (isDm) {
+          if (checkUserIdtoDm(data.users[userIndex].uId, data.dms[dmIndex].dmId) && !checkAlreadyTagged(data.users[userIndex].uId, verifiedTaggedUsers)) {
+            verifiedTagCount += 1;
+            verifiedTaggedUsers.push(data.users[userIndex].uId);
+          }
+        } else {
+          if (userIsChannelMember(data.users[userIndex].uId, data.channels[channelIndex].channelId) && !checkAlreadyTagged(data.users[userIndex].uId, verifiedTaggedUsers)) {
+            verifiedTagCount += 1;
+            verifiedTaggedUsers.push(data.users[userIndex].uId);
+          }
+        }
+      }
+    }
+    return {
+      amountTagged: verifiedTagCount,
+      membersTagged: verifiedTaggedUsers,
+    };
+  }
+}
+
+/**
+ * Checks if resetCode exists in data
+ *
+ * @param {string} resetCode - a resetCode emailed to the user
+ * @returns {boolean} - true/false whether resetCode is valid/exists
+ */
+export function validResetCode(resetCode: string): boolean {
+  return getData().users.some(user => user.resetCode === resetCode);
 }

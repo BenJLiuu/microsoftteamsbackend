@@ -44,6 +44,7 @@ export type User = {
   nameLast: Name,
   email: Email,
   handleStr: HandleStr,
+  resetCode?: string,
 };
 export type Users = User[];
 
@@ -57,3 +58,17 @@ export type Dms = {
 }[];
 
 // ITERATION 3 TYPES
+
+export type Notification = {
+  channelId: number,
+  dmId: number,
+  notificationMessage: string,
+};
+export type Notifications = Notification[];
+
+export type tagInfo = {
+  amountTagged: number,
+  membersTagged: UId[],
+};
+
+export type ResetCode = string;

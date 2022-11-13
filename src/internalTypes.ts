@@ -11,6 +11,8 @@ export type PrivateUser = {
   handleStr: itf.HandleStr,
   passwordHash: HashedPassword,
   globalPermissions: number,
+  notifications: itf.Notifications,
+  resetCode: string
 };
 
 export type PrivateChannel = {
@@ -77,3 +79,11 @@ export type MessageIdObj = {
 export type DMsObj = {
   dms: itf.Dms,
 }
+
+export type NotificationsObj = {
+  notifications: itf.Notifications,
+};
+
+export type messages = {
+  messages: itf.Messages,
+};

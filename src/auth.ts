@@ -1,9 +1,13 @@
 import { getData, setData } from './dataStore';
-import { Empty, Email, Password, Name, Token } from './interfaceTypes';
+import { Empty, Email, Password, Name, Token, ResetCode } from './interfaceTypes';
 import { Session } from './internalTypes';
 import HTTPError from 'http-errors';
 import validator from 'validator';
 import { generateUId, generateSession, generateHandleStr, hashCode, validToken, validPassword } from './helper';
+import { generateUId, generateSession, generateHandleStr, 
+         hashCode, validToken, getUserFromEmail, 
+         validResetCode, validPassword
+} from './helper';
 
 /**
   * Logs in a user and returns their user Id.
@@ -69,6 +73,8 @@ export function authRegisterV3(email: Email, password: Password, nameFirst: Name
     passwordHash: hashCode(password + 'secret'),
     // 1 if first UId made, 2 otherwise.
     globalPermissions: newUId === 0 ? 1 : 2,
+    notifications: [],
+    resetCode: '',
   });
 
   setData(data);
@@ -90,6 +96,74 @@ export function authLogoutV2(token: Token): Empty {
   const sessionIndex = data.sessions.findIndex(s => s.token === hashedToken);
   data.sessions.splice(sessionIndex, 1);
 
+  setData(data);
+  return {};
+}
+
+/**
+  * Given an email address, if the email address belongs to a registered user, sends them an email containing a secret password reset code.
+  * Logs a user out of all current sessions when they request a password reset.
+  *
+  * @param {Email} email - email to send the reset code to
+  *
+  * @returns {Empty} {} - in all cases.
+*/
+export function authPasswordResetRequestV1(email: Email): Empty {
+  if (!validator.isEmail(email)) return {};
+  const data = getData();
+  if (!data.users.find((e) => e.email === email)) return {};
+  const resetCode = String(Math.floor(100000 + Math.random() * 900000));
+  const nodemailer = require('nodemailer');
+  const transporter = nodemailer.createTransport({
+    service: 'outlook',
+    auth: {
+      user: 'beansreset@outlook.com',
+      pass: 'aero123!'
+    }
+  });
+  const mailOptions = {
+    from: 'beansreset@outlook.com',
+    to: email,
+    subject: 'Reset your password!',
+    text: resetCode,
+  };
+  transporter.sendMail(mailOptions, function(error: any, info: any) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+
+  const user = getUserFromEmail(email);
+  const uId = user.uId;
+  user.resetCode = resetCode;
+  // logs out user from all sessions
+  for (let i = data.sessions.length - 1; i >= 0; --i) {
+    if (data.sessions[i].authUserId === uId) {
+      data.sessions.splice(i, 1);
+    }
+  }
+  setData(data);
+  return {};
+}
+
+/**
+ * Given a reset code for a user, sets that user's new password to the password provided.
+ * Once a reset code has been used, it is then invalidated.
+ *
+ * @param {ResetCode} resetCode - reset code that user received in email
+ * @param {Password} newPassword - new password that user wishes to use
+ * @returns {Empty} {} - if no error
+ * @throws 400 Error - if resetCode is invalid or password is too short
+ */
+export function authPasswordResetResetV1(resetCode: ResetCode, newPassword: Password): Empty {
+  if (newPassword.length < 6) throw HTTPError(400, 'New password is too short');
+  if (!validResetCode(resetCode)) throw HTTPError(400, 'Invalid Reset Code.');
+  const data = getData();
+  const user = data.users.find(user => user.resetCode === resetCode);
+  user.passwordHash = newPassword;
+  user.resetCode = '';
   setData(data);
   return {};
 }
