@@ -4,6 +4,7 @@ import {
   UId, Token,
   ChannelId, DmId, MessageId,
   User, HandleStr, Name,
+  Password, Email
 } from './interfaceTypes';
 import { PrivateUser, Session } from './internalTypes';
 
@@ -39,6 +40,20 @@ export function validToken(token: Token): boolean {
   const data = getData();
   const hashedToken = hashCode(token + 'secret');
   if (data.sessions.some(t => t.token === hashedToken)) {
+    return true;
+  } else return false;
+}
+
+/**
+ * Checks whether a password is valid
+ * 
+ * @param {Password} password - password to check
+ * @returns {boolean} Boolean of whether the password is valid
+ */
+export function validPassword(intendedUser: PrivateUser, password: Password): boolean {
+  const data = getData();
+  const hashedPassword = hashCode(password + 'secret');
+  if (intendedUser.passwordHash === hashedPassword) {
     return true;
   } else return false;
 }

@@ -3,7 +3,7 @@ import { Empty, Email, Password, Name, Token } from './interfaceTypes';
 import { Session } from './internalTypes';
 import HTTPError from 'http-errors';
 import validator from 'validator';
-import { generateUId, generateSession, generateHandleStr, hashCode, validToken } from './helper';
+import { generateUId, generateSession, generateHandleStr, hashCode, validToken, validPassword } from './helper';
 
 /**
   * Logs in a user and returns their user Id.
@@ -18,13 +18,9 @@ import { generateUId, generateSession, generateHandleStr, hashCode, validToken }
 */
 export function authLoginV3(email: Email, password: Password): Session {
   const data = getData();
-  for (const user of data.users) {
-    if (user.email === email) {
-      // Found an email match
-      if (user.passwordHash === password) return generateSession(user.uId);
-      else throw HTTPError(400, 'Incorrect Password.');
-    }
-  }
+  const intendedUser = data.users.find(u => u.email === email);
+  if (validPassword(intendedUser, password)) return generateSession(intendedUser.uId);
+  else throw HTTPError(400, 'Incorrect Password.');
 
   // If nothing has been returned, user has not been found.
   throw HTTPError(400, 'Email Not Found.');
@@ -70,7 +66,7 @@ export function authRegisterV3(email: Email, password: Password, nameFirst: Name
     nameLast: nameLast,
     email: email,
     handleStr: handleStr,
-    passwordHash: password,
+    passwordHash: hashCode(password + 'secret'),
     // 1 if first UId made, 2 otherwise.
     globalPermissions: newUId === 0 ? 1 : 2,
   });
