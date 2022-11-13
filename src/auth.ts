@@ -162,7 +162,7 @@ export function authPasswordResetResetV1(resetCode: ResetCode, newPassword: Pass
   if (!validResetCode(resetCode)) throw HTTPError(400, 'Invalid Reset Code.');
   const data = getData();
   const user = data.users.find(user => user.resetCode === resetCode);
-  user.passwordHash = newPassword;
+  user.passwordHash = hashCode(newPassword + 'secret');
   user.resetCode = '';
   setData(data);
   return {};
