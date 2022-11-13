@@ -3,10 +3,10 @@ import { Empty, Email, Password, Name, Token, ResetCode } from './interfaceTypes
 import { Session } from './internalTypes';
 import HTTPError from 'http-errors';
 import validator from 'validator';
-import { generateUId, generateSession, generateHandleStr, hashCode, validToken, validPassword } from './helper';
-import { generateUId, generateSession, generateHandleStr, 
-         hashCode, validToken, getUserFromEmail, 
-         validResetCode, validPassword
+import {
+  generateUId, generateSession, generateHandleStr,
+  hashCode, validToken, getUserFromEmail,
+  validResetCode, validPassword
 } from './helper';
 
 /**
