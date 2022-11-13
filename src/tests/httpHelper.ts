@@ -143,6 +143,18 @@ export function requestMessageRemove(token: string, messageId: number) {
   return requestHelper('DELETE', '/message/remove/v2', { messageId }, token);
 }
 
+export function requestMessageSendlater(token: string, channelId: number, message: string, timeSent: number) {
+  return requestHelper('POST', '/message/sendlater/v1', { channelId, message, timeSent }, token);
+}
+
+export function requestMessageSendlaterDm(token: string, dmId: number, message: string, timeSent: number) {
+  return requestHelper('POST', '/message/sendlaterdm/v1', { dmId, message, timeSent }, token);
+}
+
+export function requestSearch(token: string, queryStr: string) {
+  return requestHelper('GET', '/search/v1', { queryStr }, token);
+}
+
 // DM
 
 export function requestDmCreate(token: string, uIds: Array<number>) {

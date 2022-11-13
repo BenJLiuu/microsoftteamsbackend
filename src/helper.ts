@@ -429,6 +429,7 @@ export function getUserFromEmail(email: string): User {
   const userObject = data.users.find((userEmail) => userEmail.email === email);
   return userObject;
 }
+
 /**
  * Checks a message for any users tagged
  *
@@ -436,8 +437,20 @@ export function getUserFromEmail(email: string): User {
  *
  * @returns tagInfo - object containing number of tags and users tagged
  */
-export function checkTag(message: string): tagInfo {
+export function checkTag(message: string, channelId: number, dmId: number): tagInfo {
+  function checkAlreadyTagged(uId: UId, taggedUsers: UId[]): boolean {
+    return taggedUsers.includes(uId);
+  }
   const data = getData();
+  let channelIndex = 0;
+  let dmIndex = 0;
+  let isDm = false;
+  if (channelId === -1) {
+    dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
+    isDm = true;
+  } else {
+    channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  }
   let newMessage = message;
   const usersTagged: string[] = [];
   let tagCount = 0;
@@ -463,8 +476,17 @@ export function checkTag(message: string): tagInfo {
     for (let i = 0; i < usersTagged.length; i++) {
       if (data.users.some(user => user.handleStr === usersTagged[i])) {
         const userIndex = data.users.findIndex(user => user.handleStr === usersTagged[i]);
-        verifiedTagCount += 1;
-        verifiedTaggedUsers.push(data.users[userIndex].uId);
+        if (isDm) {
+          if (checkUserIdtoDm(data.users[userIndex].uId, data.dms[dmIndex].dmId) && !checkAlreadyTagged(data.users[userIndex].uId, verifiedTaggedUsers)) {
+            verifiedTagCount += 1;
+            verifiedTaggedUsers.push(data.users[userIndex].uId);
+          }
+        } else {
+          if (userIsChannelMember(data.users[userIndex].uId, data.channels[channelIndex].channelId) && !checkAlreadyTagged(data.users[userIndex].uId, verifiedTaggedUsers)) {
+            verifiedTagCount += 1;
+            verifiedTaggedUsers.push(data.users[userIndex].uId);
+          }
+        }
       }
     }
     return {
