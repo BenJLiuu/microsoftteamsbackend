@@ -4,10 +4,9 @@ import {
   UId, Token,
   ChannelId, DmId, MessageId,
   User, HandleStr, Name, tagInfo,
-  Message
+  Password
 } from './interfaceTypes';
-import { PrivateUser, Session, PrivateChannel } from './internalTypes';
-import HTTPError from 'http-errors';
+import { PrivateUser, Session, PrivateChannel, HashedPassword } from './internalTypes';
 
 /**
  * Checks whether a uId exists in the database
@@ -41,6 +40,19 @@ export function validToken(token: Token): boolean {
   const data = getData();
   const hashedToken = hashCode(token + 'secret');
   if (data.sessions.some(t => t.token === hashedToken)) {
+    return true;
+  } else return false;
+}
+
+/**
+ * Checks whether a password is valid
+ *
+ * @param {Password} password - password to check
+ * @returns {boolean} Boolean of whether the password is valid
+ */
+export function validPassword(storedPassword: HashedPassword, attemptedPassword: Password): boolean {
+  const hashedAttempt = hashCode(attemptedPassword + 'secret');
+  if (storedPassword === hashedAttempt) {
     return true;
   } else return false;
 }
@@ -431,6 +443,7 @@ export function getUserFromEmail(email: string): User {
   const userObject = data.users.find((userEmail) => userEmail.email === email);
   return userObject;
 }
+
 /**
  * Checks a message for any users tagged
  *
@@ -438,8 +451,20 @@ export function getUserFromEmail(email: string): User {
  *
  * @returns tagInfo - object containing number of tags and users tagged
  */
-export function checkTag(message: string): tagInfo {
+export function checkTag(message: string, channelId: number, dmId: number): tagInfo {
+  function checkAlreadyTagged(uId: UId, taggedUsers: UId[]): boolean {
+    return taggedUsers.includes(uId);
+  }
   const data = getData();
+  let channelIndex = 0;
+  let dmIndex = 0;
+  let isDm = false;
+  if (channelId === -1) {
+    dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
+    isDm = true;
+  } else {
+    channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  }
   let newMessage = message;
   const usersTagged: string[] = [];
   let tagCount = 0;
@@ -465,8 +490,17 @@ export function checkTag(message: string): tagInfo {
     for (let i = 0; i < usersTagged.length; i++) {
       if (data.users.some(user => user.handleStr === usersTagged[i])) {
         const userIndex = data.users.findIndex(user => user.handleStr === usersTagged[i]);
-        verifiedTagCount += 1;
-        verifiedTaggedUsers.push(data.users[userIndex].uId);
+        if (isDm) {
+          if (checkUserIdtoDm(data.users[userIndex].uId, data.dms[dmIndex].dmId) && !checkAlreadyTagged(data.users[userIndex].uId, verifiedTaggedUsers)) {
+            verifiedTagCount += 1;
+            verifiedTaggedUsers.push(data.users[userIndex].uId);
+          }
+        } else {
+          if (userIsChannelMember(data.users[userIndex].uId, data.channels[channelIndex].channelId) && !checkAlreadyTagged(data.users[userIndex].uId, verifiedTaggedUsers)) {
+            verifiedTagCount += 1;
+            verifiedTaggedUsers.push(data.users[userIndex].uId);
+          }
+        }
       }
     }
     return {
@@ -497,12 +531,12 @@ export function getChannelFromChannelId(channelId: ChannelId): PrivateChannel {
 // If no standup messages are sent during the standup, no message should be sent at the end.
 export function endStandup(token: Token, channelId: ChannelId): Empty {
   const data = getData();
-  const standupChannel = data.channels.findIndex(c => c.channelId === channelId);
+  const standupChannelIndex = data.channels.findIndex(c => c.channelId === channelId);
   if (!data.channels[standupChannelIndex]) return {};
   const standupMessage = data.channels[standupChannelIndex].standupMessage.replace(/\n$/, ''); // removes last newline
   // basically messageSendV2(token, channelId, message) WITHOUT NOTIFICATIONS
   const standupMessageId = generateMessageId().messageId;
-  if (standupChannel.standupMessage !== '') {
+  if (data.channels[standupChannelIndex].standupMessage !== '') {
     data.channels.find(c => c.channelId === channelId).messages.push({
       messageId: standupMessageId,
       uId: getUserIdFromToken(token),
