@@ -17,7 +17,6 @@ import {
   checkTag,
 } from './helper';
 import HTTPError from 'http-errors';
-import { idText } from 'typescript';
 
 /**
  * Send and store a DM sent by a given user
