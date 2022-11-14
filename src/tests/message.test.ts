@@ -374,7 +374,7 @@ describe('requestMessageShare', () => {
 
     expect(requestMessageShare(user1.token, message1.messageId, '', channel2.channelId, dm1.dmId)).toEqual(400);
   });
-/*
+  /*
   test('ogMessageId is invalid ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
@@ -458,7 +458,6 @@ describe('requestMessageShare', () => {
     const messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
     expect(messageInfo.messages[0].message).toStrictEqual('test shared');
   });
-
 });
 
 // messageReact tests
@@ -475,7 +474,7 @@ describe('requestMessageReact', () => {
 
     expect(requestMessageReact('test', message1.messageId, 1)).toEqual(403);
   });
-/*
+  /*
   test('MessageId is invalid ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
@@ -516,12 +515,10 @@ describe('requestMessageReact', () => {
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
     requestMessageReact(user1.token, message1.messageId, 1);
-    
 
     const messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
     expect(messageInfo.messages[0].reacts[0]).toStrictEqual(user1.authUserId);
   });
-
 });
 
 // messageUnreact tests
@@ -587,7 +584,6 @@ describe('requestMessageUnreact', () => {
     const messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
     expect(messageInfo.messages[0].reacts[0]).toStrictEqual(undefined);
   });
-
 });
 
 // messagePin tests
@@ -604,7 +600,7 @@ describe('requestMessagePin', () => {
 
     expect(requestMessagePin('test', message1.messageId)).toEqual(403);
   });
-/*
+  /*
   test('MessageId is invalid ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
@@ -666,7 +662,7 @@ describe('messageUnpin', () => {
 
     expect(requestMessageUnpin('test', message1.messageId)).toEqual(403);
   });
-/*
+  /*
   test('MessageId is invalid ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
