@@ -1,7 +1,9 @@
 import {
   requestAuthRegister, requestUserProfile, requestUsersAll, requestUserProfileSetName,
   requestUserProfileSetEmail, requestUserProfileSetHandle, requestClear,
-  requestChannelsCreate, requestChannelJoin, requestChannelDetails
+  requestChannelsCreate, requestChannelJoin, requestChannelDetails,
+  requestUserStats, requestChannelLeave, requestDmCreate, requestDmLeave,
+  requestMessageSend, requestMessageRemove, requestMessageSendDm
 } from './httpHelper';
 
 describe('Test userProfile', () => {
@@ -377,7 +379,6 @@ describe('Test Updating User Info', () => {
 describe('Test userStats', () => {
   let user1;
   let user2;
-  let channel1;
   let channel2;
   let dm1;
 
@@ -422,7 +423,7 @@ describe('Test userStats', () => {
   });
 
   test('Test user creates one channel', () => {
-    channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    requestChannelsCreate(user1.token, 'channel1', true);
     test('test user has not joined anything', () => {
       expect(requestUserStats(user1.token)).toStrictEqual({
         userStats: {
@@ -451,7 +452,7 @@ describe('Test userStats', () => {
               timeStamp: expect.any(Number)
             }
           ],
-          involvementRate: 0
+          involvementRate: 1
         },
       });
     });
@@ -486,7 +487,7 @@ describe('Test userStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0
+        involvementRate: 1
       },
     });
   });
@@ -559,7 +560,7 @@ describe('Test userStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0
+        involvementRate: 0.5
       },
     });
   });
@@ -593,7 +594,7 @@ describe('Test userStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0
+        involvementRate: 0.5
       },
     });
   });
@@ -671,7 +672,7 @@ describe('Test userStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0
+        involvementRate: 0.5
       },
     });
   });
@@ -711,7 +712,7 @@ describe('Test userStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0
+        involvementRate: 0.5
       },
     });
   });
@@ -750,7 +751,7 @@ describe('Test userStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0
+        involvementRate: 1/3
       },
     });
   });
@@ -790,7 +791,7 @@ describe('Test userStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0
+        involvementRate: 1/3
       },
     });
   });

@@ -59,7 +59,6 @@ export type Dms = {
 
 // ITERATION 3 TYPES
 
-
 export type Notification = {
   channelId: ChannelId,
   dmId: DmId,
@@ -75,7 +74,6 @@ export type tagInfo = {
 
 export type ResetCode = string;
 export type Rate = number;
-export type Time = number;
 
 export type UserStats = {
   channelsJoined: {

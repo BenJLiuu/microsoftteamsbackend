@@ -4,9 +4,9 @@ import {
   Empty,
   Token, UId,
   Name, Email,
-  HandleStr, UserStats
+  HandleStr
 } from './interfaceTypes';
-import { UserObj } from './internalTypes';
+import { UserObj, UserStatsObj } from './internalTypes';
 import {
   validToken,
   validUserId,
@@ -118,4 +118,20 @@ export function userProfileSetEmailV2 (token: Token, email: Email): Empty {
   // Update user details in channel
   updateUserDetails(userId);
   return {};
+}
+
+/**
+ * Gets the users' stats, including channel/dm/message info, and involvement.
+ * @param {Token} token the user requesting their stats
+ * @throws 403 - Invalid token, if user does not exist.
+ * @returns {UserStatsObj} the users stats, contained within an object.
+ */
+export function userStats (token: Token): UserStatsObj {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
+  const uId = getUserIdFromToken(token);
+  const data = getData();
+
+  return {
+    userStats: data.users.find(user => user.uId === uId).userStats,
+  };
 }

@@ -87,3 +87,7 @@ export type NotificationsObj = {
 export type messages = {
   messages: itf.Messages,
 };
+
+export type UserStatsObj = {
+  userStats: itf.UserStats,
+}
