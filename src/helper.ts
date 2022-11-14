@@ -4,8 +4,10 @@ import {
   UId, Token,
   ChannelId, DmId, MessageId,
   User, HandleStr, Name, tagInfo,
+  Message
 } from './interfaceTypes';
 import { PrivateUser, Session, PrivateChannel } from './internalTypes';
+import HTTPError from 'http-errors';
 
 /**
  * Checks whether a uId exists in the database
@@ -495,12 +497,13 @@ export function getChannelFromChannelId(channelId: ChannelId): PrivateChannel {
 // If no standup messages are sent during the standup, no message should be sent at the end.
 export function endStandup(token: Token, channelId: ChannelId): Empty {
   const data = getData();
-  const standupChannelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  const standupChannel = data.channels.findIndex(c => c.channelId === channelId);
+  if (!data.channels[standupChannelIndex]) return {};
   const standupMessage = data.channels[standupChannelIndex].standupMessage.replace(/\n$/, ''); // removes last newline
   // basically messageSendV2(token, channelId, message) WITHOUT NOTIFICATIONS
   const standupMessageId = generateMessageId().messageId;
-  if (data.channels[standupChannelIndex].standupMessage !== '') {
-    data.channels.find(channel => channel.channelId === channelId).messages.push({
+  if (standupChannel.standupMessage !== '') {
+    data.channels.find(c => c.channelId === channelId).messages.push({
       messageId: standupMessageId,
       uId: getUserIdFromToken(token),
       message: standupMessage,
