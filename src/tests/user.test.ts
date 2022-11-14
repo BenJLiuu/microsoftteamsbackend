@@ -373,3 +373,425 @@ describe('Test Updating User Info', () => {
     );
   });
 });
+
+describe('Test userStats', () => {
+  let user1;
+  let user2;
+  let channel1;
+  let channel2;
+  let dm1;
+
+  beforeEach(() => {
+    requestClear();
+    user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    user2 = requestAuthRegister('albert@email.com', 'albpass', 'Al', 'Bert');
+    channel2 = requestChannelsCreate(user2.token, 'channel2', true);
+  });
+
+  test('token is invalid', () => {
+    expect(requestUserStats(user1.token + '1')).toEqual(403);
+  });
+
+  test('test user has not joined anything', () => {
+    expect(requestUserStats(user1.token)).toStrictEqual({
+      userStats: {
+        channelsJoined:
+        [
+          {
+            numChannelsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        dmsJoined:
+        [
+          {
+            numDmsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        messagesSent:
+        [
+          {
+            numMessagesSent: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        involvementRate: 0
+      },
+    });
+  });
+
+  test('Test user creates one channel', () => {
+    channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    test('test user has not joined anything', () => {
+      expect(requestUserStats(user1.token)).toStrictEqual({
+        userStats: {
+          channelsJoined:
+          [
+            {
+              numChannelsJoined: 0,
+              timeStamp: expect.any(Number)
+            },
+            {
+              numChannelsJoined: 1,
+              timeStamp: expect.any(Number)
+            }
+          ],
+          dmsJoined:
+          [
+            {
+              numDmsJoined: 0,
+              timeStamp: expect.any(Number)
+            }
+          ],
+          messagesSent:
+          [
+            {
+              numMessagesSent: 0,
+              timeStamp: expect.any(Number)
+            }
+          ],
+          involvementRate: 0
+        },
+      });
+    });
+  });
+
+  test('Test user joins one channel', () => {
+    requestChannelJoin(user1.token, channel2.channelId);
+    expect(requestUserStats(user1.token)).toStrictEqual({
+      userStats: {
+        channelsJoined:
+        [
+          {
+            numChannelsJoined: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numChannelsJoined: 1,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        dmsJoined:
+        [
+          {
+            numDmsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        messagesSent:
+        [
+          {
+            numMessagesSent: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        involvementRate: 0
+      },
+    });
+  });
+
+  test('Test user joins, then leaves one channel', () => {
+    requestChannelJoin(user1.token, channel2.channelId);
+    requestChannelLeave(user1.token, channel2.channelId);
+    expect(requestUserStats(user1.token)).toStrictEqual({
+      userStats: {
+        channelsJoined:
+        [
+          {
+            numChannelsJoined: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numChannelsJoined: 1,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numChannelsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        dmsJoined:
+        [
+          {
+            numDmsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        messagesSent:
+        [
+          {
+            numMessagesSent: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        involvementRate: 0
+      },
+    });
+  });
+
+  test('Test user creates one dm', () => {
+    requestDmCreate(user1.token, []);
+    expect(requestUserStats(user1.token)).toStrictEqual({
+      userStats: {
+        channelsJoined:
+        [
+          {
+            numChannelsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        dmsJoined:
+        [
+          {
+            numDmsJoined: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numDmsJoined: 1,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        messagesSent:
+        [
+          {
+            numMessagesSent: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        involvementRate: 0
+      },
+    });
+  });
+
+  test('Test user joins one dm', () => {
+    requestDmCreate(user2.token, [user1.authUserId]);
+    expect(requestUserStats(user1.token)).toStrictEqual({
+      userStats: {
+        channelsJoined:
+        [
+          {
+            numChannelsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        dmsJoined:
+        [
+          {
+            numDmsJoined: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numDmsJoined: 1,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        messagesSent:
+        [
+          {
+            numMessagesSent: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        involvementRate: 0
+      },
+    });
+  });
+
+  test('Test user joins, then leaves one dm', () => {
+    dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    requestDmLeave(user1.token, dm1.dmId);
+    expect(requestUserStats(user1.token)).toStrictEqual({
+      userStats: {
+        channelsJoined:
+        [
+          {
+            numChannelsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        dmsJoined:
+        [
+          {
+            numDmsJoined: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numDmsJoined: 1,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numDmsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        messagesSent:
+        [
+          {
+            numMessagesSent: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        involvementRate: 0
+      },
+    });
+  });
+
+  test('test user sends a channel message', () => {
+    requestChannelJoin(user1.token, channel2.channelId);
+    requestMessageSend(user1.token, channel2.channelId, 'test message');
+    expect(requestUserStats(user1.token)).toStrictEqual({
+      userStats: {
+        channelsJoined:
+        [
+          {
+            numChannelsJoined: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numChannelsJoined: 1,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        dmsJoined:
+        [
+          {
+            numDmsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        messagesSent:
+        [
+          {
+            numMessagesSent: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numMessagesSent: 1,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        involvementRate: 0
+      },
+    });
+  });
+
+  test('test user sends a channel message, then deletes it', () => {
+    requestChannelJoin(user1.token, channel2.channelId);
+    const msg1 = requestMessageSend(user1.token, channel2.channelId, 'test message');
+    requestMessageRemove(user1.token, msg1.messageId);
+    expect(requestUserStats(user1.token)).toStrictEqual({
+      userStats: {
+        channelsJoined:
+        [
+          {
+            numChannelsJoined: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numChannelsJoined: 1,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        dmsJoined:
+        [
+          {
+            numDmsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        messagesSent:
+        [
+          {
+            numMessagesSent: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numMessagesSent: 1,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        involvementRate: 0
+      },
+    });
+  });
+
+  test('test user sends a dm message', () => {
+    dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    requestMessageSendDm(user1.token, dm1.dmId, 'test message');
+    expect(requestUserStats(user1.token)).toStrictEqual({
+      userStats: {
+        channelsJoined:
+        [
+          {
+            numChannelsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        dmsJoined:
+        [
+          {
+            numDmsJoined: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numDmsJoined: 1,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        messagesSent:
+        [
+          {
+            numMessagesSent: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numMessagesSent: 1,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        involvementRate: 0
+      },
+    });
+  });
+
+  test('test user sends a dm message, then deletes it', () => {
+    dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const msg1 = requestMessageSendDm(user1.token, dm1.dmId, 'test message');
+    requestMessageRemove(user1.token, msg1.messageId);
+    expect(requestUserStats(user1.token)).toStrictEqual({
+      userStats: {
+        channelsJoined:
+        [
+          {
+            numChannelsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        dmsJoined:
+        [
+          {
+            numDmsJoined: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numDmsJoined: 1,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        messagesSent:
+        [
+          {
+            numMessagesSent: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numMessagesSent: 1,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        involvementRate: 0
+      },
+    });
+  });
+});
