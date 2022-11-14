@@ -3,9 +3,10 @@ import {
   Empty, Error,
   UId, Token,
   ChannelId, DmId, MessageId,
-  User, HandleStr, Name, tagInfo,
+  User, HandleStr, Name,
+  Password, tagInfo
 } from './interfaceTypes';
-import { PrivateUser, Session } from './internalTypes';
+import { PrivateUser, Session, HashedPassword } from './internalTypes';
 
 /**
  * Checks whether a uId exists in the database
@@ -39,6 +40,19 @@ export function validToken(token: Token): boolean {
   const data = getData();
   const hashedToken = hashCode(token + 'secret');
   if (data.sessions.some(t => t.token === hashedToken)) {
+    return true;
+  } else return false;
+}
+
+/**
+ * Checks whether a password is valid
+ *
+ * @param {Password} password - password to check
+ * @returns {boolean} Boolean of whether the password is valid
+ */
+export function validPassword(storedPassword: HashedPassword, attemptedPassword: Password): boolean {
+  const hashedAttempt = hashCode(attemptedPassword + 'secret');
+  if (storedPassword === hashedAttempt) {
     return true;
   } else return false;
 }
