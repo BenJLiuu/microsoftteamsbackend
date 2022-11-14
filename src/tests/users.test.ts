@@ -525,6 +525,75 @@ describe('Test notificationsGet', () => {
     });
   });
 
+  test('Notification for non-member tagged in dm', () => {
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user1.token, [user3.authUserId]);
+    requestMessageSendDm(user1.token, dm1.dmId, 'hello @johnmate');
+    expect(requestNotificationsGet(user2.token)).toStrictEqual({
+      notifications: [],
+    });
+  });
+
+  test('Notification for non-member tagged in channel', () => {
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    requestMessageSend(user1.token, channel1.channelId, 'hello @johnmate how is it going today?');
+    expect(requestNotificationsGet(user2.token)).toStrictEqual({
+      notifications: [],
+    });
+  });
+
+  test('Notification for multiple tags to same person in channel', () => {
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    requestChannelInvite(user1.token, channel1.channelId, user2.authUserId);
+    requestMessageSend(user1.token, channel1.channelId, 'hello @johnmate how is it @johnmate going today?');
+    expect(requestNotificationsGet(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage: 'aliceperson tagged you in channel1: hello @johnmate how ',
+        },
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage: 'aliceperson added you to channel1',
+        }
+      ],
+    });
+  });
+
+  test('Notification for multiple tags to same person in dm', () => {
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId, user3.authUserId]);
+    requestMessageSendDm(user1.token, dm1.dmId, '@johnmate hello @johnmate');
+    expect(requestNotificationsGet(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage: 'aliceperson tagged you in aliceperson, johnmate, johnnymate: @johnmate hello @joh',
+        },
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage: 'aliceperson added you to aliceperson, johnmate, johnnymate',
+        }
+      ],
+    });
+  });
+
   test('Notification for tagged in edited message to channel', () => {
     requestClear();
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');

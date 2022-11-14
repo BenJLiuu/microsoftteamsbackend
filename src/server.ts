@@ -11,7 +11,7 @@ import { echo } from './echo';
 import { clearV1 } from './other';
 import { userProfileV3, usersAllV2, userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2 } from './users';
 import { dmCreateV2, dmListV2, ddmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
-import { messageSendDmV2, messageSendV2, messageEditV2, messageRemoveV2, messageShareV1, messageReactV1, messageUnreactV1, messagePinV1, messageUnpinV1 } from './message';
+import { messageSendDmV2, messageSendV2, messageEditV2, messageRemoveV2, messageShareV1, messageReactV1, messageUnreactV1, messagePinV1, messageUnpinV1,  messageSendlaterV1, messageSendlaterDmV1, searchV1 } from './message';
 
 // Set up web app
 const app = express();
@@ -370,6 +370,47 @@ app.post('/message/unpin/v1', (req: Request, res: Response, next) => {
     next(err);
   }
 });
+
+app.post('/message/sendlater/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { channelId, message, timeSent } = req.body;
+    res.json(messageSendlaterV1(token, channelId, message, timeSent));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/message/sendlaterdm/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { dmId, message, timeSent } = req.body;
+    res.json(messageSendlaterDmV1(token, dmId, message, timeSent));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/search/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const queryStr = req.query.queryStr as string;
+    res.json(searchV1(token, queryStr));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/notifications/get/v1', (req: Request, res: Response, next) => {
+    try {
+      const token = req.header('token') as string;
+      const { messageId } = req.body;
+      res.json(messageUnpinV1(token, messageId));
+    } catch (err) {
+      next(err);
+    }
+  });
+  
 
 // OTHER ROUTES
 

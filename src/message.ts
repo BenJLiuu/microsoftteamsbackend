@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import { Token, DmId, ChannelId, Message, Empty } from './interfaceTypes';
-import {  MessageIdObj, SharedMessageIdObj } from './internalTypes';
+import {  MessageIdObj, SharedMessageIdObj, messages } from './internalTypes';
 import {
   validChannelId,
   validToken,
@@ -14,6 +14,7 @@ import {
   checkUserToMessage,
   validMessageId,
   userIsChannelOwner,
+  checkTag,
 } from './helper';
 import HTTPError from 'http-errors';
 import { idText } from 'typescript';
@@ -51,6 +52,21 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
     reacts: [],
     isPinned: false
   });
+
+  const usersTagged = checkTag(message, -1, dmId);
+  const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
+  const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
+  if (usersTagged.amountTagged !== 0) {
+    for (let i = 0; i < usersTagged.membersTagged.length; i++) {
+      const userIndex = data.users.findIndex(user => user.uId === usersTagged.membersTagged[i]);
+      const notification = {
+        channelId: -1,
+        dmId: dmId,
+        notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.dms[dmIndex].name + ': ' + message.substring(0, 20),
+      };
+      data.users[userIndex].notifications.push(notification);
+    }
+  }
 
   setData(data);
   return {
@@ -91,6 +107,21 @@ export function messageSendV2(token: Token, channelId: ChannelId, message: Messa
     reacts: [],
     isPinned: false
   });
+
+  const usersTagged = checkTag(message, channelId, -1);
+  const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
+  const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  if (usersTagged.amountTagged !== 0) {
+    for (let i = 0; i < usersTagged.membersTagged.length; i++) {
+      const userIndex = data.users.findIndex(user => user.uId === usersTagged.membersTagged[i]);
+      const notification = {
+        channelId: channelId,
+        dmId: -1,
+        notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.channels[channelIndex].name + ': ' + message.substring(0, 20),
+      };
+      data.users[userIndex].notifications.push(notification);
+    }
+  }
 
   setData(data);
   return {
@@ -135,6 +166,37 @@ export function messageEditV2(token: string, messageId: number, message: string)
       data.channels[isChannel].messages.splice(position, 1);
     } else {
       data.channels[isChannel].messages[position].message = message;
+    }
+  }
+
+  if (message !== '') {
+    const isDm = checkMessageToDm(messageId);
+    let usersTagged = { amountTagged: 0, membersTagged: [0] };
+    if (isChannel === -1) {
+      usersTagged = checkTag(message, -1, data.dms[isDm].dmId);
+    } else {
+      usersTagged = checkTag(message, data.channels[isChannel].channelId, -1);
+    }
+    let notification = { channelId: 0, dmId: 0, notificationMessage: '' };
+    const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
+    if (usersTagged.amountTagged !== 0) {
+      for (let i = 0; i < usersTagged.membersTagged.length; i++) {
+        const userIndex = data.users.findIndex(user => user.uId === usersTagged.membersTagged[i]);
+        if (isChannel === -1) {
+          notification = {
+            channelId: -1,
+            dmId: data.dms[isDm].dmId,
+            notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.dms[isDm].name + ': ' + message.substring(0, 20),
+          };
+        } else {
+          notification = {
+            channelId: data.channels[isChannel].channelId,
+            dmId: -1,
+            notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.channels[isChannel].name + ': ' + message.substring(0, 20),
+          };
+        }
+        data.users[userIndex].notifications.push(notification);
+      }
     }
   }
 
@@ -368,4 +430,119 @@ export function messageUnpinV1(token: string, messageId: number): Empty {
   }
   setData(data);
   return {};
+}
+
+/**
+  * Sends a message to a channel after a specified amount of time.
+  *
+  * @param {string} token - Token of user sending the message.
+  * @param {ChannelId} channelId - the channel the message was sent in
+  * @param {Message} message - the message to be sent
+  * @param {number} timeSent - Id of message to be removed.
+  *
+  * @returns {Error} {error: 'Invalid Channel Id.'} - channel does not exist.
+  * @returns {Error} {error: 'Message contains too little characters.'} - Message has less than 1 character.
+  * @returns {Error} {error: 'Message contains too many characters.'} - Message has more than 1000 characters.
+  * @returns {Error} {error: 'Invalid Session.'} - Token does not correspond to an existing user.
+  * @returns {Error} {error: 'Authorised user is not a channel member.'} - The authUserId corresponds to user that is not a member of the channel.
+  * @returns {Error} {error: 'Invalid time given!'} - timestamp given is in the past.
+  * @returns {messageId} messageId - the Id of the stored message
+*/
+export function messageSendlaterV1(token: Token, channelId: ChannelId, message: Message, timeSent: number): MessageIdObj {
+  if (!validChannelId(channelId)) throw HTTPError(400, 'Invalid Channel Id');
+  if (message.length < 1) throw HTTPError(400, 'Message contains too little characters.');
+  if (message.length > 1000) throw HTTPError(400, 'Message contains too many characters.');
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session.');
+  const authUserId = getUserIdFromToken(token);
+  if (!userIsChannelMember(authUserId, channelId)) throw HTTPError(403, 'Authorised user is not a channel member');
+  let currentTime = Math.floor((new Date()).getTime() / 1000);
+  if (currentTime > timeSent) throw HTTPError(400, 'Invalid time given!');
+  while (Math.floor((new Date()).getTime() / 1000) !== timeSent) {
+    currentTime = Math.floor((new Date()).getTime() / 1000);
+  }
+  const newMessage = messageSendV2(token, channelId, message);
+  return { messageId: newMessage.messageId };
+}
+
+/**
+  * Sends a message to a channel after a specified amount of time.
+  *
+  * @param {string} token - Token of user sending the message.
+  * @param {ChannelId} channelId - the channel the message was sent in
+  * @param {Message} message - the message to be sent
+  * @param {number} timeSent - Id of message to be removed.
+  *
+  * @returns {Error} {error: 'Invalid Channel Id.'} - channel does not exist.
+  * @returns {Error} {error: 'Message contains too little characters.'} - Message has less than 1 character.
+  * @returns {Error} {error: 'Message contains too many characters.'} - Message has more than 1000 characters.
+  * @returns {Error} {error: 'Invalid Session.'} - Token does not correspond to an existing user.
+  * @returns {Error} {error: 'Authorised user is not a channel member.'} - The authUserId corresponds to user that is not a member of the channel.
+  * @returns {Error} {error: 'Invalid time given!'} - timestamp given is in the past.
+  * @returns {messageId} messageId - the Id of the stored message
+*/
+export function messageSendlaterDmV1(token: Token, dmId: DmId, message: Message, timeSent: number): MessageIdObj {
+  if (!validDmId(dmId)) throw HTTPError(400, 'Invalid Dm Id');
+  if (message.length < 1) throw HTTPError(400, 'Message contains too little characters.');
+  if (message.length > 1000) throw HTTPError(400, 'Message contains too many characters.');
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session.');
+  const authUserId = getUserIdFromToken(token);
+  if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(403, 'Authorised user is not a member of the Dm');
+  let currentTime = Math.floor((new Date()).getTime() / 1000);
+  if (currentTime > timeSent) throw HTTPError(400, 'Invalid time given!');
+  while (Math.floor((new Date()).getTime() / 1000) !== timeSent) {
+    currentTime = Math.floor((new Date()).getTime() / 1000);
+  }
+  const newMessage = messageSendDmV2(token, dmId, message);
+  return { messageId: newMessage.messageId };
+}
+
+/**
+  * Takes in a query string and returns all messages containing the query.
+  *
+  * @param {string} token - Token of user sending the message.
+  * @param {string} queryStr - the query to be checked.
+  *
+  * @returns {Error} {error: 'Query contains too little characters.'} - Query has less than 1 character.
+  * @returns {Error} {error: 'Query contains too many characters.'} - Query has more than 1000 characters.
+  * @returns {Error} {error: 'Invalid Session.'} - Token does not correspond to an existing user.
+  * @returns {messages} Messages - array of all messages containing the query.
+*/
+export function searchV1(token: Token, queryStr: string): messages {
+  if (queryStr.length < 1) throw HTTPError(400, 'Query contains too little characters.');
+  if (queryStr.length > 1000) throw HTTPError(400, 'Query contains too many characters.');
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Session.');
+  const authUserId = getUserIdFromToken(token);
+  const data = getData();
+  const channelsArray = [];
+  for (let i = 0; i < data.channels.length; i++) {
+    if (userIsChannelMember(authUserId, data.channels[i].channelId)) {
+      channelsArray.push(data.channels[i]);
+    }
+  }
+  const dmsArray = [];
+  for (let i = 0; i < data.dms.length; i++) {
+    if (checkUserIdtoDm(authUserId, data.dms[i].dmId)) {
+      dmsArray.push(data.dms[i]);
+    }
+  }
+
+  const messagesArray = [];
+  const query = queryStr.toLowerCase();
+  for (let i = 0; i < channelsArray.length; i++) {
+    for (let j = 0; j < channelsArray[i].messages.length; j++) {
+      const message = channelsArray[i].messages[j].message.toLowerCase();
+      if (message.includes(query)) {
+        messagesArray.push(channelsArray[i].messages[j]);
+      }
+    }
+  }
+  for (let i = 0; i < dmsArray.length; i++) {
+    for (let j = 0; j < dmsArray[i].messages.length; j++) {
+      const message = dmsArray[i].messages[j].message.toLowerCase();
+      if (message.includes(query)) {
+        messagesArray.push(dmsArray[i].messages[j]);
+      }
+    }
+  }
+  return { messages: messagesArray };
 }
