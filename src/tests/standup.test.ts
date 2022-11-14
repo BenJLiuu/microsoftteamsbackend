@@ -43,7 +43,13 @@ describe('standupStartV1 tests', () => {
     expect(requestStandupStart(user2.token, channel.channelId, 1)).toEqual(403);
   });
 
-  // Successful use cases for standupStart are tested in standupActive and standupMessages in detail; as testing of a
+  test('successful activation', () => {
+    const user1 = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
+    const channel = requestChannelsCreate(user1.token, 'Example', true);
+    expect(requestStandupStart(user1.token, channel.channelId, 0)).toEqual({ timeFinish: expect.any(Number) });
+  });
+
+  // More successful use cases for standupStart are tested in standupActive and standupMessages in detail; as testing of a
   // standup's functionality requires extensive use of both of those functions.
 });
 
