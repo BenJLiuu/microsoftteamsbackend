@@ -19,11 +19,11 @@ export function standupStartV1(token: Token, channelId: ChannelId, length: Lengt
   if (validChannelId(channelId) && !userIsChannelMember(getUserIdFromToken(token), channelId)) throw HTTPError(403, 'User is not a member of the channel.');
 
   const data = getData();
-  const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
+  const channel = data.channels.find(channel => channel.channelId === channelId);
   const newTimeFinish = (Math.floor((new Date()).getTime() / 1000)) + length;
   const lengthInMs = length * 1000;
-  data.channels[channelIndex].activeStandup = true;
-  data.channels[channelIndex].standupTimeFinish = newTimeFinish;
+  channel.activeStandup = true;
+  channel.standupTimeFinish = newTimeFinish;
   setTimeout(function() {
     endStandup(token, channelId);
   }, lengthInMs);
