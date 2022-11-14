@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import { Token, DmId, ChannelId, Message, Empty } from './interfaceTypes';
-import { MessageIdObj, messages } from './internalTypes';
+import { MessageIdObj, messages, NotificationsObj } from './internalTypes';
 import {
   validChannelId,
   validToken,
@@ -343,4 +343,21 @@ export function searchV1(token: Token, queryStr: string): messages {
     }
   }
   return { messages: messagesArray };
+}
+
+/**
+ * Returns the user's most recent 20 notifications.
+ * @param {Token} token - Token of user sending the request.
+ *
+ * @returns {Error} token - Token of user wanting to change email address.
+ * @returns {notifications} - Array of 20 most recent notifications
+ */
+export function notificationsGetV1 (token: Token): NotificationsObj {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
+  const userId = getUserIdFromToken(token);
+  const data = getData();
+  const position = data.users.findIndex(user => user.uId === userId);
+  const newNotifications = data.users[position].notifications.reverse();
+  newNotifications.splice(20, newNotifications.length);
+  return { notifications: newNotifications };
 }
