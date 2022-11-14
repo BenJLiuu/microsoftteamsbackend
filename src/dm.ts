@@ -41,6 +41,8 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
     for (const uId of uIds) {
       members.push(getPublicUser(data.users.find(user => user.uId === uId)));
       names.push(gethandleStrFromId(uId));
+      const userIndex = data.users.findIndex(user => user.uId === uId);
+      data.users[userIndex].userStats = userStatsJoinDm(uId);
     }
   }
 
@@ -50,6 +52,7 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
 
   const name = names.join(', ');
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
+  data.users[ownerIndex].userStats = userStatsJoinDm(authUserId);
   let newdmId = 0;
   while (data.dms.some(c => c.dmId === newdmId)) newdmId++;
   const newDm: PrivateDm = {
@@ -114,7 +117,7 @@ export function dmListV2(token: Token): DMsObj {
   * @returns {Error} {error: 'Invalid Token.'} - token does not correspond to an existing user.
   * @returns {Empty} {} - DM has been succesfully left.
 */
-export function ddmLeaveV2(token: Token, dmId: DmId): Empty {
+export function dmLeaveV2(token: Token, dmId: DmId): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.');
 
@@ -125,6 +128,9 @@ export function ddmLeaveV2(token: Token, dmId: DmId): Empty {
   const position = data.dms.findIndex(dm => dm.dmId === dmId);
   const dmIndex = data.dms[position].members.findIndex(user => user.uId === authUserId);
   data.dms[position].members.splice(dmIndex, 1);
+
+  const userIndex = data.users.findIndex(user => user.uId === uId);
+  data.users[userIndex].userStats = userStatsLeaveDm(uId);
 
   setData(data);
 

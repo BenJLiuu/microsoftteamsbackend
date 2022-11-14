@@ -11,7 +11,7 @@ import { echo } from './echo';
 import { clearV1 } from './other';
 import { usersAllV2, notificationsGetV1 } from './users';
 import { userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2, userProfileV3 } from './user';
-import { dmCreateV2, dmListV2, ddmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
+import { dmCreateV2, dmListV2, dmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
 import { messageSendDmV2, messageSendV2, messageEditV2, messageRemoveV2, messageSendlaterV1, messageSendlaterDmV1, searchV1 } from './message';
 
 // Set up web app

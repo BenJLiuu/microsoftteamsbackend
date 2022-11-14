@@ -3,6 +3,7 @@ import { Token, Name, IsPublic, ChannelId } from './interfaceTypes';
 import { PrivateChannel, ChannelsObj } from './internalTypes';
 import HTTPError from 'http-errors';
 
+import { userStatsJoinChannel } from './userStatsHelper'
 import {
   validToken,
   userIsChannelMember,
@@ -78,7 +79,7 @@ export function channelsCreateV3(token: Token, name: Name, isPublic: IsPublic): 
   if (name.length < 1 || name.length > 20) throw HTTPError(400, 'Channel name must be between 1-20 characters.');
 
   const data = getData();
-  const authUserId = getUserIdFromToken(token);
+  const uId = getUserIdFromToken(token);
   let newChannelId = 0;
   while (data.channels.some(c => c.channelId === newChannelId)) newChannelId++;
   const newChannel: PrivateChannel = {
@@ -91,12 +92,14 @@ export function channelsCreateV3(token: Token, name: Name, isPublic: IsPublic): 
   };
 
   data.channels.push(newChannel);
-  const userIndex = data.users.findIndex(user => user.uId === authUserId);
+  
+  const userIndex = data.users.findIndex(user => user.uId === uId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === newChannelId);
-  const privateUser = getPublicUser(data.users[userIndex]);
+  const publicUser = getPublicUser(data.users[userIndex]);
 
-  data.channels[channelIndex].ownerMembers.push(privateUser);
-  data.channels[channelIndex].allMembers.push(privateUser);
+  data.channels[channelIndex].ownerMembers.push(publicUser);
+  data.channels[channelIndex].allMembers.push(publicUser);
+  data.users[userIndex].userStats = userStatsJoinChannel(uId);
 
   setData(data);
 

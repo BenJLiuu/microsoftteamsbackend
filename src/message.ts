@@ -41,6 +41,7 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
 
   const messageId = generateMessageId().messageId;
   const data = getData();
+
   // Add message to DM list
   data.dms.find(dm => dm.dmId === dmId).messages.push({
     messageId: messageId,
@@ -48,6 +49,9 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
     message: message,
     timeSent: Date.now(),
   });
+
+  const userStatsIndex = data.users.findIndex(user => user.uId === authUserId);
+  data.users[userStatsIndex].userStats = userStatsSendMessage(authUserId);
 
   const usersTagged = checkTag(message, -1, dmId);
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
@@ -101,6 +105,9 @@ export function messageSendV2(token: Token, channelId: ChannelId, message: Messa
     message: message,
     timeSent: Date.now(),
   });
+
+  const userStatsIndex = data.users.findIndex(user => user.uId === authUserId);
+  data.users[userStatsIndex].userStats = userStatsSendMessage(authUserId);
 
   const usersTagged = checkTag(message, channelId, -1);
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
