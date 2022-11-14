@@ -21,7 +21,7 @@ export function standupStartV1(token: Token, channelId: ChannelId, length: Lengt
   const data = getData();
   const channel = data.channels.find(channel => channel.channelId === channelId);
   const newTimeFinish = (Math.floor((new Date()).getTime() / 1000)) + length;
-  const lengthInMs = length * 1000;
+  const lengthInMs = length * 1000 * 60;
   channel.activeStandup = true;
   channel.standupTimeFinish = newTimeFinish;
   setTimeout(function() {

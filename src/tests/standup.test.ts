@@ -154,14 +154,26 @@ describe('standupSendV1 tests', () => {
     requestStandupSend(user.token, channel.channelId, 'hello3');
     requestStandupSend(user.token, channel.channelId, 'hello4');
 
-    function awaitTimeout(delay: number): Promise<any> {
+    /*function awaitTimeout(delay: number): Promise<any> {
       return new Promise(resolve => setTimeout(resolve, delay));
-    }
+    }*/
 
-    awaitTimeout(7000).then(() => expect(requestChannelMessages(user.token, channel.token, 0)).toEqual({
+    const awaitTimeout = delay =>
+      new Promise(resolve => setTimeout(resolve, delay));
+
+    awaitTimeout(6500).then(() => expect(requestChannelMessages(user.token, channel.token, 0)).toEqual({
       messages: ['[kevinmalone]: hello1 \n [kevinmalone]: hello2 \n [kevinmalone]: hello3 \n [kevinmalone]: hello4'],
       start: 0,
       end: 1
     }));
+
+    const f = async () => {
+      await awaitTimeout(6500);
+      expect(requestChannelMessages(user.token, channel.token, 0)).toEqual({
+        messages: ['[kevinmalone]: hello1 \n [kevinmalone]: hello2 \n [kevinmalone]: hello3 \n [kevinmalone]: hello4'],
+        start: 0,
+        end: 1
+      });
+    };
   });
 });
