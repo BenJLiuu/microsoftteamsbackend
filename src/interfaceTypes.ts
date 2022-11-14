@@ -26,8 +26,8 @@ export type MessageData = {
   uId: UId,
   message: Message,
   timeSent: Time,
-  // reacts: React[],
-  // isPinned: IsPinned
+  reacts: React[],
+  isPinned: IsPinned
 }
 export type Messages = MessageData[];
 

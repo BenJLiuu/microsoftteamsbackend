@@ -143,8 +143,8 @@ export function requestMessageRemove(token: string, messageId: number) {
   return requestHelper('DELETE', '/message/remove/v2', { messageId }, token);
 }
 
-export function requestMessageShare(token: string, ogMessageId: number, messageId: string, channelId: number, dmId: number) {
-  return requestHelper('POST', '/message/share/v1', { ogMessageId, messageId, channelId, dmId }, token);
+export function requestMessageShare(token: string, ogMessageId: number, message: string, channelId: number, dmId: number) {
+  return requestHelper('POST', '/message/share/v1', { ogMessageId, message, channelId, dmId }, token);
 }
 
 export function requestMessageReact(token: string, messageId: number, reactId: number) {

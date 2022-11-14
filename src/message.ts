@@ -1,9 +1,6 @@
 import { getData, setData } from './dataStore';
 import { Token, DmId, ChannelId, Message, Empty } from './interfaceTypes';
-import {
-  MessageIdObj,
-  // SharedMessageIdObj
-} from './internalTypes';
+import {  MessageIdObj, SharedMessageIdObj } from './internalTypes';
 import {
   validChannelId,
   validToken,
@@ -16,8 +13,10 @@ import {
   checkMessageToDm,
   checkUserToMessage,
   validMessageId,
+  userIsChannelOwner,
 } from './helper';
 import HTTPError from 'http-errors';
+import { idText } from 'typescript';
 
 /**
  * Send and store a DM sent by a given user
@@ -49,8 +48,8 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
     uId: authUserId,
     message: message,
     timeSent: Date.now(),
-    // reacts: [],
-    // isPinned: false
+    reacts: [],
+    isPinned: false
   });
 
   setData(data);
@@ -89,8 +88,8 @@ export function messageSendV2(token: Token, channelId: ChannelId, message: Messa
     uId: authUserId,
     message: message,
     timeSent: Date.now(),
-    // reacts: [],
-    // isPinned: false
+    reacts: [],
+    isPinned: false
   });
 
   setData(data);
@@ -175,7 +174,6 @@ export function messageRemoveV2(token: string, messageId: number): Empty {
   setData(data);
   return {};
 }
-/*
 export function messageShareV1(token: string, ogMessageId: number, message: string, channelId: number, dmId: number): SharedMessageIdObj {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
   if (channelId !== -1 && dmId !== -1) throw HTTPError(400, 'Can only share to one channel/dm');
@@ -185,22 +183,61 @@ export function messageShareV1(token: string, ogMessageId: number, message: stri
   const data = getData();
   const uId = getUserIdFromToken(token);
   let sharedMessageId = { messageId: 0 };
-
+  let sharedMessage = '';
   if (channelId !== -1) {
-    const isChannel = checkMessageToChannel(ogMessageId);
-    const position = data.channels[isChannel].messages.findIndex(message => message.messageId === ogMessageId);
-    const sharedMessage = data.channels[isChannel].messages[position].message;
-    if (!userIsChannelMember(uId, channelId)) throw HTTPError(400, 'Not a member of the channel');
-    sharedMessageId = messageSendV2(token, channelId, sharedMessage + message);
+    if (checkMessageToChannel(ogMessageId) !== -1) {
+      const isChannel = checkMessageToChannel(ogMessageId);
+      const position = data.channels[isChannel].messages.findIndex(message => message.messageId === ogMessageId);
+      const ogChannelId = data.channels[isChannel].channelId
+      if (!userIsChannelMember(uId, ogChannelId)) throw HTTPError(400, 'Could not find message in channels/dms the user has joined');
+      sharedMessage = data.channels[isChannel].messages[position].message;
+    } else {
+      const isDm = checkMessageToDm(ogMessageId);
+      const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === ogMessageId);
+      const ogDmId = data.dms[isDm].dmId;
+      if (!checkUserIdtoDm(uId, ogDmId)) throw HTTPError(400, 'Could not find message in the channels/dms the user has joined');
+      sharedMessage = data.dms[isDm].messages[dmPosition].message;
+    }
+    if (!userIsChannelMember(uId, channelId)) throw HTTPError(403, 'Not a member of the channel');
+    const sharedMessageId = generateMessageId().messageId;
+    data.channels.find(channel => channel.channelId === channelId).messages.push({
+      messageId: sharedMessageId,
+      uId: uId,
+      message: sharedMessage + ' ' + message,
+      timeSent: Date.now(),
+      reacts: [],
+      isPinned: false
+    })
+    
+
   } else if (dmId !== -1) {
-    const isDm = checkMessageToDm(ogMessageId);
-    const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === ogMessageId);
-    const sharedMessage = data.dms[isDm].messages[dmPosition].message;
-    if (!checkUserIdtoDm(uId, dmId)) throw HTTPError(400, 'Not a member of the channel');
-    sharedMessageId = messageSendDmV2(token, dmId, sharedMessage + message);
-  } else {
+    if (checkMessageToChannel(ogMessageId) !== -1) {
+      const isChannel = checkMessageToChannel(ogMessageId);
+      const position = data.channels[isChannel].messages.findIndex(message => message.messageId === ogMessageId);
+      const ogChannelId = data.channels[isChannel].channelId
+      if (!userIsChannelMember(uId, ogChannelId)) throw HTTPError(400, 'Could not find message in channels/dms the user has joined');
+      sharedMessage = data.channels[isChannel].messages[position].message;
+    } else {
+      const isDm = checkMessageToDm(ogMessageId);
+      const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === ogMessageId);
+      const ogDmId = data.dms[isDm].dmId;
+      if (!checkUserIdtoDm(uId, ogDmId)) throw HTTPError(400, 'Could not find message in the channels/dms the user has joined');
+      sharedMessage = data.dms[isDm].messages[dmPosition].message;
+    }
+    if (!checkUserIdtoDm(uId, dmId)) throw HTTPError(403, 'Not a member of the channel');
+    const sharedMessageId = generateMessageId().messageId;
+    data.dms.find(dm => dm.dmId === dmId).messages.push({
+      messageId: sharedMessageId,
+      uId: uId,
+      message: sharedMessage + ' ' + message,
+      timeSent: Date.now(),
+      reacts: [],
+      isPinned: false
+    })
+   
     throw HTTPError(400, 'error');
   }
+  
   setData(data);
 
   return {
@@ -220,11 +257,21 @@ export function messageReactV1(token: string, messageId: number, reactId: number
   if (isChannel === -1) {
     const isDm = checkMessageToDm(messageId);
     const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
-    data.dms[isDm].messages[dmPosition].reacts.push(UserId);
+    const dmId = data.dms[isDm].dmId;
+    if (checkUserIdtoDm(UserId, dmId)) {
+      if (data.dms[isDm].messages[dmPosition].reacts.includes(UserId)) throw HTTPError(400, 'User already reacted to this message');
+      data.dms[isDm].messages[dmPosition].reacts.push(UserId);
+    } else throw HTTPError(400, 'User is not a member of the dm')
+   
   } else {
     const position = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
-    data.channels[isChannel].messages[position].reacts.push(UserId);
+    const channelId = data.channels[isChannel].channelId;
+    if (userIsChannelMember(UserId, channelId)){
+      if (data.channels[isChannel].messages[position].reacts.includes(UserId)) throw HTTPError(400, 'User already reacted to this message');
+      data.channels[isChannel].messages[position].reacts.push(UserId);
+    } else throw HTTPError(400, 'User is not a member of the channel');
   }
+  setData(data);
 
   return {};
 }
@@ -241,13 +288,24 @@ export function messageUnreactV1(token: string, messageId: number, reactId: numb
   if (isChannel === -1) {
     const isDm = checkMessageToDm(messageId);
     const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
-    const userIdIndex = data.dms[isDm].messages[dmPosition].reacts.findIndex(reacts => reacts === UserId);
-    data.dms[isDm].messages[dmPosition].reacts.splice(userIdIndex, 1);
+    const dmId = data.dms[isDm].dmId;
+    if (checkUserIdtoDm(UserId, dmId)) {
+      if (!data.dms[isDm].messages[dmPosition].reacts.includes(UserId)) throw HTTPError(400, 'User has not reacted to this message');
+      const userIdIndex = data.dms[isDm].messages[dmPosition].reacts.findIndex(reacts => reacts === UserId);
+      data.dms[isDm].messages[dmPosition].reacts.splice(userIdIndex, 1);
+    } else throw HTTPError(400, 'User is not a member of the dm')
+    
   } else {
     const position = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
-    const userIdIndex = data.channels[isChannel].messages[position].reacts.findIndex(reacts => reacts === UserId);
-    data.channels[isChannel].messages[position].reacts.splice(userIdIndex, 1);
+    const channelId = data.channels[isChannel].channelId;
+    if (userIsChannelMember(UserId, channelId)){
+      if (!data.channels[isChannel].messages[position].reacts.includes(UserId)) throw HTTPError(400, 'User has not reacted to this message');
+      const userIdIndex = data.channels[isChannel].messages[position].reacts.findIndex(reacts => reacts === UserId);
+      data.channels[isChannel].messages[position].reacts.splice(userIdIndex, 1);
+    } else throw HTTPError(400, 'User is not a member of the channel');
+   
   }
+  setData(data);
 
   return {};
 }
@@ -256,16 +314,27 @@ export function messagePinV1(token: string, messageId: number): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
   if (!validMessageId(messageId)) throw HTTPError(400, 'Invalid message');
 
+  const UserId = getUserIdFromToken(token);
   const data = getData();
 
   const isChannel = checkMessageToChannel(messageId);
   if (isChannel === -1) {
     const isDm = checkMessageToDm(messageId);
     const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
-    data.dms[isDm].messages[dmPosition].isPinned = true;
+    const dmId = data.dms[isDm].dmId
+    if (checkUserIdtoDm(UserId, dmId)) {
+      if (data.dms[isDm].owner.uId !== UserId) throw HTTPError(403, 'User does not have permissions');
+      if (data.dms[isDm].messages[dmPosition].isPinned) throw HTTPError(400, 'Message is already pinned');
+      data.dms[isDm].messages[dmPosition].isPinned = true;
+    } else throw HTTPError(400, 'User is not a member of the dm')
   } else {
     const position = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
-    data.channels[isChannel].messages[position].isPinned = true;
+    const channelId = data.channels[isChannel].channelId;
+    if (userIsChannelMember(UserId, channelId)){
+      if (!userIsChannelOwner(UserId, channelId)) throw HTTPError(403, 'User does not have permissions');
+      if (data.channels[isChannel].messages[position].isPinned) throw HTTPError(400, 'Message is already pinned');
+      data.channels[isChannel].messages[position].isPinned = true;
+    } else throw HTTPError(400, 'User is not a member of the channel');
   }
   setData(data);
   return {};
@@ -275,18 +344,28 @@ export function messageUnpinV1(token: string, messageId: number): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Session');
   if (!validMessageId(messageId)) throw HTTPError(400, 'Invalid message');
 
+  const UserId = getUserIdFromToken(token);
   const data = getData();
 
   const isChannel = checkMessageToChannel(messageId);
   if (isChannel === -1) {
     const isDm = checkMessageToDm(messageId);
     const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
-    data.dms[isDm].messages[dmPosition].isPinned = false;
+    const dmId = data.dms[isDm].dmId
+    if (checkUserIdtoDm(UserId, dmId)) {
+      if (data.dms[isDm].owner.uId !== UserId) throw HTTPError(403, 'User does not have permissions');
+      if (!data.dms[isDm].messages[dmPosition].isPinned) throw HTTPError(400, "Message is not currently pinned");
+      data.dms[isDm].messages[dmPosition].isPinned = false;
+    } else throw HTTPError(400, 'User is not a member of the dm')
   } else {
     const position = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
-    data.channels[isChannel].messages[position].isPinned = false;
+    const channelId = data.channels[isChannel].channelId;
+    if (userIsChannelMember(UserId, channelId)){
+      if (!userIsChannelOwner(UserId, channelId)) throw HTTPError(403, 'User does not have permissions');
+      if (!data.channels[isChannel].messages[position].isPinned) throw HTTPError(400, "Message is not currently pinned");
+      data.channels[isChannel].messages[position].isPinned = false;
+    } else throw HTTPError(400, 'User is not a member of the channel')
   }
   setData(data);
   return {};
 }
-*/
