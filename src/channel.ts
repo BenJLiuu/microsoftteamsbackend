@@ -264,7 +264,6 @@ export function channelJoinV3(token: Token, channelId: ChannelId): Empty {
   if (!userHasAccess) throw HTTPError(400, 'You do not have access to this channel.');
 
   // User Stats
-  console.log('JOINING CHANNEL');
   const channelsJoined = data.users[userIndex].userStats.channelsJoined[data.users[userIndex].userStats.channelsJoined.length - 1].numChannelsJoined;
   data.users[userIndex].userStats.channelsJoined.push({
     numChannelsJoined: channelsJoined + 1,

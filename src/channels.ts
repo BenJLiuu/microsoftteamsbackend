@@ -101,7 +101,6 @@ export function channelsCreateV3(token: Token, name: Name, isPublic: IsPublic): 
   data.channels[channelIndex].allMembers.push(publicUser);
 
   // User Stats
-  console.log('CREATING CHANNEL');
   const channelsJoined = data.users[userIndex].userStats.channelsJoined[data.users[userIndex].userStats.channelsJoined.length - 1].numChannelsJoined;
   data.users[userIndex].userStats.channelsJoined.push({
     numChannelsJoined: channelsJoined + 1,

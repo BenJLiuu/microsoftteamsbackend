@@ -45,7 +45,6 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
       names.push(gethandleStrFromId(uId));
 
       // User Stats
-      console.log('JOINING DM');
       const dmsJoined = data.users[userIndex].userStats.dmsJoined[data.users[userIndex].userStats.dmsJoined.length - 1].numDmsJoined;
       data.users[userIndex].userStats.dmsJoined.push({
         numDmsJoined: dmsJoined + 1,
@@ -63,7 +62,6 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
 
   // User Stats
-  console.log('CREATING DM');
   const dmsJoined = data.users[ownerIndex].userStats.dmsJoined[data.users[ownerIndex].userStats.dmsJoined.length - 1].numDmsJoined;
   data.users[ownerIndex].userStats.dmsJoined.push({
     numDmsJoined: dmsJoined + 1,

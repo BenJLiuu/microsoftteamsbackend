@@ -56,7 +56,6 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
 
   // User stats
   const userStatsIndex = data.users.findIndex(user => user.uId === authUserId);
-  console.log('CREATING DM MESSAGE');
   const messagesSent = data.users[userStatsIndex].userStats.messagesSent[data.users[userStatsIndex].userStats.messagesSent.length - 1].numMessagesSent;
   data.users[userStatsIndex].userStats.messagesSent.push({
     numMessagesSent: messagesSent + 1,
@@ -125,7 +124,6 @@ export function messageSendV2(token: Token, channelId: ChannelId, message: Messa
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
 
   // User Stats
-  console.log('CREATING MESSAGE');
   const messagesSent = data.users[ownerIndex].userStats.messagesSent[data.users[ownerIndex].userStats.messagesSent.length - 1].numMessagesSent;
   data.users[ownerIndex].userStats.messagesSent.push({
     numMessagesSent: messagesSent + 1,
