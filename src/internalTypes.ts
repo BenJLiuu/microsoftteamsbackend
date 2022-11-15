@@ -11,7 +11,8 @@ export type PrivateUser = {
   passwordHash: itf.Password,
   globalPermissions: number,
   notifications: itf.Notifications,
-  resetCode: string
+  resetCode: string,
+  profileImgUrl: string
 };
 
 export type PrivateChannel = {

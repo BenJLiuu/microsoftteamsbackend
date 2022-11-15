@@ -16,6 +16,8 @@ import {
   updateUserDetails,
 } from './helper';
 import HTTPError from 'http-errors';
+import { port } from './config.json';
+import Jimp from 'jimp';
 
 /**
   * For a valid user, returns information about a requested valid user profile
@@ -156,4 +158,54 @@ export function notificationsGetV1 (token: Token): NotificationsObj {
   const newNotifications = data.users[position].notifications.reverse();
   newNotifications.splice(20, newNotifications.length);
   return { notifications: newNotifications };
+}
+
+/**
+  * Edits the contents of an existing message.
+  *
+  * @param {string} token - Token of user editing the message.
+  * @param {number} messageId - Id of message to be edited.
+  * @param {string} message - New message to be stored.
+  *
+  * @returns {error: 'Invalid Message Id.'}  - Message Id does not correspond to an existing message.
+  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {error: 'Message  not sent by authorised user.'} - the message was not sent by the authorised user making this request.
+  * @returns {error: 'Message size exceeds limit.'} - message is over 1000 characters long.
+  * @returns {} - Message edited successfully.
+*/
+export function userProfileUploadPhotoV1(token: string, imgUrl: string, xStart: number, yStart: number, xEnd: number, yEnd: number): Empty | Error {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
+  if (xEnd <= xStart || yEnd <= yStart) throw HTTPError(400, 'Invalid dimensions.');
+  if (Math.sign(xStart) === -1 || Math.sign(yStart) === -1) throw HTTPError(400, 'Invalid dimensions.');
+  if (Math.sign(xEnd) === -1 || Math.sign(yEnd) === -1) throw HTTPError(400, 'Invalid dimensions.');
+  if (!imgUrl.endsWith('.jpg')) throw HTTPError(400, 'Invalid URL.');
+  const randomString = (Math.random() + 1).toString(36).substring(2);
+  const newPhotoUrl = 'imgurl/' + randomString + '.jpg';
+  const url = 'https://localhost:' + port + '/' + newPhotoUrl;
+  fetch(imgUrl).then((response) => {
+    if (response.status !== 200) {
+      throw new Error('Error.');
+    } else {
+      Jimp.read(imgUrl).then(image => {
+        const width = image.bitmap.width;
+        const height = image.bitmap.height;
+        if (xStart >= width || xEnd > width) throw err;
+        if (yStart >= height || yEnd > height) throw err;
+        image.crop(xStart, yStart, (xEnd - xStart), (yEnd - yStart));
+        image.write(newPhotoUrl);
+      })
+      .catch(err => {
+        throw HTTPError(400, 'Error Encountered.');
+      });
+      }
+    })
+  .catch(err => {
+    throw HTTPError(400, 'Error Encountered.');
+  });
+  const data = getData();
+  const userId = getUserIdFromToken(token);
+  data.users.find(user => user.uId === userId).profileImgUrl = url;
+  setData(data);
+  updateUserDetails(userId);
+  return {};
 }

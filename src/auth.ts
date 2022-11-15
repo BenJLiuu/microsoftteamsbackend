@@ -4,6 +4,7 @@ import { Session } from './internalTypes';
 import HTTPError from 'http-errors';
 import validator from 'validator';
 import { generateUId, generateSession, generateHandleStr, hashCode, validToken, getUserFromEmail, validResetCode } from './helper';
+import { port } from './config.json';
 
 /**
   * Logs in a user and returns their user Id.
@@ -75,6 +76,7 @@ export function authRegisterV3(email: Email, password: Password, nameFirst: Name
     globalPermissions: newUId === 0 ? 1 : 2,
     notifications: [],
     resetCode: '',
+    profileImgUrl: 'https://localhost:' + port + '/default_profile_photo.jpg',
   });
 
   setData(data);

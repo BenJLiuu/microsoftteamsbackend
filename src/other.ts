@@ -1,5 +1,7 @@
 import { Empty } from './interfaceTypes';
 import { setData } from './dataStore';
+import fs from 'fs';
+import path from 'path';
 
 /**
   * Clears all the data in the dataStore, for creating fresh datasets in testing.
@@ -14,6 +16,18 @@ export function clearV1 (): Empty {
     channels: [],
     sessions: [],
     dms: [],
+  });
+
+  const directory = './imgurl';
+
+  fs.readdir(directory, (err, files) => {
+    if (err) throw err;
+
+    for (const file of files) {
+      fs.unlink(path.join(directory, file), (err) => {
+        if (err) throw err;
+      });
+    }
   });
   return {};
 }
