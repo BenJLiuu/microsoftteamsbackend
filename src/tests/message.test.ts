@@ -374,7 +374,7 @@ describe('requestMessageShare', () => {
 
     expect(requestMessageShare(user1.token, message1.messageId, '', channel2.channelId, dm1.dmId)).toEqual(400);
   });
-  /*
+
   test('ogMessageId is invalid ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
@@ -382,7 +382,7 @@ describe('requestMessageShare', () => {
 
     expect(requestMessageShare(user1.token, message1.messageId + 1, 'test', channel1.channelId, -1)).toEqual(400);
   });
-*/
+
   test('Unathorised user ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
@@ -474,7 +474,7 @@ describe('requestMessageReact', () => {
 
     expect(requestMessageReact('test', message1.messageId, 1)).toEqual(403);
   });
-  /*
+
   test('MessageId is invalid ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
@@ -482,7 +482,7 @@ describe('requestMessageReact', () => {
 
     expect(requestMessageReact(user1.token, message1.messageId + 1, 1)).toEqual(400);
   });
-*/
+
   test('Unathorised user ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
@@ -536,7 +536,7 @@ describe('requestMessageUnreact', () => {
 
     expect(requestMessageUnreact('test', message1.messageId, 1)).toEqual(403);
   });
-  /*
+
   test('MessageId is invalid ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
@@ -545,7 +545,6 @@ describe('requestMessageUnreact', () => {
 
     expect(requestMessageUnreact(user1.token, message1.messageId + 1, 1)).toEqual(400);
   });
-  */
 
   test('Unathorised user ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
@@ -600,7 +599,7 @@ describe('requestMessagePin', () => {
 
     expect(requestMessagePin('test', message1.messageId)).toEqual(403);
   });
-  /*
+
   test('MessageId is invalid ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
@@ -608,7 +607,7 @@ describe('requestMessagePin', () => {
 
     expect(requestMessagePin(user1.token, message1.messageId + 1)).toEqual(400);
   });
-*/
+
   test('Unathorised user ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
@@ -662,7 +661,7 @@ describe('messageUnpin', () => {
 
     expect(requestMessageUnpin('test', message1.messageId)).toEqual(403);
   });
-  /*
+
   test('MessageId is invalid ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
@@ -671,7 +670,7 @@ describe('messageUnpin', () => {
 
     expect(requestMessageUnpin(user1.token, message1.messageId + 1)).toEqual(400);
   });
-*/
+
   test('Unathorised user ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
