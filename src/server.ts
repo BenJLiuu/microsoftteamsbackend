@@ -5,14 +5,20 @@ import cors from 'cors';
 import errorHandler from 'middleware-http-errors';
 
 import { channelsCreateV3, channelsListV3, channelsListAllV3 } from './channels';
-import { authRegisterV3, authLoginV3, authLogoutV2, authPasswordResetRequestV1, authPasswordResetResetV1 } from './auth';
+import { authRegisterV3, authLoginV3, authLogoutV2 } from './auth';
 import { channelDetailsV3, channelJoinV3, channelInviteV3, channelMessagesV3, channelLeaveV2, channelRemoveOwnerV2, channelAddOwnerV2 } from './channel';
 import { echo } from './echo';
 import { clearV1 } from './other';
+<<<<<<< HEAD
 import { usersAllV2 } from './users';
 import { userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2, userProfileV3, userStatsV1 } from './user';
 import { dmCreateV2, dmListV2, dmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
 import { messageSendDmV2, messageSendV2, messageEditV2, messageRemoveV2, messageSendlaterV1, messageSendlaterDmV1, searchV1, notificationsGetV1 } from './message';
+=======
+import { userProfileV3, usersAllV2, userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2, notificationsGetV1 } from './users';
+import { dmCreateV2, dmListV2, ddmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
+import { messageSendDmV2, messageSendV2, messageEditV2, messageRemoveV2, messageShareV1, messageReactV1, messageUnreactV1, messagePinV1, messageUnpinV1, messageSendlaterV1, messageSendlaterDmV1, searchV1 } from './message';
+>>>>>>> c3e7d6c813ec00ba9141b4e316b808ac2dede20a
 
 // Set up web app
 const app = express();
@@ -62,16 +68,6 @@ app.post('/auth/logout/v2', (req: Request, res: Response, next) => {
   } catch (err) {
     next(err);
   }
-});
-
-app.post('/auth/passwordreset/request/v1', (req: Request, res: Response, next) => {
-  const { email } = req.body;
-  res.json(authPasswordResetRequestV1(email));
-});
-
-app.post('/auth/passwordreset/reset/v1', (req: Request, res: Response, next) => {
-  const { resetCode, newPassword } = req.body;
-  res.json(authPasswordResetResetV1(resetCode, newPassword));
 });
 
 // CHANNELS ROUTES
@@ -327,6 +323,56 @@ app.delete('/message/remove/v2', (req: Request, res: Response, next) => {
     const token = req.header('token') as string;
     const messageId = req.query.messageId as string;
     res.json(messageRemoveV2(token, messageId ? parseInt(messageId) : undefined));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/message/react/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { messageId, reactId } = req.body;
+    res.json(messageReactV1(token, messageId, reactId));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/message/share/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { ogMessageId, message, channelId, dmId } = req.body;
+    res.json(messageShareV1(token, ogMessageId, message, channelId, dmId));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/message/unreact/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { messageId, reactId } = req.body;
+    res.json(messageUnreactV1(token, messageId, reactId));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/message/pin/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { messageId } = req.body;
+    res.json(messagePinV1(token, messageId));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/message/unpin/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { messageId } = req.body;
+    res.json(messageUnpinV1(token, messageId));
   } catch (err) {
     next(err);
   }

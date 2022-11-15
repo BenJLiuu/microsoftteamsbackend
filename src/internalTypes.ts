@@ -93,10 +93,14 @@ export type NotificationsObj = {
   notifications: itf.Notifications,
 };
 
+export type SharedMessageIdObj = {
+  sharedMessageId: itf.SharedMessageId
+}
+
 export type messages = {
   messages: itf.Messages,
 };
 
 export type UserStatsObj = {
   userStats: itf.UserStats,
-}
+};

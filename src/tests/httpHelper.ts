@@ -147,6 +147,26 @@ export function requestMessageRemove(token: string, messageId: number) {
   return requestHelper('DELETE', '/message/remove/v2', { messageId }, token);
 }
 
+export function requestMessageShare(token: string, ogMessageId: number, message: string, channelId: number, dmId: number) {
+  return requestHelper('POST', '/message/share/v1', { ogMessageId, message, channelId, dmId }, token);
+}
+
+export function requestMessageReact(token: string, messageId: number, reactId: number) {
+  return requestHelper('POST', '/message/react/v1', { messageId, reactId }, token);
+}
+
+export function requestMessageUnreact(token: string, messageId: number, reactId: number) {
+  return requestHelper('POST', '/message/unreact/v1', { messageId, reactId }, token);
+}
+
+export function requestMessagePin(token: string, messageId: number) {
+  return requestHelper('POST', '/message/pin/v1', { messageId }, token);
+}
+
+export function requestMessageUnpin(token: string, messageId: number) {
+  return requestHelper('POST', '/message/unpin/v1', { messageId }, token);
+}
+
 export function requestMessageSendlater(token: string, channelId: number, message: string, timeSent: number) {
   return requestHelper('POST', '/message/sendlater/v1', { channelId, message, timeSent }, token);
 }
