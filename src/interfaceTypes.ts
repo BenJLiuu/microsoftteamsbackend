@@ -93,3 +93,19 @@ export type UserStats = {
   }[],
   involvementRate: Rate
 };
+
+export type WorkplaceStats = {
+  channelsExist: {
+    numChannelsExist: number,
+    timeStamp: Time
+  }[],
+  dmsExist: {
+    numDmsExist: number,
+    timeStamp: Time
+  }[],
+  messagesExist: {
+    numMessagesExist: number,
+    timeStamp: Time
+  }[],
+  utilizationRate: Rate
+};

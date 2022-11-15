@@ -8,11 +8,28 @@ let data: Data = {
   channels: [],
   sessions: [],
   dms: [],
+  
+  // DataStats storage
   workplaceStats: {
     numChannels: 0,
     numDms: 0,
     numMessages: 0,
-    numUsers: 0
+    numUsers: 0,
+    history: {
+      channelsExist: [{
+        numChannelsExist: 0,
+        timeStamp: Time.now()
+      }], 
+      dmsExist: [{
+        numDmsExist: 0,
+        timeStamp: Time.now()
+      }],
+      messagesExist: [{
+        nummessagesExist: 0,
+        timeStamp: Time.now()
+      }],
+      utilizationRate: 0
+    }
   }
 };
 

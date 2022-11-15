@@ -42,7 +42,8 @@ type Analytics = {
   numChannels: number,
   numDms: number,
   numMessages: number,
-  numUsers: number
+  numUsers: number,
+  history: itf.WorkplaceStats
 }
 
 export type Data = {
@@ -104,3 +105,7 @@ export type messages = {
 export type UserStatsObj = {
   userStats: itf.UserStats,
 };
+
+export type WorkplaceStatsObj = {
+  workplaceStats: itf.WorkplaceStats
+}
