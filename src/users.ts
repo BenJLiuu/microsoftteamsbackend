@@ -25,7 +25,7 @@ export function usersAllV2 (token: Token): {users: Users} {
 }
 
 /**
- * Gets the users' stats, including channel/dm/message info, and involvement.
+ * Gets the workspaces' stats, including channel/dm/message info, and utilization rate.
  * @param {Token} token the user requesting their stats
  * @throws 403 - Invalid token, if user does not exist.
  * @returns {WorkplaceStatsObj} the workplace stats, contained within an object.
