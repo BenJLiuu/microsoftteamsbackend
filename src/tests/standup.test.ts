@@ -144,36 +144,26 @@ describe('standupSendV1 tests', () => {
     expect(requestStandupSend(user2.token, channel.channelId, 'fail')).toEqual(403);
   });
 
-  test('successful call - active standup', () => {
+  test('successful call - active standup', async () => {
     const user = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
     const channel = requestChannelsCreate(user.token, 'Example', true);
-    requestStandupStart(user.token, channel.channelId, 0.1);
+    requestStandupStart(user.token, channel.channelId, 0.05);
 
     requestStandupSend(user.token, channel.channelId, 'hello1');
     requestStandupSend(user.token, channel.channelId, 'hello2');
     requestStandupSend(user.token, channel.channelId, 'hello3');
     requestStandupSend(user.token, channel.channelId, 'hello4');
 
-    /*function awaitTimeout(delay: number): Promise<any> {
+    function delay(delay: number) {
       return new Promise(resolve => setTimeout(resolve, delay));
-    }*/
+    };
 
-    const awaitTimeout = delay =>
-      new Promise(resolve => setTimeout(resolve, delay));
+    await delay(4000);
 
-    awaitTimeout(6500).then(() => expect(requestChannelMessages(user.token, channel.token, 0)).toEqual({
-      messages: ['[kevinmalone]: hello1 \n [kevinmalone]: hello2 \n [kevinmalone]: hello3 \n [kevinmalone]: hello4'],
+    expect(requestChannelMessages(user.token, channel.token, 0)).toEqual({
+      messages: ['kevinmalone: hello1\n kevinmalone: hello2\n kevinmalone: hello3\n kevinmalone: hello4'],
       start: 0,
       end: 1
-    }));
-
-    const f = async () => {
-      await awaitTimeout(6500);
-      expect(requestChannelMessages(user.token, channel.token, 0)).toEqual({
-        messages: ['[kevinmalone]: hello1 \n [kevinmalone]: hello2 \n [kevinmalone]: hello3 \n [kevinmalone]: hello4'],
-        start: 0,
-        end: 1
-      });
-    };
+    });
   });
 });
