@@ -2,8 +2,6 @@ import { getData, setData } from './dataStore';
 import { Empty, Token, ChannelId, UId, Start } from './interfaceTypes';
 import { MessageList, ChannelDetails } from './internalTypes';
 import HTTPError from 'http-errors';
-
-import { userStatsJoinChannel, userStatsLeaveChannel } from './userStatsHelper'
 import {
   validUserId,
   validChannelId,
@@ -13,7 +11,8 @@ import {
   getPublicUser,
   validToken,
   getUserIdFromToken,
-  checkChannelOwner
+  checkChannelOwner,
+  calculateInvolvementRate
 } from './helper';
 
 /**
@@ -81,13 +80,18 @@ export function channelLeaveV2(token: Token, channelId: ChannelId): Empty {
   const privateIndexAll = data.channels[channelIndex].allMembers.findIndex(channel => channel.uId === uId);
   data.channels[channelIndex].allMembers.splice(privateIndexAll, 1);
 
-  data.users[userIndex].userStats = userStatsLeaveChannel(uId);
+  // User Stats
+  const channelsJoined = data.users[userIndex].userStats.channelsJoined[data.users[userIndex].userStats.channelsJoined.length - 1].numChannelsJoined;
+  data.users[userIndex].userStats.channelsJoined.push({
+    numChannelsJoined: channelsJoined - 1,
+    timeStamp: Date.now(),
+  });
+  data.users[userIndex].userStats.involvementRate = calculateInvolvementRate(uId, 0, -1);
 
   if (checkChannelOwner(uId, channelId) === true) {
     const privateIndexOwner = data.channels[channelIndex].ownerMembers.findIndex(channel => channel.uId === uId);
     data.channels[channelIndex].ownerMembers.splice(privateIndexOwner, 1);
   }
-
 
   setData(data);
   return {};
@@ -252,16 +256,22 @@ export function channelJoinV3(token: Token, channelId: ChannelId): Empty {
   const uId = getUserIdFromToken(token);
 
   const channelIndex = data.channels.map(object => object.channelId).indexOf(channelId);
-  const userIndex = data.users.findIndex(user => user.uId === getUserIdFromToken(token));
+  const userIndex = data.users.findIndex(user => user.uId === uId);
   const publicUser = getPublicUser(data.users[userIndex]);
 
   if (userIsChannelMember(uId, channelId)) throw HTTPError(400, 'You are already a member.');
   const userHasAccess = data.channels[channelIndex].isPublic || isGlobalOwner(uId);
   if (!userHasAccess) throw HTTPError(400, 'You do not have access to this channel.');
 
-  const userIndex = data.users.findIndex(user => user.uId === uId);
-  data.users[userIndex].userStats = userStatsJoinChannel(uId);
-  
+  // User Stats
+  console.log('JOINING CHANNEL');
+  const channelsJoined = data.users[userIndex].userStats.channelsJoined[data.users[userIndex].userStats.channelsJoined.length - 1].numChannelsJoined;
+  data.users[userIndex].userStats.channelsJoined.push({
+    numChannelsJoined: channelsJoined + 1,
+    timeStamp: Date.now(),
+  });
+  data.users[userIndex].userStats.involvementRate = calculateInvolvementRate(uId, 0, 1);
+
   data.channels[channelIndex].allMembers.push(publicUser);
   setData(data);
 

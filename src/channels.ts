@@ -2,13 +2,12 @@ import { getData, setData } from './dataStore';
 import { Token, Name, IsPublic, ChannelId } from './interfaceTypes';
 import { PrivateChannel, ChannelsObj } from './internalTypes';
 import HTTPError from 'http-errors';
-
-import { userStatsJoinChannel } from './userStatsHelper'
 import {
   validToken,
   userIsChannelMember,
   getPublicUser,
   getUserIdFromToken,
+  calculateInvolvementRate
 } from './helper';
 
 /**
@@ -92,14 +91,23 @@ export function channelsCreateV3(token: Token, name: Name, isPublic: IsPublic): 
   };
 
   data.channels.push(newChannel);
-  
+  data.workplaceStats.numChannels++;
+
   const userIndex = data.users.findIndex(user => user.uId === uId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === newChannelId);
   const publicUser = getPublicUser(data.users[userIndex]);
 
   data.channels[channelIndex].ownerMembers.push(publicUser);
   data.channels[channelIndex].allMembers.push(publicUser);
-  data.users[userIndex].userStats = userStatsJoinChannel(uId);
+
+  // User Stats
+  console.log('CREATING CHANNEL');
+  const channelsJoined = data.users[userIndex].userStats.channelsJoined[data.users[userIndex].userStats.channelsJoined.length - 1].numChannelsJoined;
+  data.users[userIndex].userStats.channelsJoined.push({
+    numChannelsJoined: channelsJoined + 1,
+    timeStamp: Date.now(),
+  });
+  data.users[userIndex].userStats.involvementRate = calculateInvolvementRate(uId, 1, 1);
 
   setData(data);
 

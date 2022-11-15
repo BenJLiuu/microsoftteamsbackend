@@ -424,37 +424,35 @@ describe('Test userStats', () => {
 
   test('Test user creates one channel', () => {
     requestChannelsCreate(user1.token, 'channel1', true);
-    test('test user has not joined anything', () => {
-      expect(requestUserStats(user1.token)).toStrictEqual({
-        userStats: {
-          channelsJoined:
-          [
-            {
-              numChannelsJoined: 0,
-              timeStamp: expect.any(Number)
-            },
-            {
-              numChannelsJoined: 1,
-              timeStamp: expect.any(Number)
-            }
-          ],
-          dmsJoined:
-          [
-            {
-              numDmsJoined: 0,
-              timeStamp: expect.any(Number)
-            }
-          ],
-          messagesSent:
-          [
-            {
-              numMessagesSent: 0,
-              timeStamp: expect.any(Number)
-            }
-          ],
-          involvementRate: 1
-        },
-      });
+    expect(requestUserStats(user1.token)).toStrictEqual({
+      userStats: {
+        channelsJoined:
+        [
+          {
+            numChannelsJoined: 0,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numChannelsJoined: 1,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        dmsJoined:
+        [
+          {
+            numDmsJoined: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        messagesSent:
+        [
+          {
+            numMessagesSent: 0,
+            timeStamp: expect.any(Number)
+          }
+        ],
+        involvementRate: 1 / 2
+      },
     });
   });
 
@@ -560,7 +558,7 @@ describe('Test userStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0.5
+        involvementRate: 1 / 2
       },
     });
   });
@@ -594,7 +592,7 @@ describe('Test userStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0.5
+        involvementRate: 1 / 2
       },
     });
   });
@@ -672,7 +670,7 @@ describe('Test userStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0.5
+        involvementRate: 1
       },
     });
   });
@@ -712,7 +710,7 @@ describe('Test userStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0.5
+        involvementRate: 1
       },
     });
   });
@@ -751,7 +749,7 @@ describe('Test userStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 1/3
+        involvementRate: 2 / 3
       },
     });
   });
@@ -791,7 +789,7 @@ describe('Test userStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 1/3
+        involvementRate: 1
       },
     });
   });

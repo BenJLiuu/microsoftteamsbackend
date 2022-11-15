@@ -1,6 +1,6 @@
 import { requestAuthRegister, requestUsersAll, requestClear } from './httpHelper';
 
-describe('Test usersAll', () => {
+describe('Test usersAlls', () => {
   beforeEach(() => {
     requestClear();
   });
@@ -42,7 +42,7 @@ describe('Test usersAll', () => {
           nameFirst: 'John',
           nameLast: 'Mate',
           email: 'johnmate@gmail.com',
-          handleStr: expect.any(String),
+          handleStr: expect.any(String)
         }
       ]
     });

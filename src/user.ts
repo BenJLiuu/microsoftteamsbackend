@@ -126,7 +126,7 @@ export function userProfileSetEmailV2 (token: Token, email: Email): Empty {
  * @throws 403 - Invalid token, if user does not exist.
  * @returns {UserStatsObj} the users stats, contained within an object.
  */
-export function userStats (token: Token): UserStatsObj {
+export function userStatsV1 (token: Token): UserStatsObj {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   const uId = getUserIdFromToken(token);
   const data = getData();

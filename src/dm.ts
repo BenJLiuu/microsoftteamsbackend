@@ -8,7 +8,8 @@ import {
   gethandleStrFromId,
   validDmId,
   checkUserIdtoDm,
-  getPublicUser
+  getPublicUser,
+  calculateInvolvementRate
 } from './helper';
 import HTTPError from 'http-errors';
 
@@ -39,10 +40,18 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
   members.push(getPublicUser(data.users.find(user => user.uId === authUserId)));
   if (uIds.length !== 0) {
     for (const uId of uIds) {
-      members.push(getPublicUser(data.users.find(user => user.uId === uId)));
-      names.push(gethandleStrFromId(uId));
       const userIndex = data.users.findIndex(user => user.uId === uId);
-      data.users[userIndex].userStats = userStatsJoinDm(uId);
+      members.push(getPublicUser(data.users[userIndex]));
+      names.push(gethandleStrFromId(uId));
+
+      // User Stats
+      console.log('JOINING DM');
+      const dmsJoined = data.users[userIndex].userStats.dmsJoined[data.users[userIndex].userStats.dmsJoined.length - 1].numDmsJoined;
+      data.users[userIndex].userStats.dmsJoined.push({
+        numDmsJoined: dmsJoined + 1,
+        timeStamp: Date.now(),
+      });
+      data.users[userIndex].userStats.involvementRate = calculateInvolvementRate(uId, 1, 1);
     }
   }
 
@@ -52,7 +61,16 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
 
   const name = names.join(', ');
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
-  data.users[ownerIndex].userStats = userStatsJoinDm(authUserId);
+
+  // User Stats
+  console.log('CREATING DM');
+  const dmsJoined = data.users[ownerIndex].userStats.dmsJoined[data.users[ownerIndex].userStats.dmsJoined.length - 1].numDmsJoined;
+  data.users[ownerIndex].userStats.dmsJoined.push({
+    numDmsJoined: dmsJoined + 1,
+    timeStamp: Date.now(),
+  });
+  data.users[ownerIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, 1, 1);
+
   let newdmId = 0;
   while (data.dms.some(c => c.dmId === newdmId)) newdmId++;
   const newDm: PrivateDm = {
@@ -74,6 +92,7 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
     }
   }
 
+  data.workplaceStats.numDms++;
   data.dms.push(newDm);
   setData(data);
 
@@ -121,16 +140,22 @@ export function dmLeaveV2(token: Token, dmId: DmId): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   if (!validDmId(dmId)) throw HTTPError(400, 'Invalid DM Id.');
 
-  const authUserId = getUserIdFromToken(token);
-  if (!checkUserIdtoDm(authUserId, dmId)) throw HTTPError(400, 'Authorised user is not a member of the DM.');
+  const uId = getUserIdFromToken(token);
+  if (!checkUserIdtoDm(uId, dmId)) throw HTTPError(400, 'Authorised user is not a member of the DM.');
 
   const data = getData();
   const position = data.dms.findIndex(dm => dm.dmId === dmId);
-  const dmIndex = data.dms[position].members.findIndex(user => user.uId === authUserId);
+  const dmIndex = data.dms[position].members.findIndex(user => user.uId === uId);
   data.dms[position].members.splice(dmIndex, 1);
 
   const userIndex = data.users.findIndex(user => user.uId === uId);
-  data.users[userIndex].userStats = userStatsLeaveDm(uId);
+  // User Stats
+  const dmsJoined = data.users[userIndex].userStats.dmsJoined[data.users[userIndex].userStats.dmsJoined.length - 1].numDmsJoined;
+  data.users[userIndex].userStats.dmsJoined.push({
+    numDmsJoined: dmsJoined - 1,
+    timeStamp: Date.now(),
+  });
+  data.users[userIndex].userStats.involvementRate = calculateInvolvementRate(uId, 0, -1);
 
   setData(data);
 
@@ -159,6 +184,10 @@ export function dmRemoveV2(token: Token, dmId: DmId): Empty {
   const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
   if (authUserId !== data.dms[dmIndex].owner.uId) throw HTTPError(400, 'Authorised user is not owner of DM.');
 
+  data.workplaceStats.numDms--;
+  // FIXME:
+  const userStatsIndex = data.users.findIndex(user => user.uId === authUserId);
+  data.users[userStatsIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, -1, -1);
   data.dms.splice(dmIndex, 1);
   setData(data);
 

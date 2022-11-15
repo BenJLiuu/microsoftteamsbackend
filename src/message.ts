@@ -14,6 +14,7 @@ import {
   checkUserToMessage,
   validMessageId,
   checkTag,
+  calculateInvolvementRate,
 } from './helper';
 import HTTPError from 'http-errors';
 
@@ -50,8 +51,15 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
     timeSent: Date.now(),
   });
 
+  // User stats
   const userStatsIndex = data.users.findIndex(user => user.uId === authUserId);
-  data.users[userStatsIndex].userStats = userStatsSendMessage(authUserId);
+  console.log('CREATING DM MESSAGE');
+  const messagesSent = data.users[userStatsIndex].userStats.messagesSent[data.users[userStatsIndex].userStats.messagesSent.length - 1].numMessagesSent;
+  data.users[userStatsIndex].userStats.messagesSent.push({
+    numMessagesSent: messagesSent + 1,
+    timeStamp: Date.now(),
+  });
+  data.users[userStatsIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, 1, 1);
 
   const usersTagged = checkTag(message, -1, dmId);
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
@@ -67,6 +75,8 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
       data.users[userIndex].notifications.push(notification);
     }
   }
+
+  data.workplaceStats.numMessages++;
 
   setData(data);
   return {
@@ -105,12 +115,19 @@ export function messageSendV2(token: Token, channelId: ChannelId, message: Messa
     message: message,
     timeSent: Date.now(),
   });
-
-  const userStatsIndex = data.users.findIndex(user => user.uId === authUserId);
-  data.users[userStatsIndex].userStats = userStatsSendMessage(authUserId);
-
+  data.workplaceStats.numMessages++;
   const usersTagged = checkTag(message, channelId, -1);
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
+
+  // User Stats
+  console.log('CREATING MESSAGE');
+  const messagesSent = data.users[ownerIndex].userStats.messagesSent[data.users[ownerIndex].userStats.messagesSent.length - 1].numMessagesSent;
+  data.users[ownerIndex].userStats.messagesSent.push({
+    numMessagesSent: messagesSent + 1,
+    timeStamp: Date.now(),
+  });
+  data.users[ownerIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, 1, 1);
+
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
   if (usersTagged.amountTagged !== 0) {
     for (let i = 0; i < usersTagged.membersTagged.length; i++) {
@@ -232,6 +249,11 @@ export function messageRemoveV2(token: string, messageId: number): Empty {
     const position = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
     data.channels[isChannel].messages.splice(position, 1);
   }
+
+  const userStatsIndex = data.users.findIndex(user => user.uId === authUserId);
+  data.numMessages--;
+  // FIXME:
+  data.users[userStatsIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, -1, 0);
 
   setData(data);
   return {};
