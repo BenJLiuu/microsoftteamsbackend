@@ -156,13 +156,13 @@ describe('standupSendV1 tests', () => {
 
     function delay(delay: number) {
       return new Promise(resolve => setTimeout(resolve, delay));
-    };
+    }
 
     await delay(4000);
 
     expect(requestChannelMessages(user.token, channel.channelId, 0)).toEqual({
       messages: [
-        { 
+        {
           message: 'kevinmalone: hello1\nkevinmalone: hello2\nkevinmalone: hello3\nkevinmalone: hello4',
           messageId: expect.any(Number),
           timeSent: expect.any(Number),
