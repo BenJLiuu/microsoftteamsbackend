@@ -45,9 +45,9 @@ describe('ChannelMessages', () => {
   });
 
   /* These tests utilise the requestMessageSend helper function to test the
-   functionality of requestChannelMessages. This is white-box testing, so it has
-   been commented out, but if the helper function and these tests are uncommented
-   they will pass. */
+     functionality of requestChannelMessages. This is white-box testing, so it has
+     been commented out, but if the helper function and these tests are uncommented
+     they will pass. */
 
   test('Authorised user is invalid', () => {
     const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
@@ -69,18 +69,24 @@ describe('ChannelMessages', () => {
           uId: user1.authUserId,
           message: 'hello',
           timeSent: expect.any(Number),
+          reacts: [],
+          isPinned: false,
         },
         {
           messageId: expect.any(Number),
           uId: user1.authUserId,
           message: 'hello',
           timeSent: expect.any(Number),
+          reacts: [],
+          isPinned: false,
         },
         {
           messageId: expect.any(Number),
           uId: user1.authUserId,
           message: 'hello',
           timeSent: expect.any(Number),
+          reacts: [],
+          isPinned: false,
         },
       ],
       start: 0,

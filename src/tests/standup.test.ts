@@ -166,7 +166,9 @@ describe('standupSendV1 tests', () => {
           message: 'kevinmalone: hello1\nkevinmalone: hello2\nkevinmalone: hello3\nkevinmalone: hello4',
           messageId: expect.any(Number),
           timeSent: expect.any(Number),
-          uId: user.authUserId
+          uId: user.authUserId,
+          reacts: [],
+          isPinned: false,
         }
       ],
       start: 0,

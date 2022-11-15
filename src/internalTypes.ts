@@ -96,6 +96,10 @@ export type ActiveStandupObj = {
   timeFinish: itf.TimeFinish
 }
 
+export type SharedMessageIdObj = {
+  sharedMessageId: itf.SharedMessageId
+}
+
 export type messages = {
   messages: itf.Messages,
 };
