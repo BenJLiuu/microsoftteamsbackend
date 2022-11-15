@@ -409,7 +409,7 @@ describe('requestChannelJoin', () => {
             email: 'walter@gmail.com',
 
             handleStr: 'waltwhite',
-            
+
             profileImgUrl: expect.any(String),
 
           }

@@ -3,8 +3,7 @@ import {
   requestUserProfileSetEmail, requestUserProfileSetHandle, requestClear,
   requestChannelsCreate, requestChannelJoin, requestChannelDetails, requestNotificationsGet,
   requestChannelInvite, requestDmCreate, requestMessageSendDm, requestMessageSend,
-  requestMessageEdit, requestUserProfileUploadPhoto, requestMessageReact, requestMessageShare,
-  requestDmMessages
+  requestMessageEdit, requestUserProfileUploadPhoto, requestMessageReact, requestMessageShare
 } from './httpHelper';
 
 describe('Test userProfile', () => {
@@ -961,6 +960,5 @@ describe('Test userProfileUploadPhoto', () => {
         profileImgUrl: expect.any(String),
       },
     });
-    //expect(requestUserProfileUploadPhoto(user1.token, 'http://www.traveller.com.au/content/dam/images/h/1/p/q/1/k/image.related.articleLeadwide.620x349.h1pq27.png/1596176460724.jpg', 0, 0, 600, 340)).toEqual(500)
   });
 });

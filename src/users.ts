@@ -184,24 +184,24 @@ export function userProfileUploadPhotoV1(token: string, imgUrl: string, xStart: 
   const url = 'https://localhost:' + port + '/' + newPhotoUrl;
   fetch(imgUrl).then((response) => {
     if (response.status !== 200) {
-      throw err;
+      throw new Error('Error');
     } else {
       Jimp.read(imgUrl).then(image => {
         const width = image.bitmap.width;
         const height = image.bitmap.height;
-        if (xStart >= width || xEnd > width) throw err;
-        if (yStart >= height || yEnd > height) throw err;
+        if (xStart >= width || xEnd > width) throw new Error('Error');
+        if (yStart >= height || yEnd > height) throw new Error('Error');
         image.crop(xStart, yStart, (xEnd - xStart), (yEnd - yStart));
         image.write(newPhotoUrl);
       })
-      .catch(err => {
-        throw HTTPError(400, 'Error Encountered.');
-      });
-      }
-    })
-  .catch(err => {
-    throw HTTPError(400, 'Error Encountered.');
-  });
+        .catch(err => {
+          throw HTTPError(400, 'Error Encountered.');
+        });
+    }
+  })
+    .catch(err => {
+      throw HTTPError(400, 'Error Encountered.');
+    });
   const data = getData();
   const userId = getUserIdFromToken(token);
   data.users.find(user => user.uId === userId).profileImgUrl = url;

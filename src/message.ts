@@ -263,7 +263,6 @@ export function messageShareV1(token: string, ogMessageId: number, message: stri
   const data = getData();
   const uId = getUserIdFromToken(token);
   const sharedMessageId = { messageId: 0 };
-  let newMessageId = 0;
   let sharedMessage = '';
   if (channelId !== -1) {
     if (checkMessageToChannel(ogMessageId) !== -1) {
@@ -305,7 +304,6 @@ export function messageShareV1(token: string, ogMessageId: number, message: stri
     }
     if (!checkUserIdtoDm(uId, dmId)) throw HTTPError(403, 'Not a member of the dm.');
     const sharedMessageId = generateMessageId().messageId;
-    newMessageId = sharedMessageId;
     data.dms.find(dm => dm.dmId === dmId).messages.push({
       messageId: sharedMessageId,
       uId: uId,
@@ -317,7 +315,7 @@ export function messageShareV1(token: string, ogMessageId: number, message: stri
   }
 
   if (message !== '') {
-    let usersTagged = checkTag(message, channelId, dmId);
+    const usersTagged = checkTag(message, channelId, dmId);
     let notification = { channelId: 0, dmId: 0, notificationMessage: '' };
     const ownerIndex = data.users.findIndex(user => user.uId === uId);
     if (usersTagged.amountTagged !== 0) {
@@ -394,7 +392,7 @@ export function messageReactV1(token: string, messageId: number, reactId: number
   const isDm = checkMessageToDm(messageId);
   const ownerIndex = data.users.findIndex(user => user.uId === UserId);
   let notification = { channelId: 0, dmId: 0, notificationMessage: '' };
-  const userIndex = 0;
+  let userIndex = 0;
   if (isChannel === -1) {
     const positionDm = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
     const senderUserId = data.dms[isDm].messages[positionDm].uId;
