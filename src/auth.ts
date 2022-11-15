@@ -3,7 +3,11 @@ import { Empty, Email, Password, Name, Token, ResetCode } from './interfaceTypes
 import { Session } from './internalTypes';
 import HTTPError from 'http-errors';
 import validator from 'validator';
-import { generateUId, generateSession, generateHandleStr, hashCode, validToken, getUserFromEmail, validResetCode } from './helper';
+import {
+  generateUId, generateSession, generateHandleStr,
+  hashCode, validToken, getUserFromEmail,
+  validResetCode, validPassword
+} from './helper';
 import { port } from './config.json';
 
 /**
@@ -19,16 +23,12 @@ import { port } from './config.json';
 */
 export function authLoginV3(email: Email, password: Password): Session {
   const data = getData();
-  for (const user of data.users) {
-    if (user.email === email) {
-      // Found an email match
-      if (user.passwordHash === password) return generateSession(user.uId);
-      else throw HTTPError(400, 'Incorrect Password.');
-    }
-  }
-
+  const intendedUser = data.users.find(u => u.email === email);
   // If nothing has been returned, user has not been found.
-  throw HTTPError(400, 'Email Not Found.');
+  if (!intendedUser) throw HTTPError(400, 'Email Not Found.');
+
+  if (validPassword(intendedUser.passwordHash, password)) return generateSession(intendedUser.uId);
+  else throw HTTPError(400, 'Incorrect Password.');
 }
 
 /**
@@ -71,7 +71,7 @@ export function authRegisterV3(email: Email, password: Password, nameFirst: Name
     nameLast: nameLast,
     email: email,
     handleStr: handleStr,
-    passwordHash: password,
+    passwordHash: hashCode(password + 'secret'),
     // 1 if first UId made, 2 otherwise.
     globalPermissions: newUId === 0 ? 1 : 2,
     notifications: [],
@@ -164,7 +164,7 @@ export function authPasswordResetResetV1(resetCode: ResetCode, newPassword: Pass
   if (!validResetCode(resetCode)) throw HTTPError(400, 'Invalid Reset Code.');
   const data = getData();
   const user = data.users.find(user => user.resetCode === resetCode);
-  user.passwordHash = newPassword;
+  user.passwordHash = hashCode(newPassword + 'secret');
   user.resetCode = '';
   setData(data);
   return {};

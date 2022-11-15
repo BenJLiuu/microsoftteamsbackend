@@ -1,6 +1,7 @@
 import * as itf from './interfaceTypes';
 
 export type HashedToken = number;
+export type HashedPassword = number;
 
 export type PrivateUser = {
   uId: itf.UId,
@@ -8,7 +9,7 @@ export type PrivateUser = {
   nameLast: itf.Name,
   email: itf.Email,
   handleStr: itf.HandleStr,
-  passwordHash: itf.Password,
+  passwordHash: HashedPassword,
   globalPermissions: number,
   notifications: itf.Notifications,
   resetCode: string,
@@ -83,6 +84,10 @@ export type DMsObj = {
 export type NotificationsObj = {
   notifications: itf.Notifications,
 };
+
+export type SharedMessageIdObj = {
+  sharedMessageId: itf.SharedMessageId
+}
 
 export type messages = {
   messages: itf.Messages,
