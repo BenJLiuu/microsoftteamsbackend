@@ -88,6 +88,9 @@ export function channelsCreateV3(token: Token, name: Name, isPublic: IsPublic): 
     ownerMembers: [],
     allMembers: [],
     messages: [],
+    activeStandup: false,
+    standupTimeFinish: null,
+    standupMessage: '',
   };
 
   data.channels.push(newChannel);
