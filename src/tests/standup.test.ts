@@ -160,10 +160,17 @@ describe('standupSendV1 tests', () => {
 
     await delay(4000);
 
-    expect(requestChannelMessages(user.token, channel.token, 0)).toEqual({
-      messages: ['kevinmalone: hello1\n kevinmalone: hello2\n kevinmalone: hello3\n kevinmalone: hello4'],
+    expect(requestChannelMessages(user.token, channel.channelId, 0)).toEqual({
+      messages: [
+        { 
+          message: 'kevinmalone: hello1\nkevinmalone: hello2\nkevinmalone: hello3\nkevinmalone: hello4',
+          messageId: expect.any(Number),
+          timeSent: expect.any(Number),
+          uId: user.authUserId
+        }
+      ],
       start: 0,
-      end: 1
+      end: -1
     });
   });
 });
