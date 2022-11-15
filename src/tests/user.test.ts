@@ -377,10 +377,10 @@ describe('Test Updating User Info', () => {
 });
 
 describe('Test userStats', () => {
-  let user1;
-  let user2;
-  let channel2;
-  let dm1;
+  let user1: any;
+  let user2: any;
+  let channel2: any;
+  let dm1: any;
 
   beforeEach(() => {
     requestClear();

@@ -251,7 +251,7 @@ export function messageRemoveV2(token: string, messageId: number): Empty {
   }
 
   const userStatsIndex = data.users.findIndex(user => user.uId === authUserId);
-  data.numMessages--;
+  data.workplaceStats.numMessages--;
   // FIXME:
   data.users[userStatsIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, -1, 0);
 
