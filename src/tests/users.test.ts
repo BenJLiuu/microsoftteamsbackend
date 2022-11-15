@@ -3,7 +3,8 @@ import {
   requestUserProfileSetEmail, requestUserProfileSetHandle, requestClear,
   requestChannelsCreate, requestChannelJoin, requestChannelDetails, requestNotificationsGet,
   requestChannelInvite, requestDmCreate, requestMessageSendDm, requestMessageSend,
-  requestMessageEdit, requestUserProfileUploadPhoto
+  requestMessageEdit, requestUserProfileUploadPhoto, requestMessageReact, requestMessageShare,
+  requestDmMessages
 } from './httpHelper';
 
 describe('Test userProfile', () => {
@@ -648,35 +649,115 @@ describe('Test notificationsGet', () => {
     });
   });
 
-  // test('Notification for message react in dm', () => {
-  //   requestClear();
-  //   const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-  //   const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
-  //   expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
-  //     user: {
-  //       uId: user1.authUserId,
-  //       nameFirst: 'Alice',
-  //       nameLast: 'Person',
-  //       email: 'aliceP@fmail.au',
-  //       handleStr: 'aliceperson',
-  //     },
-  //   });
-  // });
+  test('Notification for message react in dm', () => {
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId, user3.authUserId]);
+    const message1 = requestMessageSendDm(user2.token, dm1.dmId, 'hello');
+    requestMessageReact(user1.token, message1.messageId, 1);
+    expect(requestNotificationsGet(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage: 'aliceperson reacted to your message in aliceperson, johnmate, johnnymate',
+        },
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage: 'aliceperson added you to aliceperson, johnmate, johnnymate',
+        }
+      ],
+    });
+  });
 
-  // test('Notification for message react in channel', () => {
-  //   requestClear();
-  //   const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-  //   const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
-  //   expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
-  //     user: {
-  //       uId: user1.authUserId,
-  //       nameFirst: 'Alice',
-  //       nameLast: 'Person',
-  //       email: 'aliceP@fmail.au',
-  //       handleStr: 'aliceperson',
-  //     },
-  //   });
-  // });
+  test('Notification for message react in channel', () => {
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    requestChannelInvite(user1.token, channel1.channelId, user2.authUserId);
+    requestChannelInvite(user1.token, channel1.channelId, user3.authUserId);
+    const message1 = requestMessageSend(user2.token, channel1.channelId, 'hello');
+    requestMessageReact(user1.token, message1.messageId, 1);
+    expect(requestNotificationsGet(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage: 'aliceperson reacted to your message in channel1',
+        },
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage: 'aliceperson added you to channel1',
+        }
+      ],
+    });
+  });
+
+  test('Notification for shared message through channel', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    requestChannelInvite(user1.token, channel1.channelId, user2.authUserId);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    const channel2 = requestChannelsCreate(user1.token, 'channel2', true);
+    requestChannelInvite(user1.token, channel2.channelId, user2.authUserId);
+    requestMessageShare(user1.token, message1.messageId, 'hi @aliceperson', channel2.channelId, -1);
+    expect(requestNotificationsGet(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel2.channelId,
+          dmId: -1,
+          notificationMessage: 'johnnylawrence tagged you in channel2: hi @aliceperson',
+        },
+        {
+          channelId: channel2.channelId,
+          dmId: -1,
+          notificationMessage: 'johnnylawrence added you to channel2',
+        },
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage: 'johnnylawrence added you to channel1',
+        }
+      ],
+    });
+  });
+
+  test('Notification for shared message through dm', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId, user3.authUserId]);
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    requestChannelInvite(user1.token, channel1.channelId, user2.authUserId);
+    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    requestMessageShare(user1.token, message1.messageId, 'hi @aliceperson', -1, dm1.dmId);
+    expect(requestNotificationsGet(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage: 'johnsmith tagged you in aliceperson, johnnymate, johnsmith: hi @aliceperson',
+        },
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage: 'johnsmith added you to channel1',
+        },
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage: 'johnsmith added you to aliceperson, johnnymate, johnsmith',
+        }
+      ],
+    });
+  });
 
   test('Over 20 Notifications', () => {
     requestClear();
@@ -828,11 +909,11 @@ describe('Test userProfileUploadPhoto', () => {
     expect(requestUserProfileUploadPhoto(user1.token + '1', URL, 0, 0, 200, 200)).toEqual(403);
   });
 
-  test('url is invalid', () => {
-    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    const URL = 'http://www.testing.com/test.jpg';
-    expect(requestUserProfileUploadPhoto(user1.token, URL, 0, 0, 200, 200)).toEqual(400);
-  });
+  // test('url is invalid', () => {
+  //   const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+  //   const URL = 'http://www.testing.com/test.jpg';
+  //   expect(requestUserProfileUploadPhoto(user1.token, URL, 0, 0, 200, 200)).toEqual(400);
+  // });
 
   test('image is not jpg', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
@@ -877,7 +958,7 @@ describe('Test userProfileUploadPhoto', () => {
         nameLast: 'Person',
         email: 'aliceP@fmail.au',
         handleStr: 'aliceperson',
-        profileImgUrl: 'hi',
+        profileImgUrl: expect.any(String),
       },
     });
     //expect(requestUserProfileUploadPhoto(user1.token, 'http://www.traveller.com.au/content/dam/images/h/1/p/q/1/k/image.related.articleLeadwide.620x349.h1pq27.png/1596176460724.jpg', 0, 0, 600, 340)).toEqual(500)

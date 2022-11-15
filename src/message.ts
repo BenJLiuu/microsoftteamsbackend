@@ -263,6 +263,7 @@ export function messageShareV1(token: string, ogMessageId: number, message: stri
   const data = getData();
   const uId = getUserIdFromToken(token);
   const sharedMessageId = { messageId: 0 };
+  let newMessageId = 0;
   let sharedMessage = '';
   if (channelId !== -1) {
     if (checkMessageToChannel(ogMessageId) !== -1) {
@@ -304,6 +305,7 @@ export function messageShareV1(token: string, ogMessageId: number, message: stri
     }
     if (!checkUserIdtoDm(uId, dmId)) throw HTTPError(403, 'Not a member of the dm.');
     const sharedMessageId = generateMessageId().messageId;
+    newMessageId = sharedMessageId;
     data.dms.find(dm => dm.dmId === dmId).messages.push({
       messageId: sharedMessageId,
       uId: uId,
@@ -312,8 +314,33 @@ export function messageShareV1(token: string, ogMessageId: number, message: stri
       reacts: [],
       isPinned: false
     });
+  }
 
-    throw HTTPError(400, 'error');
+  if (message !== '') {
+    let usersTagged = checkTag(message, channelId, dmId);
+    let notification = { channelId: 0, dmId: 0, notificationMessage: '' };
+    const ownerIndex = data.users.findIndex(user => user.uId === uId);
+    if (usersTagged.amountTagged !== 0) {
+      for (let i = 0; i < usersTagged.membersTagged.length; i++) {
+        const userIndex = data.users.findIndex(user => user.uId === usersTagged.membersTagged[i]);
+        if (channelId === -1) {
+          const DmPostition = data.dms.findIndex(dm => dm.dmId === dmId);
+          notification = {
+            channelId: -1,
+            dmId: dmId,
+            notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.dms[DmPostition].name + ': ' + message.substring(0, 20),
+          };
+        } else {
+          const ChannelPostition = data.channels.findIndex(channel => channel.channelId === channelId);
+          notification = {
+            channelId: channelId,
+            dmId: -1,
+            notificationMessage: data.users[ownerIndex].handleStr + ' tagged you in ' + data.channels[ChannelPostition].name + ': ' + message.substring(0, 20),
+          };
+        }
+        data.users[userIndex].notifications.push(notification);
+      }
+    }
   }
 
   setData(data);
@@ -363,6 +390,31 @@ export function messageReactV1(token: string, messageId: number, reactId: number
       data.channels[isChannel].messages[position].reacts.push(UserId);
     } else throw HTTPError(400, 'User is not a member of the channel.');
   }
+
+  const isDm = checkMessageToDm(messageId);
+  const ownerIndex = data.users.findIndex(user => user.uId === UserId);
+  let notification = { channelId: 0, dmId: 0, notificationMessage: '' };
+  const userIndex = 0;
+  if (isChannel === -1) {
+    const positionDm = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
+    const senderUserId = data.dms[isDm].messages[positionDm].uId;
+    userIndex = data.users.findIndex(user => user.uId === senderUserId);
+    notification = {
+      channelId: -1,
+      dmId: data.dms[isDm].dmId,
+      notificationMessage: data.users[ownerIndex].handleStr + ' reacted to your message in ' + data.dms[isDm].name,
+    };
+  } else {
+    const positionChannel = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
+    const senderUserId = data.channels[isChannel].messages[positionChannel].uId;
+    userIndex = data.users.findIndex(user => user.uId === senderUserId);
+    notification = {
+      channelId: data.channels[isChannel].channelId,
+      dmId: -1,
+      notificationMessage: data.users[ownerIndex].handleStr + ' reacted to your message in ' + data.channels[isChannel].name,
+    };
+  }
+  data.users[userIndex].notifications.push(notification);
   setData(data);
 
   return {};

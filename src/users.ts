@@ -184,7 +184,7 @@ export function userProfileUploadPhotoV1(token: string, imgUrl: string, xStart: 
   const url = 'https://localhost:' + port + '/' + newPhotoUrl;
   fetch(imgUrl).then((response) => {
     if (response.status !== 200) {
-      throw new Error('Error.');
+      throw err;
     } else {
       Jimp.read(imgUrl).then(image => {
         const width = image.bitmap.width;
