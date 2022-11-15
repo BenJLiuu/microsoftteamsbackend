@@ -240,9 +240,14 @@ export function userStatsConstructor(): UserStats {
 }
 
 /**
- * Given a UserStats object, calculates an involvement rate.
- * @param stats - the stats (that have been updated since last calculation) to use for updated calculation
- * @returns a float between 0 and 1 (inclusive) describing involvement rate.
+ * Given a userId and the required changes in involvement, calculate an updated involvement.
+ * THIS EXPECTS THE DATA TO NOT HAVE BEEN SAVED YET! This is important for certain user/workspace functionality.
+ * NOTE this also is capped at 1 (which occurs when a message is sent, then deleted, which does not change MessagesSent but does
+ * change MessagesExist, therefore increasing Involvement).
+ * @param {UId} uId - the user to update
+ * @param {number} totalchange - the workspace change
+ * @param {number} userchange - the user change (difference being if a user leaves a channel, but that channel is not deleted)
+ * @returns {number} a float between 0 and 1 (inclusive) correlated to involvement.
  */
 export function calculateInvolvementRate(uId: UId, totalchange: number, userchange: number): number {
   const data = getData();
@@ -257,6 +262,31 @@ export function calculateInvolvementRate(uId: UId, totalchange: number, userchan
   if (totalItems === 0) return 0;
   // Clamp to 1 in case a message is deleted (which does not affect userSent but does affect messageTotal)
   return Math.min(userItems / totalItems, 1);
+}
+
+/**
+ * Given a userId and the required changes in involvement, calculate an updated involvement.
+ * THIS EXPECTS THE DATA TO NOT HAVE BEEN SAVED YET! This is important for certain user/workspace functionality.
+ * NOTE this also is capped at 1 (which occurs when a message is sent, then deleted, which does not change MessagesSent but does
+ * change MessagesExist, therefore increasing Involvement).
+ * @param {UId} uId - the user to update
+ * @param {number} totalchange - the workspace change
+ * @param {number} userchange - the user change (difference being if a user leaves a channel, but that channel is not deleted)
+ * @returns {number} a float between 0 and 1 (inclusive) correlated to involvement.
+ */
+ export function calculateUtilizationRate(change: number): number {
+  const data = getData();
+
+  // add up user current channels, dms, messages sent, adding on change
+  let usersInAtLeastOneChannel = 0;
+  for (const user of data.users) {
+    if (data.channels.some(channel => userIsChannelMember(user.uId, channel.channelId))) {
+      usersInAtLeastOneChannel++;
+    }
+  }
+  if (totalItems === 0) return 0;
+  // Clamp to 1
+  return Math.min(usersInAtLeastOneChannel / data.workplaceStats.numUsers, 1);
 }
 
 /**

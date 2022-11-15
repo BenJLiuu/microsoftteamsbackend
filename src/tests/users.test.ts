@@ -1,5 +1,5 @@
 import { requestAuthRegister, requestUsersAll, requestClear, requestUsersStats } from './httpHelper';
-
+requestUsersStats
 describe('Test usersAlls', () => {
   beforeEach(() => {
     requestClear();
@@ -49,420 +49,444 @@ describe('Test usersAlls', () => {
   });
 });
 
-describe('Test userStats', () => {
-  let user1: any;
-  let user2: any;
-  let channel2: any;
-  let dm1: any;
+describe('Test usersStats', () => { 
 
   beforeEach(() => {
     requestClear();
-    user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    user2 = requestAuthRegister('albert@email.com', 'albpass', 'Al', 'Bert');
-    channel2 = requestChannelsCreate(user2.token, 'channel2', true);
   });
 
   test('token is invalid', () => {
-    expect(requestUsersStats(user1.token + '1')).toEqual(403);
+    expect(requestUsersStats('1')).toEqual(403);
   });
 
-  test('test user has not joined anything', () => {
-    expect(requestUserStats(user1.token)).toStrictEqual({
-      userStats: {
-        channelsJoined:
+  test('test only one user', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    expect(requestUsersStats(user1.token)).toStrictEqual({
+      workspaceStats: {
+        channelsExist:
         [
           {
-            numChannelsJoined: 0,
+            numChannelsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        dmsJoined:
+        dmsExist:
         [
           {
-            numDmsJoined: 0,
+            numDmsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        messagesSent:
+        messagesExist:
         [
           {
-            numMessagesSent: 0,
+            numMessagesExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0
+        utilizationRate: 0
       },
     });
   });
 
   test('Test user creates one channel', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     requestChannelsCreate(user1.token, 'channel1', true);
-    expect(requestUserStats(user1.token)).toStrictEqual({
-      userStats: {
-        channelsJoined:
+    expect(requestUsersStats(user1.token)).toStrictEqual({
+      workspaceStats: {
+        channelsExist:
         [
           {
-            numChannelsJoined: 0,
+            numChannelsExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numChannelsJoined: 1,
+            numChannelsExist: 1,
             timeStamp: expect.any(Number)
           }
         ],
-        dmsJoined:
+        dmsExist:
         [
           {
-            numDmsJoined: 0,
+            numDmsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        messagesSent:
+        messagesExist:
         [
           {
-            numMessagesSent: 0,
+            numMessagesExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 1 / 2
+        utilizationRate: 1
       },
     });
   });
 
   test('Test user joins one channel', () => {
-    requestChannelJoin(user1.token, channel2.channelId);
-    expect(requestUserStats(user1.token)).toStrictEqual({
-      userStats: {
-        channelsJoined:
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    requestChannelJoin(user2.token, channel1.channelId);
+    expect(requestUsersStats(user1.token)).toStrictEqual({
+      workspaceStats: {
+        channelsExist:
         [
           {
-            numChannelsJoined: 0,
+            numChannelsExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numChannelsJoined: 1,
+            numChannelsExist: 1,
             timeStamp: expect.any(Number)
           }
         ],
-        dmsJoined:
+        dmsExist:
         [
           {
-            numDmsJoined: 0,
+            numDmsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        messagesSent:
+        messagesExist:
         [
           {
-            numMessagesSent: 0,
+            numMessagesExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 1
+        utilizationRate: 1
       },
     });
   });
 
   test('Test user joins, then leaves one channel', () => {
-    requestChannelJoin(user1.token, channel2.channelId);
-    requestChannelLeave(user1.token, channel2.channelId);
-    expect(requestUserStats(user1.token)).toStrictEqual({
-      userStats: {
-        channelsJoined:
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    requestChannelJoin(user2.token, channel1.channelId);
+    requestChannelLeave(user2.token, channel1.channelId);
+    expect(requestUsersStats(user1.token)).toStrictEqual({
+      workspaceStats: {
+        channelsExist:
         [
           {
-            numChannelsJoined: 0,
+            numChannelsExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numChannelsJoined: 1,
+            numChannelsExist: 1,
             timeStamp: expect.any(Number)
           },
           {
-            numChannelsJoined: 0,
+            numChannelsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        dmsJoined:
+        dmsExist:
         [
           {
-            numDmsJoined: 0,
+            numDmsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        messagesSent:
+        messagesExist:
         [
           {
-            numMessagesSent: 0,
+            numMessagesExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0
+        utilizationRate: 1/2
       },
     });
   });
 
   test('Test user creates one dm', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
     requestDmCreate(user1.token, []);
-    expect(requestUserStats(user1.token)).toStrictEqual({
-      userStats: {
-        channelsJoined:
+    expect(requestUsersStats(user1.token)).toStrictEqual({
+      workspaceStats: {
+        channelsExist:
         [
           {
-            numChannelsJoined: 0,
+            numChannelsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        dmsJoined:
+        dmsExist:
         [
           {
-            numDmsJoined: 0,
+            numDmsExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numDmsJoined: 1,
+            numDmsExist: 1,
             timeStamp: expect.any(Number)
           }
         ],
-        messagesSent:
+        messagesExist:
         [
           {
-            numMessagesSent: 0,
+            numMessagesExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 1 / 2
+        utilizationRate: 1/2
       },
     });
   });
 
   test('Test user joins one dm', () => {
-    requestDmCreate(user2.token, [user1.authUserId]);
-    expect(requestUserStats(user1.token)).toStrictEqual({
-      userStats: {
-        channelsJoined:
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
+    requestDmCreate(user1.token, [user2.token]);
+    expect(requestUsersStats(user1.token)).toStrictEqual({
+      workspaceStats: {
+        channelsExist:
         [
           {
-            numChannelsJoined: 0,
+            numChannelsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        dmsJoined:
+        dmsExist:
         [
           {
-            numDmsJoined: 0,
+            numDmsExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numDmsJoined: 1,
+            numDmsExist: 1,
             timeStamp: expect.any(Number)
           }
         ],
-        messagesSent:
+        messagesExist:
         [
           {
-            numMessagesSent: 0,
+            numMessagesExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 1 / 2
+        utilizationRate: 1
       },
     });
   });
 
   test('Test user joins, then leaves one dm', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
     dm1 = requestDmCreate(user2.token, [user1.authUserId]);
     requestDmLeave(user1.token, dm1.dmId);
-    expect(requestUserStats(user1.token)).toStrictEqual({
-      userStats: {
-        channelsJoined:
+    requestDmLeave(user2.token, dm1.dmId);
+    expect(requestUsersStats(user1.token)).toStrictEqual({
+      workspaceStats: {
+        channelsExist:
         [
           {
-            numChannelsJoined: 0,
+            numChannelsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        dmsJoined:
+        dmsExist:
         [
           {
-            numDmsJoined: 0,
+            numDmsExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numDmsJoined: 1,
+            numDmsExist: 1,
             timeStamp: expect.any(Number)
           },
           {
-            numDmsJoined: 0,
+            numDmsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        messagesSent:
+        messagesExist:
         [
           {
-            numMessagesSent: 0,
+            numMessagesExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 0
+        utilizationRate: 0
       },
     });
   });
 
   test('test user sends a channel message', () => {
-    requestChannelJoin(user1.token, channel2.channelId);
-    requestMessageSend(user1.token, channel2.channelId, 'test message');
-    expect(requestUserStats(user1.token)).toStrictEqual({
-      userStats: {
-        channelsJoined:
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    requestMessageSend(user1.token, channel1.channelId, 'test message');
+    expect(requestUsersStats(user1.token)).toStrictEqual({
+      workspaceStats: {
+        channelsExist:
         [
           {
-            numChannelsJoined: 0,
+            numChannelsExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numChannelsJoined: 1,
+            numChannelsExist: 1,
             timeStamp: expect.any(Number)
           }
         ],
-        dmsJoined:
+        dmsExist:
         [
           {
-            numDmsJoined: 0,
+            numDmsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        messagesSent:
+        messagesExist:
         [
           {
-            numMessagesSent: 0,
+            numMessagesExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numMessagesSent: 1,
+            numMessagesExist: 1,
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 1
+        utilizationRate: 1/2
       },
     });
   });
 
   test('test user sends a channel message, then deletes it', () => {
-    requestChannelJoin(user1.token, channel2.channelId);
-    const msg1 = requestMessageSend(user1.token, channel2.channelId, 'test message');
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+    const msg1 = requestMessageSend(user1.token, channel1.channelId, 'test message');
     requestMessageRemove(user1.token, msg1.messageId);
-    expect(requestUserStats(user1.token)).toStrictEqual({
-      userStats: {
-        channelsJoined:
+    expect(requestUsersStats(user1.token)).toStrictEqual({
+      workspaceStats: {
+        channelsExist:
         [
           {
-            numChannelsJoined: 0,
+            numChannelsExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numChannelsJoined: 1,
+            numChannelsExist: 1,
             timeStamp: expect.any(Number)
           }
         ],
-        dmsJoined:
+        dmsExist:
         [
           {
-            numDmsJoined: 0,
+            numDmsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        messagesSent:
+        messagesExist:
         [
           {
-            numMessagesSent: 0,
+            numMessagesExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numMessagesSent: 1,
+            numMessagesExist: 1,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numMessagesExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 1
+        utilizationRate: 1/2
       },
     });
   });
 
   test('test user sends a dm message', () => {
-    dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
+    const dm1 = requestDmCreate(user1.token, [user2.token]);
     requestMessageSendDm(user1.token, dm1.dmId, 'test message');
-    expect(requestUserStats(user1.token)).toStrictEqual({
-      userStats: {
-        channelsJoined:
+    expect(requestUsersStats(user1.token)).toStrictEqual({
+      workspaceStats: {
+        channelsExist:
         [
           {
-            numChannelsJoined: 0,
+            numChannelsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        dmsJoined:
+        dmsExist:
         [
           {
-            numDmsJoined: 0,
+            numDmsExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numDmsJoined: 1,
+            numDmsExist: 1,
             timeStamp: expect.any(Number)
           }
         ],
-        messagesSent:
+        messagesExist:
         [
           {
-            numMessagesSent: 0,
+            numMessagesExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numMessagesSent: 1,
+            numMessagesExist: 1,
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 2 / 3
+        utilizationRate: 1
       },
     });
   });
 
   test('test user sends a dm message, then deletes it', () => {
-    dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
+    const dm1 = requestDmCreate(user1.token, [user2.token]);
     const msg1 = requestMessageSendDm(user1.token, dm1.dmId, 'test message');
     requestMessageRemove(user1.token, msg1.messageId);
-    expect(requestUserStats(user1.token)).toStrictEqual({
-      userStats: {
-        channelsJoined:
+    expect(requestUsersStats(user1.token)).toStrictEqual({
+      workspaceStats: {
+        channelsExist:
         [
           {
-            numChannelsJoined: 0,
+            numChannelsExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        dmsJoined:
+        dmsExist:
         [
           {
-            numDmsJoined: 0,
+            numDmsExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numDmsJoined: 1,
+            numDmsExist: 1,
             timeStamp: expect.any(Number)
           }
         ],
-        messagesSent:
+        messagesExist:
         [
           {
-            numMessagesSent: 0,
+            numMessagesExist: 0,
             timeStamp: expect.any(Number)
           },
           {
-            numMessagesSent: 1,
+            numMessagesExist: 1,
+            timeStamp: expect.any(Number)
+          },
+          {
+            numMessagesExist: 0,
             timeStamp: expect.any(Number)
           }
         ],
-        involvementRate: 1
+        utilizationRate: 1
       },
     });
   });
