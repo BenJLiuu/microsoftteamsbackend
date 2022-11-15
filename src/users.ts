@@ -18,6 +18,10 @@ import {
 import HTTPError from 'http-errors';
 import { port } from './config.json';
 import Jimp from 'jimp';
+import request from 'sync-request';
+import sizeOf from 'image-size';
+import fs from 'fs';
+import path from 'path';
 
 /**
   * For a valid user, returns information about a requested valid user profile
@@ -182,22 +186,23 @@ export function userProfileUploadPhotoV1(token: string, imgUrl: string, xStart: 
   const randomString = (Math.random() + 1).toString(36).substring(2);
   const newPhotoUrl = 'imgurl/' + randomString + '.jpg';
   const url = 'https://localhost:' + port + '/' + newPhotoUrl;
-  fetch(imgUrl).then((response) => {
-    if (response.status !== 200) {
-      throw new Error('Error');
-    } else {
-      Jimp.read(imgUrl).then(image => {
-        const width = image.bitmap.width;
-        const height = image.bitmap.height;
-        if (xStart >= width || xEnd > width) throw new Error('Error');
-        if (yStart >= height || yEnd > height) throw new Error('Error');
-        image.crop(xStart, yStart, (xEnd - xStart), (yEnd - yStart));
-        image.write(newPhotoUrl);
-      })
-        .catch(err => {
-          throw HTTPError(400, 'Error Encountered.');
-        });
-    }
+  const res = request(
+    'GET', imgUrl
+  );
+  if (res.statusCode !== 200) {
+    throw HTTPError(400, 'Error: Image URL is invalid');
+  }
+  const body = res.getBody();
+  fs.writeFileSync('imgurl/checkSize.jpg', body, { flag: 'w' });
+  const dimensions = sizeOf('imgurl/checkSize.jpg');
+  fs.unlink(path.join('./imgurl', 'checkSize.jpg'), (err) => {
+    if (err) throw err;
+  });
+  if (xStart >= dimensions.width || xEnd > dimensions.width) throw HTTPError(400, 'Invalid dimensions.');
+  if (yStart >= dimensions.height || yEnd > dimensions.height) throw HTTPError(400, 'Invalid dimensions.');
+  Jimp.read(imgUrl).then(image => {
+    image.crop(xStart, yStart, (xEnd - xStart), (yEnd - yStart));
+    image.write(newPhotoUrl);
   })
     .catch(err => {
       throw HTTPError(400, 'Error Encountered.');

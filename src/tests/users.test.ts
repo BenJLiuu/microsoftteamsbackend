@@ -908,11 +908,11 @@ describe('Test userProfileUploadPhoto', () => {
     expect(requestUserProfileUploadPhoto(user1.token + '1', URL, 0, 0, 200, 200)).toEqual(403);
   });
 
-  // test('url is invalid', () => {
-  //   const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-  //   const URL = 'http://www.testing.com/test.jpg';
-  //   expect(requestUserProfileUploadPhoto(user1.token, URL, 0, 0, 200, 200)).toEqual(400);
-  // });
+  test('url is invalid', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const URL = 'http://www.testing.com/test.jpg';
+    expect(requestUserProfileUploadPhoto(user1.token, URL, 0, 0, 200, 200)).toEqual(400);
+  });
 
   test('image is not jpg', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
@@ -920,11 +920,11 @@ describe('Test userProfileUploadPhoto', () => {
     expect(requestUserProfileUploadPhoto(user1.token, URL, 0, 0, 200, 200)).toEqual(400);
   });
 
-  // test('invalid dimensions (not within original)', () => {
-  //   const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-  //   const URL = 'http://www.traveller.com.au/content/dam/images/h/1/p/q/1/k/image.related.articleLeadwide.620x349.h1pq27.png/1596176460724.jpg';
-  //   expect(requestUserProfileUploadPhoto(user1.token, URL, 0, 0, 900, 900)).toEqual(400);
-  // });
+  test('invalid dimensions (not within original)', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const URL = 'http://www.traveller.com.au/content/dam/images/h/1/p/q/1/k/image.related.articleLeadwide.620x349.h1pq27.png/1596176460724.jpg';
+    expect(requestUserProfileUploadPhoto(user1.token, URL, 0, 0, 900, 900)).toEqual(400);
+  });
 
   test('invalid dimensions (not within original)', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
@@ -948,8 +948,8 @@ describe('Test userProfileUploadPhoto', () => {
     requestClear();
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
-    // requestUserProfileUploadPhoto(user1.token, 'http://d13vnoj51jbatu.cloudfront.net/static/img/profile.jpg', 0, 0, 600, 600);
-    requestUserProfileUploadPhoto(user1.token, 'http://www.traveller.com.au/content/dam/images/h/1/p/q/1/k/image.related.articleLeadwide.620x349.h1pq27.png/1596176460724.jpg', 0, 0, 600, 340);
+    const URL = 'http://www.traveller.com.au/content/dam/images/h/1/p/q/1/k/image.related.articleLeadwide.620x349.h1pq27.png/1596176460724.jpg';
+    requestUserProfileUploadPhoto(user1.token, URL, 0, 0, 600, 340);
     expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
       user: {
         uId: user1.authUserId,
