@@ -14,7 +14,7 @@ export function clearV1 (): Empty {
     channels: [],
     sessions: [],
     dms: [],
-    
+
     // DataStats storage
     workspaceStats: {
       numChannels: 0,
@@ -24,15 +24,15 @@ export function clearV1 (): Empty {
       history: {
         channelsExist: [{
           numChannelsExist: 0,
-          timeStamp: Time.now()
-        }], 
+          timeStamp: Date.now()
+        }],
         dmsExist: [{
           numDmsExist: 0,
-          timeStamp: Time.now()
+          timeStamp: Date.now()
         }],
         messagesExist: [{
-          nummessagesExist: 0,
-          timeStamp: Time.now()
+          numMessagesExist: 0,
+          timeStamp: Date.now()
         }],
         utilizationRate: 0
       }

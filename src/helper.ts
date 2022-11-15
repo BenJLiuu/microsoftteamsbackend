@@ -269,24 +269,23 @@ export function calculateInvolvementRate(uId: UId, totalchange: number, userchan
  * THIS EXPECTS THE DATA TO NOT HAVE BEEN SAVED YET! This is important for certain user/workspace functionality.
  * NOTE this also is capped at 1 (which occurs when a message is sent, then deleted, which does not change MessagesSent but does
  * change MessagesExist, therefore increasing Involvement).
- * @param {UId} uId - the user to update
- * @param {number} totalchange - the workspace change
- * @param {number} userchange - the user change (difference being if a user leaves a channel, but that channel is not deleted)
  * @returns {number} a float between 0 and 1 (inclusive) correlated to involvement.
  */
- export function calculateUtilizationRate(change: number): number {
+export function calculateUtilizationRate(): number {
   const data = getData();
 
   // add up user current channels, dms, messages sent, adding on change
-  let usersInAtLeastOneChannel = 0;
+  let usersInAtLeastOneChat = 0;
   for (const user of data.users) {
-    if (data.channels.some(channel => userIsChannelMember(user.uId, channel.channelId))) {
-      usersInAtLeastOneChannel++;
+    const userIsInChannel = data.channels.some(channel => userIsChannelMember(user.uId, channel.channelId));
+    const userIsInDm = data.dms.some(dm => checkUserIdtoDm(user.uId, dm.dmId));
+    if (userIsInChannel || userIsInDm) {
+      usersInAtLeastOneChat++;
     }
   }
-  if (totalItems === 0) return 0;
+  if (data.workspaceStats.numUsers === 0) return 0;
   // Clamp to 1
-  return Math.min(usersInAtLeastOneChannel / data.workspaceStats.numUsers, 1);
+  return Math.min(usersInAtLeastOneChat / data.workspaceStats.numUsers, 1);
 }
 
 /**

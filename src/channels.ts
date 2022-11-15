@@ -106,7 +106,10 @@ export function channelsCreateV3(token: Token, name: Name, isPublic: IsPublic): 
     numChannelsJoined: channelsJoined + 1,
     timeStamp: Date.now(),
   });
-  data.workspaceStats
+  data.workspaceStats.history.channelsExist.push({
+    numChannelsExist: data.workspaceStats.history.channelsExist[data.workspaceStats.history.channelsExist.length - 1].numChannelsExist + 1,
+    timeStamp: Date.now()
+  });
   data.users[userIndex].userStats.involvementRate = calculateInvolvementRate(uId, 1, 1);
 
   setData(data);

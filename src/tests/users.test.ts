@@ -1,5 +1,10 @@
-import { requestAuthRegister, requestUsersAll, requestClear, requestUsersStats } from './httpHelper';
-requestUsersStats
+import {
+  requestAuthRegister, requestUsersAll, requestClear,
+  requestUsersStats, requestChannelsCreate, requestChannelJoin,
+  requestChannelLeave, requestDmCreate, requestDmLeave,
+  requestMessageSend, requestMessageRemove, requestMessageSendDm,
+  requestDmRemove
+} from './httpHelper';
 describe('Test usersAlls', () => {
   beforeEach(() => {
     requestClear();
@@ -49,8 +54,7 @@ describe('Test usersAlls', () => {
   });
 });
 
-describe('Test usersStats', () => { 
-
+describe('Test usersStats', () => {
   beforeEach(() => {
     requestClear();
   });
@@ -178,10 +182,6 @@ describe('Test usersStats', () => {
           {
             numChannelsExist: 1,
             timeStamp: expect.any(Number)
-          },
-          {
-            numChannelsExist: 0,
-            timeStamp: expect.any(Number)
           }
         ],
         dmsExist:
@@ -198,14 +198,14 @@ describe('Test usersStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        utilizationRate: 1/2
+        utilizationRate: 1 / 2
       },
     });
   });
 
   test('Test user creates one dm', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
+    requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
     requestDmCreate(user1.token, []);
     expect(requestUsersStats(user1.token)).toStrictEqual({
       workspaceStats: {
@@ -234,7 +234,7 @@ describe('Test usersStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        utilizationRate: 1/2
+        utilizationRate: 1 / 2
       },
     });
   });
@@ -242,7 +242,7 @@ describe('Test usersStats', () => {
   test('Test user joins one dm', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
-    requestDmCreate(user1.token, [user2.token]);
+    requestDmCreate(user1.token, [user2.authUserId]);
     expect(requestUsersStats(user1.token)).toStrictEqual({
       workspaceStats: {
         channelsExist:
@@ -275,12 +275,12 @@ describe('Test usersStats', () => {
     });
   });
 
-  test('Test user joins, then leaves one dm', () => {
+  test('Test user joins, then removes one dm', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
-    dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId]);
     requestDmLeave(user1.token, dm1.dmId);
-    requestDmLeave(user2.token, dm1.dmId);
+    requestDmRemove(user2.token, dm1.dmId);
     expect(requestUsersStats(user1.token)).toStrictEqual({
       workspaceStats: {
         channelsExist:
@@ -319,7 +319,7 @@ describe('Test usersStats', () => {
 
   test('test user sends a channel message', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
+    requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     requestMessageSend(user1.token, channel1.channelId, 'test message');
     expect(requestUsersStats(user1.token)).toStrictEqual({
@@ -353,14 +353,14 @@ describe('Test usersStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        utilizationRate: 1/2
+        utilizationRate: 1 / 2
       },
     });
   });
 
   test('test user sends a channel message, then deletes it', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
+    requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const msg1 = requestMessageSend(user1.token, channel1.channelId, 'test message');
     requestMessageRemove(user1.token, msg1.messageId);
@@ -399,7 +399,7 @@ describe('Test usersStats', () => {
             timeStamp: expect.any(Number)
           }
         ],
-        utilizationRate: 1/2
+        utilizationRate: 1 / 2
       },
     });
   });
@@ -407,7 +407,7 @@ describe('Test usersStats', () => {
   test('test user sends a dm message', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
-    const dm1 = requestDmCreate(user1.token, [user2.token]);
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
     requestMessageSendDm(user1.token, dm1.dmId, 'test message');
     expect(requestUsersStats(user1.token)).toStrictEqual({
       workspaceStats: {
@@ -448,7 +448,7 @@ describe('Test usersStats', () => {
   test('test user sends a dm message, then deletes it', () => {
     const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const user2 = requestAuthRegister('johnS@gmail.au', 'johnpass', 'John', 'Smith');
-    const dm1 = requestDmCreate(user1.token, [user2.token]);
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
     const msg1 = requestMessageSendDm(user1.token, dm1.dmId, 'test message');
     requestMessageRemove(user1.token, msg1.messageId);
     expect(requestUsersStats(user1.token)).toStrictEqual({

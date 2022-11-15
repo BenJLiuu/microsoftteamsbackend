@@ -85,7 +85,7 @@ export function requestUserStats(token: string) {
   return requestHelper('GET', '/user/stats/v1', {}, token);
 }
 
-export function requestUserStats(token: string) {
+export function requestUsersStats(token: string) {
   return requestHelper('GET', '/users/stats/v1', {}, token);
 }
 

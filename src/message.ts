@@ -62,6 +62,10 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
     timeStamp: Date.now(),
   });
   data.users[userStatsIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, 1, 1);
+  data.workspaceStats.history.messagesExist.push({
+    numMessagesExist: data.workspaceStats.history.messagesExist[data.workspaceStats.history.messagesExist.length - 1].numMessagesExist + 1,
+    timeStamp: Date.now()
+  });
 
   const usersTagged = checkTag(message, -1, dmId);
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
@@ -130,6 +134,10 @@ export function messageSendV2(token: Token, channelId: ChannelId, message: Messa
     timeStamp: Date.now(),
   });
   data.users[ownerIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, 1, 1);
+  data.workspaceStats.history.messagesExist.push({
+    numMessagesExist: data.workspaceStats.history.messagesExist[data.workspaceStats.history.messagesExist.length - 1].numMessagesExist + 1,
+    timeStamp: Date.now()
+  });
 
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
   if (usersTagged.amountTagged !== 0) {
@@ -258,6 +266,10 @@ export function messageRemoveV2(token: string, messageId: number): Empty {
   data.workspaceStats.numMessages--;
   // FIXME:
   data.users[userStatsIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, -1, 0);
+  data.workspaceStats.history.messagesExist.push({
+    numMessagesExist: data.workspaceStats.history.messagesExist[data.workspaceStats.history.messagesExist.length - 1].numMessagesExist - 1,
+    timeStamp: Date.now()
+  });
 
   setData(data);
   return {};
