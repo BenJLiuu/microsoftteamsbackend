@@ -252,7 +252,7 @@ export function userStatsConstructor(): UserStats {
 export function calculateInvolvementRate(uId: UId, totalchange: number, userchange: number): number {
   const data = getData();
   const stats = data.users.find(user => user.uId === uId).userStats;
-  const totalItems = data.workplaceStats.numChannels + data.workplaceStats.numDms + data.workplaceStats.numMessages + totalchange;
+  const totalItems = data.workspaceStats.numChannels + data.workspaceStats.numDms + data.workspaceStats.numMessages + totalchange;
 
   // add up user current channels, dms, messages sent, adding on change
   const userItems = userchange +
@@ -286,7 +286,7 @@ export function calculateInvolvementRate(uId: UId, totalchange: number, userchan
   }
   if (totalItems === 0) return 0;
   // Clamp to 1
-  return Math.min(usersInAtLeastOneChannel / data.workplaceStats.numUsers, 1);
+  return Math.min(usersInAtLeastOneChannel / data.workspaceStats.numUsers, 1);
 }
 
 /**

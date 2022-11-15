@@ -16,7 +16,7 @@ export function clearV1 (): Empty {
     dms: [],
     
     // DataStats storage
-    workplaceStats: {
+    workspaceStats: {
       numChannels: 0,
       numDms: 0,
       numMessages: 0,

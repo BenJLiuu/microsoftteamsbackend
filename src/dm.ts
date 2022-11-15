@@ -90,7 +90,7 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
     }
   }
 
-  data.workplaceStats.numDms++;
+  data.workspaceStats.numDms++;
   data.dms.push(newDm);
   setData(data);
 
@@ -182,7 +182,7 @@ export function dmRemoveV2(token: Token, dmId: DmId): Empty {
   const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
   if (authUserId !== data.dms[dmIndex].owner.uId) throw HTTPError(400, 'Authorised user is not owner of DM.');
 
-  data.workplaceStats.numDms--;
+  data.workspaceStats.numDms--;
   // FIXME:
   const userStatsIndex = data.users.findIndex(user => user.uId === authUserId);
   data.users[userStatsIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, -1, -1);

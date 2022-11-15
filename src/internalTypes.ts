@@ -53,7 +53,7 @@ export type Data = {
   channels: PrivateChannel[],
   dms: PrivateDm[],
   sessions: Session[],
-  workplaceStats: Analytics
+  workspaceStats: Analytics
 };
 
 export type MessageList = {
@@ -107,5 +107,5 @@ export type UserStatsObj = {
 };
 
 export type WorkplaceStatsObj = {
-  workplaceStats: itf.WorkplaceStats
+  workspaceStats: itf.WorkplaceStats
 }

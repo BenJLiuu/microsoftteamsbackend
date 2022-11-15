@@ -91,7 +91,7 @@ export function channelsCreateV3(token: Token, name: Name, isPublic: IsPublic): 
   };
 
   data.channels.push(newChannel);
-  data.workplaceStats.numChannels++;
+  data.workspaceStats.numChannels++;
 
   const userIndex = data.users.findIndex(user => user.uId === uId);
   const channelIndex = data.channels.findIndex(channel => channel.channelId === newChannelId);
@@ -106,6 +106,7 @@ export function channelsCreateV3(token: Token, name: Name, isPublic: IsPublic): 
     numChannelsJoined: channelsJoined + 1,
     timeStamp: Date.now(),
   });
+  data.workspaceStats
   data.users[userIndex].userStats.involvementRate = calculateInvolvementRate(uId, 1, 1);
 
   setData(data);
