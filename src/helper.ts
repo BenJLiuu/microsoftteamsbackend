@@ -413,7 +413,7 @@ export function checkUserToMessage(authUserId : number, messageId : number) : bo
  * @returns boolean - whether the message id is valid or not
  */
 export function validMessageId(messageId : number) : boolean {
-  if (!checkMessageToChannel(messageId) && !checkMessageToDm(messageId)) {
+  if (checkMessageToChannel(messageId) === -1 && checkMessageToDm(messageId) === -1) {
     return false;
   } else {
     return true;
