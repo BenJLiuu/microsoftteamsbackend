@@ -75,3 +75,6 @@ export type tagInfo = {
 };
 
 export type ResetCode = string;
+
+export type ActiveStandup = boolean;
+export type TimeFinish = number;
