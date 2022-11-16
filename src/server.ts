@@ -9,7 +9,7 @@ import { authRegisterV3, authLoginV3, authLogoutV2 } from './auth';
 import { channelDetailsV3, channelJoinV3, channelInviteV3, channelMessagesV3, channelLeaveV2, channelRemoveOwnerV2, channelAddOwnerV2 } from './channel';
 import { echo } from './echo';
 import { clearV1 } from './other';
-import { usersAllV2 } from './users';
+import { usersAllV2, usersStatsV1 } from './users';
 import { userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2, userProfileV3, userStatsV1, userProfileUploadPhotoV1 } from './user';
 import { dmCreateV2, dmListV2, dmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
 import {
@@ -437,6 +437,14 @@ app.get('/user/stats/v1', (req: Request, res: Response, next) => {
   }
 });
 
+app.get('/users/stats/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    res.json(usersStatsV1(token));
+  } catch (err) {
+    next(err);
+  }
+});
 // STANDUP ROUTES
 
 app.post('/standup/start/v1', (req: Request, res: Response, next) => {

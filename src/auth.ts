@@ -80,7 +80,7 @@ export function authRegisterV3(email: Email, password: Password, nameFirst: Name
     userStats: userStatsConstructor(),
   });
 
-  data.workplaceStats.numUsers++;
+  data.workspaceStats.numUsers++;
 
   setData(data);
   return generateSession(newUId);
