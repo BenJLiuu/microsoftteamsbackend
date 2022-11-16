@@ -67,7 +67,8 @@ export function adminUserRemove (token: Token, uId: UId): Empty {
     globalPermissions: null,
     notifications: [],
     resetCode: '',
-    userStats: null
+    userStats: null,
+    profileImgUrl: null
   };
 
   // Replace all messages. Probably doesn't work so FIXME:

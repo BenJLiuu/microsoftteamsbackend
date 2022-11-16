@@ -143,13 +143,15 @@ describe('Test adminUserRemove', () => {
           nameLast: 'Owner',
           email: 'global@owner.com',
           handleStr: expect.any(String),
+          profileImgUrl: expect.any(String)
         },
         {
           uId: user3.authUserId,
           nameFirst: 'Alice',
           nameLast: 'Person',
           email: 'aliceP@email.com',
-          handleStr: expect.any(String)
+          handleStr: expect.any(String),
+          profileImgUrl: expect.any(String)
         }
       ]
     });
@@ -171,6 +173,7 @@ describe('Test adminUserRemove', () => {
             nameLast: 'Person',
             email: 'aliceP@email.com',
             handleStr: 'aliceperson',
+            profileImgUrl: expect.any(String)
           }
         ],
         allMembers:
@@ -181,6 +184,7 @@ describe('Test adminUserRemove', () => {
             nameLast: 'Person',
             email: 'aliceP@email.com',
             handleStr: 'aliceperson',
+            profileImgUrl: expect.any(String)
           }
         ],
       }
@@ -205,6 +209,7 @@ describe('Test adminUserRemove', () => {
             nameLast: 'Smith',
             email: 'johnS@email.com',
             handleStr: 'johnsmith',
+            profileImgUrl: expect.any(String)
           }
         ],
       }
@@ -226,6 +231,7 @@ describe('Test adminUserRemove', () => {
             nameLast: 'Person',
             email: 'aliceP@email.com',
             handleStr: 'aliceperson',
+            profileImgUrl: expect.any(String)
           }
         ]
       }
@@ -269,6 +275,7 @@ describe('Test adminUserRemove', () => {
         nameLast: 'ThatWasRemoved',
         email: 'johnS@email.com',
         handleStr: 'emailthatwasremoved',
+        profileImgUrl: expect.any(String)
       },
     });
   });
@@ -288,6 +295,7 @@ describe('Test adminUserRemove', () => {
         nameLast: 'Smith',
         email: 'differentJohn@ggmail.com',
         handleStr: 'johnsmith',
+        profileImgUrl: expect.any(String)
       },
     });
   });
