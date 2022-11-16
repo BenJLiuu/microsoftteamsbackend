@@ -77,10 +77,10 @@ describe('standupActiveV1 tests', () => {
   });
 
   test('successful call - active standup', () => {
-    const expectedTimeFinish = Math.floor(Date.now() / 1000) + 90;
+    const expectedTimeFinish = Math.floor(Date.now() / 1000) + 2;
     const user = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
     const channel = requestChannelsCreate(user.token, 'Example', true);
-    requestStandupStart(user.token, channel.channelId, 90);
+    requestStandupStart(user.token, channel.channelId, 2);
 
     const standup = requestStandupActive(user.token, channel.channelId);
     expect(standup).toEqual({
@@ -147,7 +147,7 @@ describe('standupSendV1 tests', () => {
   test('successful call - active standup', async () => {
     const user = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
     const channel = requestChannelsCreate(user.token, 'Example', true);
-    requestStandupStart(user.token, channel.channelId, 0.05);
+    requestStandupStart(user.token, channel.channelId, 1);
 
     requestStandupSend(user.token, channel.channelId, 'hello1');
     requestStandupSend(user.token, channel.channelId, 'hello2');

@@ -2,7 +2,6 @@ import { getData, setData } from './dataStore';
 import { Empty, Token, ChannelId, UId, Start } from './interfaceTypes';
 import { MessageList, ChannelDetails } from './internalTypes';
 import HTTPError from 'http-errors';
-
 import {
   validUserId,
   validChannelId,
@@ -12,7 +11,8 @@ import {
   getPublicUser,
   validToken,
   getUserIdFromToken,
-  checkChannelOwner
+  checkChannelOwner,
+  calculateInvolvementRate
 } from './helper';
 
 /**
@@ -62,25 +62,34 @@ export function channelMessagesV3(token: Token, channelId: ChannelId, start: Sta
   *
   * @returns {Error} {error: 'Invalid Channel Id.'} - Channel does not exist.
   * @returns {Error} {error: 'Invalid Token.'} - Token does not correspond to an existing user.
-  * @returns {Error} {error: 'You are already a member.'} - authUserId corresponds to user already in channel.
+  * @returns {Error} {error: 'You are already a member.'} - uId corresponds to user already in channel.
   * @returns {Error} {error: 'You do not have access to this channel.'} - Channel is private.
-  * @returns {Empty} {} - authUserId successfully leaves the specified channel.
+  * @returns {Empty} {} - uId successfully leaves the specified channel.
   *
 */
 export function channelLeaveV2(token: Token, channelId: ChannelId): Empty {
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
   if (!validChannelId(channelId)) throw HTTPError(400, 'Invalid Channel Id.');
 
-  const UserId = getUserIdFromToken(token);
-  if (!userIsChannelMember(UserId, channelId)) throw HTTPError(400, 'You are not a member of this channel.');
+  const uId = getUserIdFromToken(token);
+  if (!userIsChannelMember(uId, channelId)) throw HTTPError(400, 'You are not a member of this channel.');
   const data = getData();
 
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
-  const privateIndexAll = data.channels[channelIndex].allMembers.findIndex(channel => channel.uId === UserId);
+  const userIndex = data.users.findIndex(user => user.uId === uId);
+  const privateIndexAll = data.channels[channelIndex].allMembers.findIndex(channel => channel.uId === uId);
   data.channels[channelIndex].allMembers.splice(privateIndexAll, 1);
 
-  if (checkChannelOwner(UserId, channelId) === true) {
-    const privateIndexOwner = data.channels[channelIndex].ownerMembers.findIndex(channel => channel.uId === UserId);
+  // User Stats
+  const channelsJoined = data.users[userIndex].userStats.channelsJoined[data.users[userIndex].userStats.channelsJoined.length - 1].numChannelsJoined;
+  data.users[userIndex].userStats.channelsJoined.push({
+    numChannelsJoined: channelsJoined - 1,
+    timeStamp: Date.now(),
+  });
+  data.users[userIndex].userStats.involvementRate = calculateInvolvementRate(uId, 0, -1);
+
+  if (checkChannelOwner(uId, channelId) === true) {
+    const privateIndexOwner = data.channels[channelIndex].ownerMembers.findIndex(channel => channel.uId === uId);
     data.channels[channelIndex].ownerMembers.splice(privateIndexOwner, 1);
   }
 
@@ -247,12 +256,20 @@ export function channelJoinV3(token: Token, channelId: ChannelId): Empty {
   const uId = getUserIdFromToken(token);
 
   const channelIndex = data.channels.map(object => object.channelId).indexOf(channelId);
-  const userIndex = data.users.findIndex(user => user.uId === getUserIdFromToken(token));
+  const userIndex = data.users.findIndex(user => user.uId === uId);
   const publicUser = getPublicUser(data.users[userIndex]);
 
   if (userIsChannelMember(uId, channelId)) throw HTTPError(400, 'You are already a member.');
   const userHasAccess = data.channels[channelIndex].isPublic || isGlobalOwner(uId);
   if (!userHasAccess) throw HTTPError(400, 'You do not have access to this channel.');
+
+  // User Stats
+  const channelsJoined = data.users[userIndex].userStats.channelsJoined[data.users[userIndex].userStats.channelsJoined.length - 1].numChannelsJoined;
+  data.users[userIndex].userStats.channelsJoined.push({
+    numChannelsJoined: channelsJoined + 1,
+    timeStamp: Date.now(),
+  });
+  data.users[userIndex].userStats.involvementRate = calculateInvolvementRate(uId, 0, 1);
 
   data.channels[channelIndex].allMembers.push(publicUser);
   setData(data);

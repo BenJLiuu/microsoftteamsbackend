@@ -9,10 +9,18 @@ import { authRegisterV3, authLoginV3, authLogoutV2 } from './auth';
 import { channelDetailsV3, channelJoinV3, channelInviteV3, channelMessagesV3, channelLeaveV2, channelRemoveOwnerV2, channelAddOwnerV2 } from './channel';
 import { echo } from './echo';
 import { clearV1 } from './other';
-import { userProfileV3, usersAllV2, userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2, notificationsGetV1 } from './users';
-import { dmCreateV2, dmListV2, ddmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
+import { usersAllV2 } from './users';
+
+import { userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2, userProfileV3, userStatsV1 } from './user';
+import { dmCreateV2, dmListV2, dmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
+import {
+  notificationsGetV1, messageSendDmV2, messageSendV2,
+  messageEditV2, messageRemoveV2, messageShareV1,
+  messageReactV1, messageUnreactV1, messagePinV1,
+  messageUnpinV1, messageSendlaterV1, messageSendlaterDmV1,
+  searchV1
+} from './message';
 import { standupStartV1, standupActiveV1, standupSendV1 } from './standup';
-import { messageSendDmV2, messageSendV2, messageEditV2, messageRemoveV2, messageShareV1, messageReactV1, messageUnreactV1, messagePinV1, messageUnpinV1, messageSendlaterV1, messageSendlaterDmV1, searchV1 } from './message';
 
 // Set up web app
 const app = express();
@@ -243,7 +251,7 @@ app.post('/dm/leave/v2', (req: Request, res: Response, next) => {
   try {
     const token = req.header('token') as string;
     const { dmId } = req.body;
-    res.json(ddmLeaveV2(token, dmId));
+    res.json(dmLeaveV2(token, dmId));
   } catch (err) {
     next(err);
   }
@@ -406,6 +414,15 @@ app.get('/notifications/get/v1', (req: Request, res: Response, next) => {
   try {
     const token = req.header('token') as string;
     res.json(notificationsGetV1(token));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/user/stats/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    res.json(userStatsV1(token));
   } catch (err) {
     next(err);
   }

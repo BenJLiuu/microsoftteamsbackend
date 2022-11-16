@@ -6,7 +6,7 @@ import validator from 'validator';
 import {
   generateUId, generateSession, generateHandleStr,
   hashCode, validToken, getUserFromEmail,
-  validResetCode, validPassword
+  validResetCode, validPassword, userStatsConstructor
 } from './helper';
 
 /**
@@ -71,11 +71,16 @@ export function authRegisterV3(email: Email, password: Password, nameFirst: Name
     email: email,
     handleStr: handleStr,
     passwordHash: hashCode(password + 'secret'),
+
     // 1 if first UId made, 2 otherwise.
     globalPermissions: newUId === 0 ? 1 : 2,
+
     notifications: [],
     resetCode: '',
+    userStats: userStatsConstructor(),
   });
+
+  data.workplaceStats.numUsers++;
 
   setData(data);
   return generateSession(newUId);

@@ -8,6 +8,12 @@ let data: Data = {
   channels: [],
   sessions: [],
   dms: [],
+  workplaceStats: {
+    numChannels: 0,
+    numDms: 0,
+    numMessages: 0,
+    numUsers: 0
+  }
 };
 
 export function setData(newData: Data) {

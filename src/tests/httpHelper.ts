@@ -81,6 +81,10 @@ export function requestNotificationsGet(token: string) {
   return requestHelper('GET', '/notifications/get/v1', {}, token);
 }
 
+export function requestUserStats(token: string) {
+  return requestHelper('GET', '/user/stats/v1', {}, token);
+}
+
 // CHANNELS
 
 export function requestChannelsCreate(token: string, name: string, isPublic: boolean) {

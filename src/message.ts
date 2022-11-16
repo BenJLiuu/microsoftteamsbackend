@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import { Token, DmId, ChannelId, Message, Empty } from './interfaceTypes';
-import { MessageIdObj, SharedMessageIdObj, messages } from './internalTypes';
+import { MessageIdObj, SharedMessageIdObj, messages, NotificationsObj } from './internalTypes';
 import {
   validChannelId,
   validToken,
@@ -15,6 +15,7 @@ import {
   validMessageId,
   userIsChannelOwner,
   checkTag,
+  calculateInvolvementRate,
 } from './helper';
 import HTTPError from 'http-errors';
 
@@ -42,6 +43,7 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
 
   const messageId = generateMessageId().messageId;
   const data = getData();
+
   // Add message to DM list
   data.dms.find(dm => dm.dmId === dmId).messages.push({
     messageId: messageId,
@@ -51,6 +53,15 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
     reacts: [],
     isPinned: false
   });
+
+  // User stats
+  const userStatsIndex = data.users.findIndex(user => user.uId === authUserId);
+  const messagesSent = data.users[userStatsIndex].userStats.messagesSent[data.users[userStatsIndex].userStats.messagesSent.length - 1].numMessagesSent;
+  data.users[userStatsIndex].userStats.messagesSent.push({
+    numMessagesSent: messagesSent + 1,
+    timeStamp: Date.now(),
+  });
+  data.users[userStatsIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, 1, 1);
 
   const usersTagged = checkTag(message, -1, dmId);
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
@@ -66,6 +77,8 @@ export function messageSendDmV2(token: Token, dmId: DmId, message: Message): Mes
       data.users[userIndex].notifications.push(notification);
     }
   }
+
+  data.workplaceStats.numMessages++;
 
   setData(data);
   return {
@@ -106,9 +119,18 @@ export function messageSendV2(token: Token, channelId: ChannelId, message: Messa
     reacts: [],
     isPinned: false
   });
-
+  data.workplaceStats.numMessages++;
   const usersTagged = checkTag(message, channelId, -1);
   const ownerIndex = data.users.findIndex(user => user.uId === authUserId);
+
+  // User Stats
+  const messagesSent = data.users[ownerIndex].userStats.messagesSent[data.users[ownerIndex].userStats.messagesSent.length - 1].numMessagesSent;
+  data.users[ownerIndex].userStats.messagesSent.push({
+    numMessagesSent: messagesSent + 1,
+    timeStamp: Date.now(),
+  });
+  data.users[ownerIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, 1, 1);
+
   const channelIndex = data.channels.findIndex(channel => channel.channelId === channelId);
   if (usersTagged.amountTagged !== 0) {
     for (let i = 0; i < usersTagged.membersTagged.length; i++) {
@@ -231,6 +253,11 @@ export function messageRemoveV2(token: string, messageId: number): Empty {
     const position = data.channels[isChannel].messages.findIndex(message => message.messageId === messageId);
     data.channels[isChannel].messages.splice(position, 1);
   }
+
+  const userStatsIndex = data.users.findIndex(user => user.uId === authUserId);
+  data.workplaceStats.numMessages--;
+  // FIXME:
+  data.users[userStatsIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, -1, 0);
 
   setData(data);
   return {};
@@ -616,4 +643,21 @@ export function searchV1(token: Token, queryStr: string): messages {
     }
   }
   return { messages: messagesArray };
+}
+
+/**
+ * Returns the user's most recent 20 notifications.
+ * @param {Token} token - Token of user sending the request.
+ *
+ * @returns {Error} token - Token of user wanting to change email address.
+ * @returns {notifications} - Array of 20 most recent notifications
+ */
+export function notificationsGetV1 (token: Token): NotificationsObj {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
+  const userId = getUserIdFromToken(token);
+  const data = getData();
+  const position = data.users.findIndex(user => user.uId === userId);
+  const newNotifications = data.users[position].notifications.reverse();
+  newNotifications.splice(20, newNotifications.length);
+  return { notifications: newNotifications };
 }

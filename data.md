@@ -9,6 +9,23 @@ let data = {
       email: 'mitchellemail@gmail.com',
       handleStr: 'mitchellgayfer',
       passwordHash: 0x5AF3d6,
+      dataStats: {
+        channelsJoined: [
+          {
+            numChannelsJoined: 0,
+            timeStamp: 1668419418
+          },
+          {
+            numChannelsJoined: 1,
+            timeStamp: 1668419592
+          }
+        ],
+        //et cetera
+        dmsJoined: [{numDmsJoined, timeStamp}],
+        messagesSent: [{numMessagesSent, timeStamp}], 
+
+        involvementRate: 0.651
+      }
     }
   ],
 

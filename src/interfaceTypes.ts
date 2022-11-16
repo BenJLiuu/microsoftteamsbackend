@@ -63,10 +63,11 @@ export type Dms = {
 // ITERATION 3 TYPES
 export type SharedMessageId = number;
 export type Notification = {
-  channelId: number,
-  dmId: number,
+  channelId: ChannelId,
+  dmId: DmId,
   notificationMessage: string,
 };
+
 export type Notifications = Notification[];
 
 export type tagInfo = {
@@ -75,6 +76,22 @@ export type tagInfo = {
 };
 
 export type ResetCode = string;
+export type Rate = number;
 
+export type UserStats = {
+  channelsJoined: {
+    numChannelsJoined: number,
+    timeStamp: Time
+  }[],
+  dmsJoined: {
+    numDmsJoined: number,
+    timeStamp: Time
+  }[],
+  messagesSent: {
+    numMessagesSent: number,
+    timeStamp: Time
+  }[],
+  involvementRate: Rate
+};
 export type ActiveStandup = boolean;
-export type TimeFinish = number;
+export type TimeFinish = Time;
