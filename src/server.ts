@@ -419,12 +419,15 @@ app.get('/notifications/get/v1', (req: Request, res: Response, next) => {
   }
 });
 
-<<<<<<< src/server.ts
 app.get('/user/stats/v1', (req: Request, res: Response, next) => {
   try {
     const token = req.header('token') as string;
     res.json(userStatsV1(token));
-=======
+  } catch (err) {
+    next(err);
+  }
+});
+
 // STANDUP ROUTES
 
 app.post('/standup/start/v1', (req: Request, res: Response, next) => {
@@ -452,7 +455,6 @@ app.post('/standup/send/v1', (req: Request, res: Response, next) => {
     const token = req.header('token') as string;
     const { channelId, message } = req.body;
     res.json(standupSendV1(token, channelId, message));
->>>>>>> src/server.ts
   } catch (err) {
     next(err);
   }

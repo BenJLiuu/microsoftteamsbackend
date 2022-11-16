@@ -3,13 +3,8 @@ import {
   Empty, Error,
   UId, Token,
   ChannelId, DmId, MessageId,
-<<<<<<< src/helper.ts
   User, HandleStr, Name,
   Password, tagInfo, UserStats
-=======
-  User, HandleStr, Name, tagInfo,
-  Password
->>>>>>> src/helper.ts
 } from './interfaceTypes';
 import { PrivateUser, Session, PrivateChannel, HashedPassword } from './internalTypes';
 
