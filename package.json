@@ -1,5 +1,6 @@
 {
     "scripts": {
+        "testc": "jest --detectOpenHandles -- ",
         "test": "jest --testMatch '**/?(*.)+(test).ts'",
         "tsc": "tsc --noImplicitAny",
         "lint": "eslint src/**/*.{ts,js}",

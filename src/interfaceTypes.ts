@@ -93,3 +93,5 @@ export type UserStats = {
   }[],
   involvementRate: Rate
 };
+export type ActiveStandup = boolean;
+export type TimeFinish = Time;

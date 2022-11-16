@@ -10,6 +10,7 @@ import { channelDetailsV3, channelJoinV3, channelInviteV3, channelMessagesV3, ch
 import { echo } from './echo';
 import { clearV1 } from './other';
 import { usersAllV2 } from './users';
+
 import { userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2, userProfileV3, userStatsV1 } from './user';
 import { dmCreateV2, dmListV2, dmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
 import {
@@ -19,6 +20,7 @@ import {
   messageUnpinV1, messageSendlaterV1, messageSendlaterDmV1,
   searchV1
 } from './message';
+import { standupStartV1, standupActiveV1, standupSendV1 } from './standup';
 
 // Set up web app
 const app = express();
@@ -417,10 +419,40 @@ app.get('/notifications/get/v1', (req: Request, res: Response, next) => {
   }
 });
 
+<<<<<<< src/server.ts
 app.get('/user/stats/v1', (req: Request, res: Response, next) => {
   try {
     const token = req.header('token') as string;
     res.json(userStatsV1(token));
+=======
+// STANDUP ROUTES
+
+app.post('/standup/start/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { channelId, length } = req.body;
+    res.json(standupStartV1(token, channelId, length));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/standup/active/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const channelId = req.query.channelId as string;
+    res.json(standupActiveV1(token, parseInt(channelId)));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/standup/send/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { channelId, message } = req.body;
+    res.json(standupSendV1(token, channelId, message));
+>>>>>>> src/server.ts
   } catch (err) {
     next(err);
   }
