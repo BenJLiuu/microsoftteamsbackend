@@ -1,5 +1,7 @@
 import { Empty } from './interfaceTypes';
 import { setData } from './dataStore';
+import fs from 'fs';
+import path from 'path';
 
 /**
   * Clears all the data in the dataStore, for creating fresh datasets in testing.
@@ -35,6 +37,20 @@ export function clearV1 (): Empty {
           timeStamp: Date.now()
         }],
         utilizationRate: 0
+      }
+    }
+  });
+
+  const directory = './imgurl';
+
+  fs.readdir(directory, (err, files) => {
+    if (err) throw err;
+
+    for (const file of files) {
+      if (file !== '.gitkeep') {
+        fs.unlink(path.join(directory, file), (err) => {
+          if (err) throw err;
+        });
       }
     }
   });

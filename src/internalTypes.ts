@@ -13,7 +13,8 @@ export type PrivateUser = {
   globalPermissions: number,
   notifications: itf.Notifications,
   resetCode: string,
-  userStats: itf.UserStats
+  profileImgUrl: string,
+  userStats: itf.UserStats,
 };
 
 export type PrivateChannel = {

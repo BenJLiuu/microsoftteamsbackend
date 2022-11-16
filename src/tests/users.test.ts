@@ -5,6 +5,7 @@ import {
   requestMessageSend, requestMessageRemove, requestMessageSendDm,
   requestDmRemove
 } from './httpHelper';
+
 describe('Test usersAlls', () => {
   beforeEach(() => {
     requestClear();
@@ -25,6 +26,7 @@ describe('Test usersAlls', () => {
           nameLast: 'Person',
           email: 'aliceP@fmail.au',
           handleStr: expect.any(String),
+          profileImgUrl: expect.any(String),
         }
       ]
     });
@@ -41,13 +43,15 @@ describe('Test usersAlls', () => {
           nameLast: 'Person',
           email: 'aliceP@fmail.au',
           handleStr: expect.any(String),
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user2.authUserId,
           nameFirst: 'John',
           nameLast: 'Mate',
           email: 'johnmate@gmail.com',
-          handleStr: expect.any(String)
+          handleStr: expect.any(String),
+          profileImgUrl: expect.any(String),
         }
       ]
     });
