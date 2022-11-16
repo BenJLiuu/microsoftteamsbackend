@@ -3,7 +3,10 @@ import { Empty, Token, UId } from './interfaceTypes';
 import { Permission } from './internalTypes';
 import HTTPError from 'http-errors';
 
-import { validToken, validUserId } from './helper';
+import {
+  validToken, validUserId,
+  isGlobalOwner, getUserIdFromToken
+} from './helper';
 
 /**
  * Given a user by their uID, sets their permissions to new permissions described by permissionId.
@@ -16,8 +19,10 @@ export function adminUserPermissionChange (token: Token, uId: UId, permissionId:
   const GLOBALOWNER = 1;
   const GLOBALMEMBER = 2;
   if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
+  if (!isGlobalOwner(getUserIdFromToken(token))) throw HTTPError(403, 'User does not have required privledges to perform action.');
   if (!validUserId(uId)) throw HTTPError(400, 'Invalid User Id.');
   if (permissionId !== 1 && permissionId !== 2) throw HTTPError(400, 'Invalid Permission Id.');
+  
   const data = getData();
   const globalCount = data.users.filter(user => user.globalPermissions === GLOBALOWNER).length;
   const userIndex = data.users.findIndex(user => user.uId === uId);

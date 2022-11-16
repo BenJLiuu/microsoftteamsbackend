@@ -2,7 +2,7 @@ import {
   requestAuthRegister, requestClear, requestChannelsCreate,
   requestChannelInvite,
   requestChannelRemoveOwner, requestChannelAddOwner,
-  requestUserPermissionChange
+  requestUserPermissionChange,
 } from './httpHelper';
 
 describe('Permissions', () => {
@@ -64,12 +64,16 @@ describe('Test adminUserPermissionChange', () => {
     expect(requestUserPermissionChange(user1.token + 1, user2.authUserId, 1)).toEqual(403);
   });
 
+  test('Test invalid permissions to request admin perm change', () => {
+    expect(requestUserPermissionChange(user3.token, user2.authUserId, 1)).toEqual(403);
+  });
+
   test('Test uid does not refer to a valid user', () => {
     expect(requestUserPermissionChange(user1.token, 'THIS IS AN INVALID USER ID', 1)).toEqual(400);
   });
 
   test('Test uid is only global owner', () => {
-    expect(requestUserPermissionChange(user2.token, user1.authUserId, 2)).toEqual(400);
+    expect(requestUserPermissionChange(user1.token, user1.authUserId, 2)).toEqual(400);
   });
 
   test('Test permission is not valid', () => {
