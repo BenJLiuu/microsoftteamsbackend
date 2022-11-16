@@ -47,11 +47,10 @@ describe('Permissions', () => {
   });
 });
 
-
 describe('Test adminUserPermissionChange', () => {
-  const user1: any;
-  const user2: any;
-  const user3: any;
+  let user1: any;
+  let user2: any;
+  let user3: any;
   beforeEach(() => {
     requestClear();
     user1 = requestAuthRegister('global@owner.com', 'password123', 'Global', 'Owner');
@@ -62,7 +61,6 @@ describe('Test adminUserPermissionChange', () => {
   // Error tests
 
   test('Test invalid token', () => {
-
     expect(requestUserPermissionChange(user1.token + 1, user2.authUserId, 1)).toEqual(403);
   });
 
@@ -86,34 +84,7 @@ describe('Test adminUserPermissionChange', () => {
   test('Test user successfully updates permissions', () => {
     expect(requestUserPermissionChange(user1.token, user2.authUserId, 1)).toStrictEqual({});
     const channel1 = requestChannelsCreate(user3.token, 'PrivateChannel', false);
+    requestChannelInvite(user3.token, channel1.channelId, user2.authUserId);
     expect(requestChannelAddOwner(user2.token, channel1.channelId, user2.authUserId)).toStrictEqual({});
-  });
-
-  // Successful Registration tests
-
-  test('Successful Registration', () => {
-    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-
-    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-
-    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual(
-      {
-        name: 'channel1',
-        isPublic: true,
-        ownerMembers: [{
-          uId: user1.authUserId,
-          nameFirst: 'John',
-          nameLast: 'Smith',
-          email: 'johnS@email.com',
-          handleStr: 'johnsmith',
-        }],
-        allMembers: [{
-          uId: user1.authUserId,
-          nameFirst: 'John',
-          nameLast: 'Smith',
-          email: 'johnS@email.com',
-          handleStr: 'johnsmith',
-        }],
-      });
   });
 });

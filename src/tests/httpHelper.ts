@@ -17,9 +17,7 @@ function requestHelper(method: HttpVerb, path: string, payload: object, hashedTo
   if (hashedToken !== '') {
     headers = { token: hashedToken };
   }
-
   const res = request(method, SERVER_URL + path, { qs, json, headers });
-
   if (res.statusCode !== 200) {
     return res.statusCode;
   }
@@ -29,8 +27,8 @@ function requestHelper(method: HttpVerb, path: string, payload: object, hashedTo
 
 // ADMIN
 
-export function requestUserPermissionChange(token: string, uId: string, permissionId: string) {
-  return requestHelper('POST', '/channels/create/v3', { uId, permissionId }, token);
+export function requestUserPermissionChange(token: string, uId: string, permissionId: number) {
+  return requestHelper('POST', '/admin/userpermission/change/v1', { uId, permissionId }, token);
 }
 
 // AUTH
