@@ -6,7 +6,7 @@ import validator from 'validator';
 import {
   generateUId, generateSession, generateHandleStr,
   hashCode, validToken, getUserFromEmail,
-  validResetCode, validPassword
+  validResetCode, validPassword, userStatsConstructor
 } from './helper';
 import { port } from './config.json';
 
@@ -77,7 +77,10 @@ export function authRegisterV3(email: Email, password: Password, nameFirst: Name
     notifications: [],
     resetCode: '',
     profileImgUrl: 'https://localhost:' + port + '/default_profile_photo.jpg',
+    userStats: userStatsConstructor(),
   });
+
+  data.workplaceStats.numUsers++;
 
   setData(data);
   return generateSession(newUId);

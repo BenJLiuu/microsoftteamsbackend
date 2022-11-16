@@ -85,6 +85,10 @@ export function requestUserProfileUploadPhoto(token: string, imgUrl: string, xSt
   return requestHelper('POST', '/user/profile/uploadphoto/v1', { imgUrl, xStart, yStart, xEnd, yEnd }, token);
 }
 
+export function requestUserStats(token: string) {
+  return requestHelper('GET', '/user/stats/v1', {}, token);
+}
+
 // CHANNELS
 
 export function requestChannelsCreate(token: string, name: string, isPublic: boolean) {

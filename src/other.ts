@@ -16,6 +16,12 @@ export function clearV1 (): Empty {
     channels: [],
     sessions: [],
     dms: [],
+    workplaceStats: {
+      numChannels: 0,
+      numDms: 0,
+      numMessages: 0,
+      numUsers: 0
+    }
   });
 
   const directory = './imgurl';

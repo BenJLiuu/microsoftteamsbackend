@@ -3,8 +3,8 @@ import {
   Empty, Error,
   UId, Token,
   ChannelId, DmId, MessageId,
-  User, HandleStr, Name, tagInfo,
-  Password
+  User, HandleStr, Name,
+  Password, tagInfo, UserStats
 } from './interfaceTypes';
 import { PrivateUser, Session, PrivateChannel, HashedPassword } from './internalTypes';
 
@@ -206,6 +206,58 @@ export function isGlobalOwner(uId: UId): boolean | Error {
   if (!validUserId(uId)) return { error: 'Invalid User' };
   const data = getData();
   return data.users.find((user) => user.uId === uId).globalPermissions === 1;
+}
+
+/**
+ * Constructs a userStats obj for a user to track join/send history.
+ * @returns {UserStats} use stats, with all joins/sends set to 0.
+ */
+export function userStatsConstructor(): UserStats {
+  const time = Date.now();
+  return {
+    channelsJoined:
+      [
+        {
+          numChannelsJoined: 0,
+          timeStamp: time
+        }
+      ],
+    dmsJoined:
+      [
+        {
+          numDmsJoined: 0,
+          timeStamp: time
+        }
+      ],
+    messagesSent:
+      [
+        {
+          numMessagesSent: 0,
+          timeStamp: time
+        }
+      ],
+    involvementRate: 0
+  };
+}
+
+/**
+ * Given a UserStats object, calculates an involvement rate.
+ * @param stats - the stats (that have been updated since last calculation) to use for updated calculation
+ * @returns a float between 0 and 1 (inclusive) describing involvement rate.
+ */
+export function calculateInvolvementRate(uId: UId, totalchange: number, userchange: number): number {
+  const data = getData();
+  const stats = data.users.find(user => user.uId === uId).userStats;
+  const totalItems = data.workplaceStats.numChannels + data.workplaceStats.numDms + data.workplaceStats.numMessages + totalchange;
+
+  // add up user current channels, dms, messages sent, adding on change
+  const userItems = userchange +
+    stats.channelsJoined[stats.channelsJoined.length - 1].numChannelsJoined +
+    stats.dmsJoined[stats.dmsJoined.length - 1].numDmsJoined +
+    stats.messagesSent[stats.messagesSent.length - 1].numMessagesSent;
+  if (totalItems === 0) return 0;
+  // Clamp to 1 in case a message is deleted (which does not affect userSent but does affect messageTotal)
+  return Math.min(userItems / totalItems, 1);
 }
 
 /**

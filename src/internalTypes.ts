@@ -13,7 +13,8 @@ export type PrivateUser = {
   globalPermissions: number,
   notifications: itf.Notifications,
   resetCode: string,
-  profileImgUrl: string
+  profileImgUrl: string,
+  userStats: itf.UserStats,
 };
 
 export type PrivateChannel = {
@@ -41,6 +42,13 @@ export type Session = {
   token: itf.Token | HashedToken,
 };
 
+type Analytics = {
+  numChannels: number,
+  numDms: number,
+  numMessages: number,
+  numUsers: number
+}
+
 export type Data = {
   nextMessage: number,
   nextUId: number,
@@ -48,6 +56,7 @@ export type Data = {
   channels: PrivateChannel[],
   dms: PrivateDm[],
   sessions: Session[],
+  workplaceStats: Analytics
 };
 
 export type MessageList = {
@@ -103,4 +112,7 @@ export type SharedMessageIdObj = {
 
 export type messages = {
   messages: itf.Messages,
+};
+export type UserStatsObj = {
+  userStats: itf.UserStats,
 };

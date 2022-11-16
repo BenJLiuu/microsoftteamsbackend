@@ -2,12 +2,12 @@ import { getData, setData } from './dataStore';
 import { Token, Name, IsPublic, ChannelId } from './interfaceTypes';
 import { PrivateChannel, ChannelsObj } from './internalTypes';
 import HTTPError from 'http-errors';
-
 import {
   validToken,
   userIsChannelMember,
   getPublicUser,
   getUserIdFromToken,
+  calculateInvolvementRate
 } from './helper';
 
 /**
@@ -78,7 +78,7 @@ export function channelsCreateV3(token: Token, name: Name, isPublic: IsPublic): 
   if (name.length < 1 || name.length > 20) throw HTTPError(400, 'Channel name must be between 1-20 characters.');
 
   const data = getData();
-  const authUserId = getUserIdFromToken(token);
+  const uId = getUserIdFromToken(token);
   let newChannelId = 0;
   while (data.channels.some(c => c.channelId === newChannelId)) newChannelId++;
   const newChannel: PrivateChannel = {
@@ -94,12 +94,22 @@ export function channelsCreateV3(token: Token, name: Name, isPublic: IsPublic): 
   };
 
   data.channels.push(newChannel);
-  const userIndex = data.users.findIndex(user => user.uId === authUserId);
-  const channelIndex = data.channels.findIndex(channel => channel.channelId === newChannelId);
-  const privateUser = getPublicUser(data.users[userIndex]);
+  data.workplaceStats.numChannels++;
 
-  data.channels[channelIndex].ownerMembers.push(privateUser);
-  data.channels[channelIndex].allMembers.push(privateUser);
+  const userIndex = data.users.findIndex(user => user.uId === uId);
+  const channelIndex = data.channels.findIndex(channel => channel.channelId === newChannelId);
+  const publicUser = getPublicUser(data.users[userIndex]);
+
+  data.channels[channelIndex].ownerMembers.push(publicUser);
+  data.channels[channelIndex].allMembers.push(publicUser);
+
+  // User Stats
+  const channelsJoined = data.users[userIndex].userStats.channelsJoined[data.users[userIndex].userStats.channelsJoined.length - 1].numChannelsJoined;
+  data.users[userIndex].userStats.channelsJoined.push({
+    numChannelsJoined: channelsJoined + 1,
+    timeStamp: Date.now(),
+  });
+  data.users[userIndex].userStats.involvementRate = calculateInvolvementRate(uId, 1, 1);
 
   setData(data);
 

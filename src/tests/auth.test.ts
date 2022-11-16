@@ -189,6 +189,7 @@ describe('Test authLogout', () => {
     expect(requestAuthLogout(user1login2.token)).toEqual(403);
   });
 });
+
 /*
 describe('Test authPasswordResetRequest', () => {
   beforeEach(() => {
