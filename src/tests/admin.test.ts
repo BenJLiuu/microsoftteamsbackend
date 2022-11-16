@@ -47,6 +47,73 @@ describe('Permissions', () => {
   });
 });
 
-describe('Admin User Permission Change', () => {
 
+describe('Test adminUserPermissionChange', () => {
+  const user1: any;
+  const user2: any;
+  const user3: any;
+  beforeEach(() => {
+    requestClear();
+    user1 = requestAuthRegister('global@owner.com', 'password123', 'Global', 'Owner');
+    user2 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    user3 = requestAuthRegister('aliceP@email.com', 'passAlice', 'Alice', 'Person');
+  });
+
+  // Error tests
+
+  test('Test invalid token', () => {
+
+    expect(requestUserPermissionChange(user1.token + 1, user2.authUserId, 1)).toEqual(403);
+  });
+
+  test('Test uid does not refer to a valid user', () => {
+    expect(requestUserPermissionChange(user1.token, 'THIS IS AN INVALID USER ID', 1)).toEqual(400);
+  });
+
+  test('Test uid is only global owner', () => {
+    expect(requestUserPermissionChange(user2.token, user1.authUserId, 2)).toEqual(400);
+  });
+
+  test('Test permission is not valid', () => {
+    expect(requestUserPermissionChange(user1.token, user2.authUserId, 3)).toEqual(400);
+    expect(requestUserPermissionChange(user1.token, user2.authUserId, 0)).toEqual(400);
+  });
+
+  test('Test user already has permission level', () => {
+    expect(requestUserPermissionChange(user1.token, user1.authUserId, 1)).toEqual(400);
+  });
+
+  test('Test user successfully updates permissions', () => {
+    expect(requestUserPermissionChange(user1.token, user2.authUserId, 1)).toStrictEqual({});
+    const channel1 = requestChannelsCreate(user3.token, 'PrivateChannel', false);
+    expect(requestChannelAddOwner(user2.token, channel1.channelId, user2.authUserId)).toStrictEqual({});
+  });
+
+  // Successful Registration tests
+
+  test('Successful Registration', () => {
+    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+
+    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
+
+    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual(
+      {
+        name: 'channel1',
+        isPublic: true,
+        ownerMembers: [{
+          uId: user1.authUserId,
+          nameFirst: 'John',
+          nameLast: 'Smith',
+          email: 'johnS@email.com',
+          handleStr: 'johnsmith',
+        }],
+        allMembers: [{
+          uId: user1.authUserId,
+          nameFirst: 'John',
+          nameLast: 'Smith',
+          email: 'johnS@email.com',
+          handleStr: 'johnsmith',
+        }],
+      });
+  });
 });
