@@ -14,11 +14,28 @@ export function clearV1 (): Empty {
     channels: [],
     sessions: [],
     dms: [],
-    workplaceStats: {
+
+    // DataStats storage
+    workspaceStats: {
       numChannels: 0,
       numDms: 0,
       numMessages: 0,
-      numUsers: 0
+      numUsers: 0,
+      history: {
+        channelsExist: [{
+          numChannelsExist: 0,
+          timeStamp: Date.now()
+        }],
+        dmsExist: [{
+          numDmsExist: 0,
+          timeStamp: Date.now()
+        }],
+        messagesExist: [{
+          numMessagesExist: 0,
+          timeStamp: Date.now()
+        }],
+        utilizationRate: 0
+      }
     }
   });
   return {};

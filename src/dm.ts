@@ -90,7 +90,12 @@ export function dmCreateV2(token: Token, uIds: UIds): {dmId: DmId} {
     }
   }
 
-  data.workplaceStats.numDms++;
+  data.workspaceStats.numDms++;
+  data.workspaceStats.history.dmsExist.push({
+    numDmsExist: data.workspaceStats.numDms,
+    timeStamp: Date.now()
+  });
+
   data.dms.push(newDm);
   setData(data);
 
@@ -154,7 +159,6 @@ export function dmLeaveV2(token: Token, dmId: DmId): Empty {
     timeStamp: Date.now(),
   });
   data.users[userIndex].userStats.involvementRate = calculateInvolvementRate(uId, 0, -1);
-
   setData(data);
 
   return {};
@@ -182,10 +186,14 @@ export function dmRemoveV2(token: Token, dmId: DmId): Empty {
   const dmIndex = data.dms.findIndex(dm => dm.dmId === dmId);
   if (authUserId !== data.dms[dmIndex].owner.uId) throw HTTPError(400, 'Authorised user is not owner of DM.');
 
-  data.workplaceStats.numDms--;
-  // FIXME:
+  data.workspaceStats.numDms--;
+  // FIXME: All users should be updated (not losing a local involvement though!)
   const userStatsIndex = data.users.findIndex(user => user.uId === authUserId);
   data.users[userStatsIndex].userStats.involvementRate = calculateInvolvementRate(authUserId, -1, -1);
+  data.workspaceStats.history.dmsExist.push({
+    numDmsExist: data.workspaceStats.numDms,
+    timeStamp: Date.now()
+  });
   data.dms.splice(dmIndex, 1);
   setData(data);
 
