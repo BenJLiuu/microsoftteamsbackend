@@ -1,8 +1,11 @@
 import {
   requestAuthRegister, requestClear, requestChannelsCreate,
-  requestChannelInvite,
+  requestChannelInvite, requestUserProfile,
   requestChannelRemoveOwner, requestChannelAddOwner,
-  requestUserPermissionChange, adminUserRemove
+  requestUserPermissionChange, requestAdminUserRemove,
+  requestDmMessages, requestMessageSendDm, requestChannelDetails,
+  requestChannelJoin, requestUsersAll, requestDmCreate,
+  requestChannelMessages, requestMessageSend, requestDmDetails
 } from './httpHelper';
 
 describe('Permissions', () => {
@@ -107,36 +110,31 @@ describe('Test adminUserRemove', () => {
   // Error tests
 
   test('Test invalid token', () => {
-    expect(requestadminUserRemove(user1.token + 1, user2.authUserId)).toEqual(403);
+    expect(requestAdminUserRemove(user1.token + 1, user2.authUserId)).toEqual(403);
   });
 
   test('Test invalid permissions to request admin remove', () => {
-    expect(requestadminUserRemove(user3.token, user2.authUserId)).toEqual(403);
+    expect(requestAdminUserRemove(user3.token, user2.authUserId)).toEqual(403);
   });
 
   test('Test uid does not refer to a valid user', () => {
-    expect(requestadminUserRemove(user1.token, 'THIS IS AN INVALID USER ID')).toEqual(400);
+    expect(requestAdminUserRemove(user1.token, 'THIS IS AN INVALID USER ID')).toEqual(400);
   });
 
   test('Test uid is only global owner', () => {
-    expect(requestadminUserRemove(user1.token, user1.authUserId)).toEqual(400);
+    expect(requestAdminUserRemove(user1.token, user1.authUserId)).toEqual(400);
   });
 
   // Success tests
 
   test('Test removed user has updated removed name', () => {
-    expect(requestadminUserRemove(user1.token, user2.authUserId)).toStrictEqual({});
-    expect(requestUserProfile(user1.token, user2.authUserId)).toEqual({
-      user: {
-        uId: user2.authUserId,
-        nameFirst: 'Removed',
-        nameLast: 'user',
-      },
-    });
+    expect(requestAdminUserRemove(user1.token, user2.authUserId)).toStrictEqual({});
+    expect(requestUserProfile(user1.token, user2.authUserId).user.nameFirst).toEqual('Removed');
+    expect(requestUserProfile(user1.token, user2.authUserId).user.nameLast).toEqual('user');
   });
 
   test('Test removed user is not inlcuded in users/all', () => {
-    expect(requestadminUserRemove(user1.token, user2.authUserId)).toStrictEqual({});
+    expect(requestAdminUserRemove(user1.token, user2.authUserId)).toStrictEqual({});
     expect(requestUsersAll(user1.token)).toStrictEqual({
       users: [
         {
@@ -147,7 +145,7 @@ describe('Test adminUserRemove', () => {
           handleStr: expect.any(String),
         },
         {
-          uId: user2.authUserId,
+          uId: user3.authUserId,
           nameFirst: 'Alice',
           nameLast: 'Person',
           email: 'aliceP@email.com',
@@ -160,8 +158,8 @@ describe('Test adminUserRemove', () => {
   test('Test user is removed from channel member', () => {
     const channel1 = requestChannelsCreate(user3.token, 'Channel 1', true);
     requestChannelJoin(user2.token, channel1.channelId);
-    expect(requestadminUserRemove(user1.token, user2.authUserId)).toStrictEqual({});
-    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual(
+    expect(requestAdminUserRemove(user1.token, user2.authUserId)).toStrictEqual({});
+    expect(requestChannelDetails(user3.token, channel1.channelId)).toStrictEqual(
       {
         name: 'Channel 1',
         isPublic: true,
@@ -193,8 +191,8 @@ describe('Test adminUserRemove', () => {
     // This is technically undefined behaviour, but I'm not technically very fussed.
     const channel1 = requestChannelsCreate(user3.token, 'Channel 1', true);
     requestChannelJoin(user2.token, channel1.channelId);
-    expect(requestadminUserRemove(user1.token, user3.authUserId)).toStrictEqual({});
-    expect(requestChannelDetails(user1.token, channel1.channelId)).toStrictEqual(
+    expect(requestAdminUserRemove(user1.token, user3.authUserId)).toStrictEqual({});
+    expect(requestChannelDetails(user2.token, channel1.channelId)).toStrictEqual(
       {
         name: 'Channel 1',
         isPublic: true,
@@ -213,14 +211,14 @@ describe('Test adminUserRemove', () => {
     );
   });
 
-  test('Test user is removed from dm', () => {
-    // This is technically undefined behaviour, but I'm not technically very fussed.
+  test('Test user is removed from dm member', () => {
+    // This is technically undefined behaviour, but I'm technically not very fussed.
     const dm1 = requestDmCreate(user3.token, [user2.authUserId]);
-    expect(requestadminUserRemove(user1.token, user2.authUserId)).toStrictEqual({});
-    expect(requestDmDetails(user1.token, dm1.dmId)).toStrictEqual(
+    expect(requestAdminUserRemove(user1.token, user2.authUserId)).toStrictEqual({});
+    expect(requestDmDetails(user3.token, dm1.dmId)).toStrictEqual(
       {
         name: expect.any(String),
-        members: 
+        members:
         [
           {
             uId: user3.authUserId,
@@ -228,13 +226,6 @@ describe('Test adminUserRemove', () => {
             nameLast: 'Person',
             email: 'aliceP@email.com',
             handleStr: 'aliceperson',
-          },
-          {
-            uId: user2.authUserId,
-            nameFirst: 'John',
-            nameLast: 'Smith',
-            email: 'johnS@email.com',
-            handleStr: 'johnsmith',
           }
         ]
       }
@@ -243,52 +234,34 @@ describe('Test adminUserRemove', () => {
 
   test('Test global owner removed', () => {
     requestUserPermissionChange(user1.token, user2.authUserId, 1);
-    expect(requestadminUserRemove(user1.token, user2.authUserId)).toEqual({});
-    expect(requestUserProfile(user1.token, user2.authUserId)).toEqual({
-      user: {
-        uId: user2.authUserId,
-        nameFirst: 'Removed',
-        nameLast: 'user',
-      },
-    });
+    expect(requestAdminUserRemove(user1.token, user2.authUserId)).toEqual({});
+    expect(requestUserProfile(user1.token, user2.authUserId).user.nameFirst).toEqual('Removed');
+    expect(requestUserProfile(user1.token, user2.authUserId).user.nameLast).toEqual('user');
   });
 
   test('Test original global owner removed', () => {
     requestUserPermissionChange(user1.token, user2.authUserId, 1);
-    expect(requestadminUserRemove(user2.token, user1.authUserId)).toEqual({});
-    expect(requestUserProfile(user2.token, user1.authUserId)).toEqual({
-      user: {
-        uId: user1.authUserId,
-        nameFirst: 'Removed',
-        nameLast: 'user',
-      },
-    });
+    expect(requestAdminUserRemove(user2.token, user1.authUserId)).toEqual({});
+    expect(requestUserProfile(user2.token, user1.authUserId).user.nameFirst).toEqual('Removed');
+    expect(requestUserProfile(user2.token, user1.authUserId).user.nameLast).toEqual('user');
   });
 
   test('Test global owner removes themselves', () => {
-    // This is technically undefined behaviour, but I'm not technically very fussed.
+    // This is technically undefined behaviour, but I'm technically not very fussed.
     requestUserPermissionChange(user1.token, user2.authUserId, 1);
-    expect(requestadminUserRemove(user2.token, user2.authUserId)).toEqual({});
-    expect(requestUserProfile(user1.token, user2.authUserId)).toEqual({
-      user: {
-        uId: user2.authUserId,
-        nameFirst: 'Removed',
-        nameLast: 'user',
-      },
-    });
+    expect(requestAdminUserRemove(user2.token, user2.authUserId)).toEqual({});
+    expect(requestUserProfile(user1.token, user2.authUserId).user.nameFirst).toEqual('Removed');
+    expect(requestUserProfile(user1.token, user2.authUserId).user.nameLast).toEqual('user');
   });
-  
+
   test('Test email is reusable after deletion', () => {
     requestUserPermissionChange(user1.token, user2.authUserId, 1);
-    expect(requestadminUserRemove(user1.token, user2.authUserId)).toEqual({});
+    expect(requestAdminUserRemove(user1.token, user2.authUserId)).toEqual({});
     const user4 = requestAuthRegister('johnS@email.com', 'reusingAn', 'Email', 'ThatWasRemoved');
-    expect(requestUserProfile(user1.token, user2.authUserId)).toEqual({
-      user: {
-        uId: user2.authUserId,
-        nameFirst: 'Removed',
-        nameLast: 'user',
-      },
-    });
+
+    expect(requestUserProfile(user1.token, user2.authUserId).user.nameFirst).toEqual('Removed');
+    expect(requestUserProfile(user1.token, user2.authUserId).user.nameLast).toEqual('user');
+
     expect(requestUserProfile(user1.token, user4.authUserId)).toStrictEqual({
       user: {
         uId: user4.authUserId,
@@ -302,15 +275,12 @@ describe('Test adminUserRemove', () => {
 
   test('Test handle is reusable after deletion', () => {
     requestUserPermissionChange(user1.token, user2.authUserId, 1);
-    expect(requestadminUserRemove(user1.token, user2.authUserId)).toEqual({});
+    expect(requestAdminUserRemove(user1.token, user2.authUserId)).toEqual({});
     const user4 = requestAuthRegister('differentJohn@ggmail.com', 'reusingTheName', 'John', 'Smith');
-    expect(requestUserProfile(user1.token, user2.authUserId)).toEqual({
-      user: {
-        uId: user2.authUserId,
-        nameFirst: 'Removed',
-        nameLast: 'user',
-      },
-    });
+
+    expect(requestUserProfile(user1.token, user2.authUserId).user.nameFirst).toEqual('Removed');
+    expect(requestUserProfile(user1.token, user2.authUserId).user.nameLast).toEqual('user');
+
     expect(requestUserProfile(user1.token, user4.authUserId)).toStrictEqual({
       user: {
         uId: user4.authUserId,
@@ -326,16 +296,16 @@ describe('Test adminUserRemove', () => {
     const channel1 = requestChannelsCreate(user1.token, 'general', true);
     requestChannelJoin(user2.token, channel1.channelId);
     requestMessageSend(user2.token, channel1.channelId, 'test message');
-    expect(requestadminUserRemove(user1.token, user2.authUserId)).toEqual({});
+    expect(requestAdminUserRemove(user1.token, user2.authUserId)).toEqual({});
     const messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
     expect(messageInfo.messages[0].message).toStrictEqual('Removed user');
   });
-  
+
   test('Test messages are deleted in dm', () => {
     const dm1 = requestDmCreate(user3.token, [user2.authUserId]);
     requestMessageSendDm(user2.token, dm1.dmId, 'test message');
-    expect(requestadminUserRemove(user1.token, user2.authUserId)).toEqual({});
-    const messageInfo = requestDmMessages(user1.token, dm1.dmId, 0);
+    expect(requestAdminUserRemove(user1.token, user2.authUserId)).toEqual({});
+    const messageInfo = requestDmMessages(user3.token, dm1.dmId, 0);
     expect(messageInfo.messages[0].message).toStrictEqual('Removed user');
   });
 });

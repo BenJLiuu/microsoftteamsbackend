@@ -31,6 +31,10 @@ export function requestUserPermissionChange(token: string, uId: string, permissi
   return requestHelper('POST', '/admin/userpermission/change/v1', { uId, permissionId }, token);
 }
 
+export function requestAdminUserRemove(token: string, uId: string) {
+  return requestHelper('DELETE', '/admin/user/remove/v1', { uId }, token);
+}
+
 // AUTH
 
 export function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {
