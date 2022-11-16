@@ -112,4 +112,3 @@ export type WorkplaceStats = {
   }[],
   utilizationRate: Rate
 };
-
