@@ -94,6 +94,9 @@ export type UserStats = {
   involvementRate: Rate
 };
 
+export type ActiveStandup = boolean;
+export type TimeFinish = Time;
+
 export type WorkplaceStats = {
   channelsExist: {
     numChannelsExist: number,
@@ -109,3 +112,4 @@ export type WorkplaceStats = {
   }[],
   utilizationRate: Rate
 };
+

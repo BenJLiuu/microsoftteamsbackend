@@ -23,6 +23,9 @@ export type PrivateChannel = {
   ownerMembers: itf.Users,
   allMembers: itf.Users,
   messages: itf.Messages,
+  activeStandup: itf.ActiveStandup,
+  standupTimeFinish: itf.TimeFinish,
+  standupMessage: itf.Message,
 };
 
 export type PrivateDm = {
@@ -94,6 +97,15 @@ export type NotificationsObj = {
   notifications: itf.Notifications,
 };
 
+export type TimeFinishObj = {
+  timeFinish: itf.TimeFinish
+}
+
+export type ActiveStandupObj = {
+  isActive: itf.ActiveStandup,
+  timeFinish: itf.TimeFinish
+}
+
 export type SharedMessageIdObj = {
   sharedMessageId: itf.SharedMessageId
 }
@@ -101,7 +113,6 @@ export type SharedMessageIdObj = {
 export type messages = {
   messages: itf.Messages,
 };
-
 export type UserStatsObj = {
   userStats: itf.UserStats,
 };

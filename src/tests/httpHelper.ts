@@ -208,3 +208,17 @@ export function requestDmMessages(token: string, dmId: number, start: number) {
 export function requestDmRemove(token: string, dmId: number) {
   return requestHelper('DELETE', '/dm/remove/v2', { dmId }, token);
 }
+
+// STANDUP
+
+export function requestStandupStart(token: string, channelId: number, length: number) {
+  return requestHelper('POST', '/standup/start/v1', { channelId, length }, token);
+}
+
+export function requestStandupActive(token: string, channelId: number) {
+  return requestHelper('GET', '/standup/active/v1', { channelId }, token);
+}
+
+export function requestStandupSend(token: string, channelId: number, message: string) {
+  return requestHelper('POST', '/standup/send/v1', { channelId, message }, token);
+}
