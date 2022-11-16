@@ -24,13 +24,11 @@ export function standupStartV1(token: Token, channelId: ChannelId, length: Lengt
   const lengthInMs = length * 1000;
   channel.activeStandup = true;
   channel.standupTimeFinish = newTimeFinish;
-  console.log("STARTING STANDUP with ms: " + lengthInMs);
   setData(data);
   setTimeout(function() {
-    console.log("STOPPING STANDUP");
     endStandup(token, channelId);
   }, lengthInMs);
-  
+
   return { timeFinish: newTimeFinish };
 }
 
