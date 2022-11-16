@@ -27,6 +27,12 @@ function requestHelper(method: HttpVerb, path: string, payload: object, hashedTo
   return JSON.parse(res.getBody('utf-8'));
 }
 
+// ADMIN
+
+export function requestUserPermissionChange(token: string, uId: string, permissionId: string) {
+  return requestHelper('POST', '/channels/create/v3', { uId, permissionId }, token);
+}
+
 // AUTH
 
 export function requestAuthRegister(email: string, password: string, nameFirst: string, nameLast: string) {

@@ -42,6 +42,18 @@ app.get('/echo', (req: Request, res: Response, next) => {
   }
 });
 
+// ADMIN ROUTES
+
+app.post('admin/userpermission/change/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { uId, permissionId } = req.body;
+    res.json(adminUserPermissionChange(token, uId, permissionId));
+  } catch (err) {
+    next(err);
+  }
+});
+
 // AUTH ROUTES
 
 app.post('/auth/login/v3', (req: Request, res: Response, next) => {

@@ -2,6 +2,7 @@ import {
   requestAuthRegister, requestClear, requestChannelsCreate,
   requestChannelInvite,
   requestChannelRemoveOwner, requestChannelAddOwner,
+  requestUserPermissionChange
 } from './httpHelper';
 
 describe('Permissions', () => {
@@ -44,4 +45,8 @@ describe('Permissions', () => {
     expect(requestChannelRemoveOwner(user2.token, public20.channelId, globalOwner.authUserId)).toStrictEqual({});
     expect(requestChannelRemoveOwner(user1.token, private10.channelId, globalOwner.authUserId)).toStrictEqual({});
   });
+});
+
+describe('Admin User Permission Change', () => {
+
 });

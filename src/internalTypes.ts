@@ -2,6 +2,7 @@ import * as itf from './interfaceTypes';
 
 export type HashedToken = number;
 export type HashedPassword = number;
+export type Permission = number;
 
 export type PrivateUser = {
   uId: itf.UId,
@@ -10,7 +11,7 @@ export type PrivateUser = {
   email: itf.Email,
   handleStr: itf.HandleStr,
   passwordHash: HashedPassword,
-  globalPermissions: number,
+  globalPermissions: Permission,
   notifications: itf.Notifications,
   resetCode: string,
   userStats: itf.UserStats
