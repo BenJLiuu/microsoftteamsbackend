@@ -149,7 +149,8 @@ describe('requestDmLeave', () => {
             nameFirst: 'Johnny',
             nameLast: 'Lawrence',
             email: 'johnL@gmail.com',
-            handleStr: 'johnnylawrence'
+            handleStr: 'johnnylawrence',
+            profileImgUrl: expect.any(String),
           }
         ]
       });

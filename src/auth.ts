@@ -8,6 +8,7 @@ import {
   hashCode, validToken, getUserFromEmail,
   validResetCode, validPassword, userStatsConstructor
 } from './helper';
+import { port } from './config.json';
 
 /**
   * Logs in a user and returns their user Id.
@@ -71,12 +72,11 @@ export function authRegisterV3(email: Email, password: Password, nameFirst: Name
     email: email,
     handleStr: handleStr,
     passwordHash: hashCode(password + 'secret'),
-
     // 1 if first UId made, 2 otherwise.
     globalPermissions: newUId === 0 ? 1 : 2,
-
     notifications: [],
     resetCode: '',
+    profileImgUrl: 'https://localhost:' + port + '/default_profile_photo.jpg',
     userStats: userStatsConstructor(),
   });
 

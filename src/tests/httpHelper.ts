@@ -89,6 +89,10 @@ export function requestNotificationsGet(token: string) {
   return requestHelper('GET', '/notifications/get/v1', {}, token);
 }
 
+export function requestUserProfileUploadPhoto(token: string, imgUrl: string, xStart: number, yStart: number, xEnd: number, yEnd: number) {
+  return requestHelper('POST', '/user/profile/uploadphoto/v1', { imgUrl, xStart, yStart, xEnd, yEnd }, token);
+}
+
 export function requestUserStats(token: string) {
   return requestHelper('GET', '/user/stats/v1', {}, token);
 }

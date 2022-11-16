@@ -117,6 +117,7 @@ export function getPublicUser(user: PrivateUser): User {
     nameFirst: user.nameFirst,
     nameLast: user.nameLast,
     handleStr: user.handleStr,
+    profileImgUrl: user.profileImgUrl,
   };
 }
 

@@ -48,6 +48,7 @@ export type User = {
   email: Email,
   handleStr: HandleStr,
   resetCode?: string,
+  profileImgUrl: string,
 };
 export type Users = User[];
 

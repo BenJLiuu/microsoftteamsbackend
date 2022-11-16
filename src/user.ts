@@ -14,7 +14,13 @@ import {
   getUserIdFromToken,
   updateUserDetails,
 } from './helper';
+import { port } from './config.json';
 import HTTPError from 'http-errors';
+import Jimp from 'jimp';
+import request from 'sync-request';
+import sizeOf from 'image-size';
+import fs from 'fs';
+import path from 'path';
 
 /**
   * For a valid user, returns information about a requested valid user profile
@@ -134,4 +140,58 @@ export function userStatsV1 (token: Token): UserStatsObj {
   return {
     userStats: data.users.find(user => user.uId === uId).userStats,
   };
+}
+
+/**
+  * Crops a new photo and sets it as the users profile photo.
+  *
+  * @param {string} token - Token of user sending the request.
+  * @param {number} imgUrl - The URL of the image to be uploaded.
+  * @param {string} xStart - Starting x value for cropping.
+  * @param {number} yStart - Starting y value for cropping.
+  * @param {number} xEnd - Ending x value for cropping.
+  * @param {number} yEnd - Ending y value for cropping.
+  *
+  * @returns {error: 'Invalid dimensions.'}  - Dimensions given were invalid.
+  * @returns {error: 'Invalid Token.'} - token does not correspond to an existing user.
+  * @returns {error: 'Invalid URL.'} - URL given was invalid.
+  * @returns {error: 'Error Encountered.'} - url could not be loaded.
+  * @returns {} - New photo cropped and uploaded.
+*/
+export function userProfileUploadPhotoV1(token: string, imgUrl: string, xStart: number, yStart: number, xEnd: number, yEnd: number): Empty | Error {
+  if (!validToken(token)) throw HTTPError(403, 'Invalid Token.');
+  if (xEnd <= xStart || yEnd <= yStart) throw HTTPError(400, 'Invalid dimensions.');
+  if (Math.sign(xStart) === -1 || Math.sign(yStart) === -1) throw HTTPError(400, 'Invalid dimensions.');
+  if (Math.sign(xEnd) === -1 || Math.sign(yEnd) === -1) throw HTTPError(400, 'Invalid dimensions.');
+  if (!imgUrl.endsWith('.jpg')) throw HTTPError(400, 'Invalid URL.');
+  const randomString = (Math.random() + 1).toString(36).substring(2);
+  const newPhotoUrl = 'imgurl/' + randomString + '.jpg';
+  const url = 'https://localhost:' + port + '/' + newPhotoUrl;
+  const res = request(
+    'GET', imgUrl
+  );
+  if (res.statusCode !== 200) {
+    throw HTTPError(400, 'Invalid URL.');
+  }
+  const body = res.getBody();
+  fs.writeFileSync('imgurl/checkSize.jpg', body, { flag: 'w' });
+  const dimensions = sizeOf('imgurl/checkSize.jpg');
+  fs.unlink(path.join('./imgurl', 'checkSize.jpg'), (err) => {
+    if (err) throw err;
+  });
+  if (xStart >= dimensions.width || xEnd > dimensions.width) throw HTTPError(400, 'Invalid dimensions.');
+  if (yStart >= dimensions.height || yEnd > dimensions.height) throw HTTPError(400, 'Invalid dimensions.');
+  Jimp.read(imgUrl).then(image => {
+    image.crop(xStart, yStart, (xEnd - xStart), (yEnd - yStart));
+    image.write(newPhotoUrl);
+  })
+    .catch(err => {
+      throw HTTPError(400, 'Error Encountered.');
+    });
+  const data = getData();
+  const userId = getUserIdFromToken(token);
+  data.users.find(user => user.uId === userId).profileImgUrl = url;
+  setData(data);
+  updateUserDetails(userId);
+  return {};
 }

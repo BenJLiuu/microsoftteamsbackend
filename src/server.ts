@@ -11,7 +11,7 @@ import { channelDetailsV3, channelJoinV3, channelInviteV3, channelMessagesV3, ch
 import { echo } from './echo';
 import { clearV1 } from './other';
 import { usersAllV2, usersStatsV1 } from './users';
-import { userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2, userProfileV3, userStatsV1 } from './user';
+import { userProfileSetNameV2, userProfileSetEmailV2, userProfileSetHandleV2, userProfileV3, userStatsV1, userProfileUploadPhotoV1 } from './user';
 import { dmCreateV2, dmListV2, dmLeaveV2, dmMessagesV2, dmDetailsV2, dmRemoveV2 } from './dm';
 import {
   notificationsGetV1, messageSendDmV2, messageSendV2,
@@ -436,6 +436,16 @@ app.get('/notifications/get/v1', (req: Request, res: Response, next) => {
   try {
     const token = req.header('token') as string;
     res.json(notificationsGetV1(token));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/user/profile/uploadphoto/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { imgUrl, xStart, yStart, xEnd, yEnd } = req.body;
+    res.json(userProfileUploadPhotoV1(token, imgUrl, xStart, yStart, xEnd, yEnd));
   } catch (err) {
     next(err);
   }

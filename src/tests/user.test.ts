@@ -3,7 +3,7 @@ import {
   requestUserProfileSetEmail, requestUserProfileSetHandle, requestClear,
   requestChannelsCreate, requestChannelJoin, requestChannelDetails,
   requestUserStats, requestChannelLeave, requestDmCreate, requestDmLeave,
-  requestMessageSend, requestMessageRemove, requestMessageSendDm
+  requestMessageSend, requestMessageRemove, requestMessageSendDm, requestUserProfileUploadPhoto
 } from './httpHelper';
 
 describe('Test userProfile', () => {
@@ -32,6 +32,7 @@ describe('Test userProfile', () => {
         nameLast: 'Person',
         email: 'aliceP@fmail.au',
         handleStr: 'aliceperson',
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -47,6 +48,7 @@ describe('Test userProfile', () => {
         nameLast: 'Mate',
         email: 'johnmate@gmail.com',
         handleStr: 'johnmate',
+        profileImgUrl: expect.any(String),
       },
     });
     expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
@@ -56,6 +58,7 @@ describe('Test userProfile', () => {
         nameLast: 'Person',
         email: 'aliceP@fmail.au',
         handleStr: 'aliceperson',
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -95,6 +98,7 @@ describe('Test UserProfileSetName', () => {
           nameLast: 'Pinkman',
           email: 'aliceP@fmail.au',
           handleStr: expect.any(String),
+          profileImgUrl: expect.any(String),
         }
       ]
     });
@@ -135,6 +139,7 @@ describe('Test userProfileSetEmail', () => {
           nameLast: 'Person',
           email: 'new1@gmail.com',
           handleStr: expect.any(String),
+          profileImgUrl: expect.any(String),
         }
       ]
     });
@@ -181,6 +186,7 @@ describe('Test userProfileSetHandle', () => {
           nameLast: 'Person',
           email: 'aliceP@fmail.au',
           handleStr: 'dwight',
+          profileImgUrl: expect.any(String),
         }
       ]
     });
@@ -209,6 +215,7 @@ describe('Test Updating User Info', () => {
           nameLast: 'Person',
           email: 'aliceP@fmail.au',
           handleStr: 'aliceperson',
+          profileImgUrl: expect.any(String),
         }],
         allMembers: [
           {
@@ -217,6 +224,7 @@ describe('Test Updating User Info', () => {
             nameLast: 'Person',
             email: 'aliceP@fmail.au',
             handleStr: 'aliceperson',
+            profileImgUrl: expect.any(String),
           },
           {
             uId: user2.authUserId,
@@ -224,6 +232,7 @@ describe('Test Updating User Info', () => {
             nameLast: 'Scott',
             email: 'michael@gmail.com',
             handleStr: 'michaelscott',
+            profileImgUrl: expect.any(String),
           },
           {
             uId: user3.authUserId,
@@ -231,6 +240,7 @@ describe('Test Updating User Info', () => {
             nameLast: 'Halpert',
             email: 'jimhalp@gmail.com',
             handleStr: 'jimhalpert',
+            profileImgUrl: expect.any(String),
           }
         ],
       }
@@ -255,6 +265,7 @@ describe('Test Updating User Info', () => {
           nameLast: 'Smith',
           email: 'aliceP@fmail.au',
           handleStr: 'aliceperson',
+          profileImgUrl: expect.any(String),
         }],
         allMembers: [
           {
@@ -263,6 +274,7 @@ describe('Test Updating User Info', () => {
             nameLast: 'Smith',
             email: 'aliceP@fmail.au',
             handleStr: 'aliceperson',
+            profileImgUrl: expect.any(String),
           },
           {
             uId: user2.authUserId,
@@ -270,6 +282,7 @@ describe('Test Updating User Info', () => {
             nameLast: 'Scott',
             email: 'michael@gmail.com',
             handleStr: 'michaelscott',
+            profileImgUrl: expect.any(String),
           },
           {
             uId: user3.authUserId,
@@ -277,6 +290,7 @@ describe('Test Updating User Info', () => {
             nameLast: 'Halpert',
             email: 'jimhalp@gmail.com',
             handleStr: 'jimhalpert',
+            profileImgUrl: expect.any(String),
           }
         ],
       }
@@ -301,6 +315,7 @@ describe('Test Updating User Info', () => {
           nameLast: 'Person',
           email: 'aliceP@fmail.au',
           handleStr: 'aliceperson',
+          profileImgUrl: expect.any(String),
         }],
         allMembers: [
           {
@@ -309,6 +324,7 @@ describe('Test Updating User Info', () => {
             nameLast: 'Person',
             email: 'aliceP@fmail.au',
             handleStr: 'aliceperson',
+            profileImgUrl: expect.any(String),
           },
           {
             uId: user2.authUserId,
@@ -316,6 +332,7 @@ describe('Test Updating User Info', () => {
             nameLast: 'Scott',
             email: 'scottywhite@gmail.com',
             handleStr: 'michaelscott',
+            profileImgUrl: expect.any(String),
           },
           {
             uId: user3.authUserId,
@@ -323,6 +340,7 @@ describe('Test Updating User Info', () => {
             nameLast: 'Halpert',
             email: 'jimhalp@gmail.com',
             handleStr: 'jimhalpert',
+            profileImgUrl: expect.any(String),
           }
         ],
       }
@@ -347,6 +365,7 @@ describe('Test Updating User Info', () => {
           nameLast: 'Person',
           email: 'aliceP@fmail.au',
           handleStr: 'aliceperson',
+          profileImgUrl: expect.any(String),
         }],
         allMembers: [
           {
@@ -355,6 +374,7 @@ describe('Test Updating User Info', () => {
             nameLast: 'Person',
             email: 'aliceP@fmail.au',
             handleStr: 'aliceperson',
+            profileImgUrl: expect.any(String),
           },
           {
             uId: user2.authUserId,
@@ -362,6 +382,7 @@ describe('Test Updating User Info', () => {
             nameLast: 'Scott',
             email: 'michael@gmail.com',
             handleStr: 'michaelscott',
+            profileImgUrl: expect.any(String),
           },
           {
             uId: user3.authUserId,
@@ -369,6 +390,7 @@ describe('Test Updating User Info', () => {
             nameLast: 'Halpert',
             email: 'jimhalp@gmail.com',
             handleStr: 'jimhalp',
+            profileImgUrl: expect.any(String),
           }
         ],
       }
@@ -790,6 +812,72 @@ describe('Test userStats', () => {
           }
         ],
         involvementRate: 1
+      },
+    });
+  });
+});
+
+describe('Test userProfileUploadPhoto', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+
+  test('token is invalid', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const URL = 'http://www.traveller.com.au/content/dam/images/h/1/p/q/1/k/image.related.articleLeadwide.620x349.h1pq27.png/1596176460724.jpg';
+    expect(requestUserProfileUploadPhoto(user1.token + '1', URL, 0, 0, 200, 200)).toEqual(403);
+  });
+
+  test('url is invalid', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const URL = 'http://www.testing.com/test.jpg';
+    expect(requestUserProfileUploadPhoto(user1.token, URL, 0, 0, 200, 200)).toEqual(400);
+  });
+
+  test('image is not jpg', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const URL = 'http://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png';
+    expect(requestUserProfileUploadPhoto(user1.token, URL, 0, 0, 200, 200)).toEqual(400);
+  });
+
+  test('invalid dimensions (not within original)', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const URL = 'http://www.traveller.com.au/content/dam/images/h/1/p/q/1/k/image.related.articleLeadwide.620x349.h1pq27.png/1596176460724.jpg';
+    expect(requestUserProfileUploadPhoto(user1.token, URL, 0, 0, 900, 900)).toEqual(400);
+  });
+
+  test('invalid dimensions (not within original)', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const URL = 'http://www.traveller.com.au/content/dam/images/h/1/p/q/1/k/image.related.articleLeadwide.620x349.h1pq27.png/1596176460724.jpg';
+    expect(requestUserProfileUploadPhoto(user1.token, URL, -1, 0, 200, 200)).toEqual(400);
+  });
+
+  test('invalid dimensions (impossible x and y values)', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const URL = 'http://www.traveller.com.au/content/dam/images/h/1/p/q/1/k/image.related.articleLeadwide.620x349.h1pq27.png/1596176460724.jpg';
+    expect(requestUserProfileUploadPhoto(user1.token, URL, 200, 0, 200, 200)).toEqual(400);
+  });
+
+  test('invalid dimensions (impossible x and y values)', () => {
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const URL = 'http://www.traveller.com.au/content/dam/images/h/1/p/q/1/k/image.related.articleLeadwide.620x349.h1pq27.png/1596176460724.jpg';
+    expect(requestUserProfileUploadPhoto(user1.token, URL, 0, 200, 200, 100)).toEqual(400);
+  });
+
+  test('Returns user object for multiple valid users', () => {
+    requestClear();
+    const user1 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user2 = requestAuthRegister('johnmate@gmail.com', 'password123', 'John', 'Mate');
+    const URL = 'http://www.traveller.com.au/content/dam/images/h/1/p/q/1/k/image.related.articleLeadwide.620x349.h1pq27.png/1596176460724.jpg';
+    requestUserProfileUploadPhoto(user1.token, URL, 0, 0, 600, 340);
+    expect(requestUserProfile(user2.token, user1.authUserId)).toStrictEqual({
+      user: {
+        uId: user1.authUserId,
+        nameFirst: 'Alice',
+        nameLast: 'Person',
+        email: 'aliceP@fmail.au',
+        handleStr: 'aliceperson',
+        profileImgUrl: expect.any(String),
       },
     });
   });

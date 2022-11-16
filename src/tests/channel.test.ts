@@ -197,6 +197,8 @@ describe('requestChannelInvite', () => {
 
           handleStr: 'johnsmith',
 
+          profileImgUrl: expect.any(String),
+
         }],
 
         allMembers: [{
@@ -211,6 +213,8 @@ describe('requestChannelInvite', () => {
 
           handleStr: 'johnsmith',
 
+          profileImgUrl: expect.any(String),
+
         },
 
         {
@@ -224,6 +228,8 @@ describe('requestChannelInvite', () => {
           email: 'aliceP@fmail.au',
 
           handleStr: 'aliceperson',
+
+          profileImgUrl: expect.any(String),
 
         }],
       });
@@ -280,6 +286,7 @@ describe('Test requestChannelDetails', () => {
           nameLast: 'Smith',
           email: 'johnS@email.com',
           handleStr: 'johnsmith',
+          profileImgUrl: expect.any(String),
         }],
         allMembers: [{
           uId: user1.authUserId,
@@ -287,6 +294,7 @@ describe('Test requestChannelDetails', () => {
           nameLast: 'Smith',
           email: 'johnS@email.com',
           handleStr: 'johnsmith',
+          profileImgUrl: expect.any(String),
         }],
       });
   });
@@ -366,6 +374,8 @@ describe('requestChannelJoin', () => {
 
             handleStr: 'johnnylawrence',
 
+            profileImgUrl: expect.any(String),
+
           }
 
         ],
@@ -384,6 +394,8 @@ describe('requestChannelJoin', () => {
 
             handleStr: 'johnnylawrence',
 
+            profileImgUrl: expect.any(String),
+
           },
 
           {
@@ -397,6 +409,8 @@ describe('requestChannelJoin', () => {
             email: 'walter@gmail.com',
 
             handleStr: 'waltwhite',
+
+            profileImgUrl: expect.any(String),
 
           }
 
@@ -511,6 +525,8 @@ describe('requestChannelJoin', () => {
 
             handleStr: 'aliceperson',
 
+            profileImgUrl: expect.any(String),
+
           }],
 
           allMembers: [{
@@ -525,6 +541,8 @@ describe('requestChannelJoin', () => {
 
             handleStr: 'johnsmith',
 
+            profileImgUrl: expect.any(String),
+
           },
 
           {
@@ -538,6 +556,8 @@ describe('requestChannelJoin', () => {
             email: 'aliceP@fmail.au',
 
             handleStr: 'aliceperson',
+
+            profileImgUrl: expect.any(String),
 
           }]
         });
@@ -644,6 +664,8 @@ describe('requestChannelJoin', () => {
 
             handleStr: 'johnsmith',
 
+            profileImgUrl: expect.any(String),
+
           },
           {
 
@@ -656,6 +678,8 @@ describe('requestChannelJoin', () => {
             email: 'aliceP@fmail.au',
 
             handleStr: 'aliceperson',
+
+            profileImgUrl: expect.any(String),
 
           }],
 
@@ -671,6 +695,8 @@ describe('requestChannelJoin', () => {
 
             handleStr: 'johnsmith',
 
+            profileImgUrl: expect.any(String),
+
           },
 
           {
@@ -684,6 +710,8 @@ describe('requestChannelJoin', () => {
             email: 'aliceP@fmail.au',
 
             handleStr: 'aliceperson',
+
+            profileImgUrl: expect.any(String),
 
           }]
         });
@@ -749,6 +777,8 @@ describe('requestChannelJoin', () => {
 
             handleStr: 'johnsmith',
 
+            profileImgUrl: expect.any(String),
+
           }],
 
           allMembers: [{
@@ -762,6 +792,8 @@ describe('requestChannelJoin', () => {
             email: 'johnS@email.com',
 
             handleStr: 'johnsmith',
+
+            profileImgUrl: expect.any(String),
 
           }],
         });

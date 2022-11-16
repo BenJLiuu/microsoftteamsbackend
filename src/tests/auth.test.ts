@@ -71,6 +71,7 @@ describe('Test authRegister ', () => {
         nameLast: expect.any(String),
         email: expect.any(String),
         handleStr: 'johnnymate0',
+        profileImgUrl: expect.any(String),
       }
     });
     expect(userConfirm2).toStrictEqual({
@@ -80,6 +81,7 @@ describe('Test authRegister ', () => {
         nameLast: expect.any(String),
         email: expect.any(String),
         handleStr: 'johnnymate1',
+        profileImgUrl: expect.any(String),
       }
     });
   });
