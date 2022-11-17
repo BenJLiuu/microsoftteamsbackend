@@ -608,9 +608,14 @@ export function getChannelFromChannelId(channelId: ChannelId): PrivateChannel {
   return channel;
 }
 
-// Then, at the end of the standup, all buffered messages are packaged into one message,
-// and this packaged message is sent to the channel from the user who started the standup: see section 6.13. for more details.
-// If no standup messages are sent during the standup, no message should be sent at the end.
+/**
+ * Ends standup.
+ *
+ * @param token - token of user who started standup
+ * @param channelId - id of channel that standup is active in
+ *
+ * @returns {Empty} - upon successful ending of standup
+ */
 export function endStandup(token: Token, channelId: ChannelId): Empty {
   const data = getData();
   const standupChannelIndex = data.channels.findIndex(c => c.channelId === channelId);

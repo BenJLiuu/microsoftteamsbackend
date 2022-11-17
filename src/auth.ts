@@ -114,9 +114,7 @@ export function authLogoutV2(token: Token): Empty {
   * @returns {Empty} {} - in all cases.
 */
 export function authPasswordResetRequestV1(email: Email): Empty {
-  if (!validator.isEmail(email)) return {};
   const data = getData();
-  if (!data.users.find((e) => e.email === email)) return {};
   const resetCode = String(Math.floor(100000 + Math.random() * 900000));
   const nodemailer = require('nodemailer');
   const transporter = nodemailer.createTransport({
