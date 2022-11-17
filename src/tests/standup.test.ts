@@ -158,7 +158,7 @@ describe('standupSendV1 tests', () => {
       return new Promise(resolve => setTimeout(resolve, delay));
     }
 
-    await delay(2000);
+    await delay(3000);
 
     expect(requestChannelMessages(user.token, channel.channelId, 0)).toEqual({
       messages: [
