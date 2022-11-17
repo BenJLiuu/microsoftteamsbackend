@@ -331,16 +331,28 @@ describe('requestMessageShare', () => {
     const channel2 = requestChannelsCreate(user2.token, 'channel2', true);
 
     expect(requestMessageShare(user2.token, message1.messageId, '', channel2.channelId, -1)).toEqual(400);
+
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
+    const message2 = requestMessageSendDm(user1.token, dm1.dmId, 'test');
+    const dm2 = requestDmCreate(user3.token, [user2.authUserId]);
+
+    expect(requestMessageShare(user3.token, message2.messageId, '', -1, dm2.dmId)).toEqual(400);
   });
 
   test('Unathorised user not apart of the new channel ', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
     const channel2 = requestChannelsCreate(user2.token, 'channel2', true);
 
     expect(requestMessageShare(user1.token, message1.messageId, '', channel2.channelId, -1)).toEqual(403);
+
+    const dm1 = requestDmCreate(user2.token, [user3.authUserId]);
+
+    expect(requestMessageShare(user1.token, message1.messageId, '', -1, dm1.dmId)).toEqual(403);
   });
 
   // Successful test
@@ -367,7 +379,13 @@ describe('requestMessageShare', () => {
     const message1 = requestMessageSendDm(user1.token, dm1.dmId, 'test');
     requestMessageShare(user1.token, message1.messageId, 'shared', channel1.channelId, -1);
 
-    const messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
+    let messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
+    expect(messageInfo.messages[0].message).toStrictEqual('test shared');
+
+    const dm2 = requestDmCreate(user1.token, uIds);
+    requestMessageShare(user1.token, message1.messageId, 'shared', -1, dm2.dmId);
+
+    messageInfo = requestDmMessages(user1.token, dm2.dmId, 0);
     expect(messageInfo.messages[0].message).toStrictEqual('test shared');
   });
 });
@@ -402,6 +420,12 @@ describe('requestMessageReact', () => {
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
     expect(requestMessageReact(user2.token, message1.messageId, 1)).toEqual(400);
+
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const message2 = requestMessageSendDm(user2.token, dm1.dmId, 'test dm');
+
+    expect(requestMessageReact(user3.token, message2.messageId, 1)).toEqual(400);
   });
 
   test('Invalid react ', () => {
@@ -410,6 +434,12 @@ describe('requestMessageReact', () => {
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
     expect(requestMessageReact(user1.token, message1.messageId, -10)).toEqual(400);
+
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const message2 = requestMessageSendDm(user2.token, dm1.dmId, 'test dm');
+
+    expect(requestMessageReact(user2.token, message2.messageId, -10)).toEqual(400);
   });
 
   test('Already reacted ', () => {
@@ -419,6 +449,13 @@ describe('requestMessageReact', () => {
     requestMessageReact(user1.token, message1.messageId, 1);
 
     expect(requestMessageReact(user1.token, message1.messageId, 1)).toEqual(400);
+
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const message2 = requestMessageSendDm(user2.token, dm1.dmId, 'test dm');
+    requestMessageReact(user2.token, message2.messageId, 1);
+
+    expect(requestMessageReact(user2.token, message2.messageId, 1)).toEqual(400);
   });
 
   // successful tests
@@ -430,6 +467,14 @@ describe('requestMessageReact', () => {
 
     const messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
     expect(messageInfo.messages[0].reacts[0]).toStrictEqual(user1.authUserId);
+
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const message2 = requestMessageSendDm(user2.token, dm1.dmId, 'test dm');
+    requestMessageReact(user2.token, message2.messageId, 1);
+
+    const messageInfoDm = requestDmMessages(user2.token, dm1.dmId, 0);
+    expect(messageInfoDm.messages[0].reacts[0]).toStrictEqual(user2.authUserId);
   });
 });
 
@@ -465,6 +510,12 @@ describe('requestMessageUnreact', () => {
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
     expect(requestMessageUnreact(user2.token, message1.messageId, 1)).toEqual(400);
+
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const message2 = requestMessageSendDm(user2.token, dm1.dmId, 'test dm');
+
+    expect(requestMessageUnreact(user3.token, message2.messageId, 1)).toEqual(400);
   });
 
   test('Invalid react ', () => {
@@ -474,6 +525,12 @@ describe('requestMessageUnreact', () => {
     requestMessageReact(user1.token, message1.messageId, 1);
 
     expect(requestMessageUnreact(user1.token, message1.messageId, -10)).toEqual(400);
+
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const message2 = requestMessageSendDm(user2.token, dm1.dmId, 'test dm');
+
+    expect(requestMessageUnreact(user2.token, message2.messageId, -10)).toEqual(400);
   });
 
   test('Never reacted ', () => {
@@ -482,6 +539,12 @@ describe('requestMessageUnreact', () => {
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
     expect(requestMessageUnreact(user1.token, message1.messageId, 1)).toEqual(400);
+
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const message2 = requestMessageSendDm(user2.token, dm1.dmId, 'test dm');
+
+    expect(requestMessageUnreact(user2.token, message2.messageId, 1)).toEqual(400);
   });
 
   // successful tests
@@ -494,6 +557,15 @@ describe('requestMessageUnreact', () => {
 
     const messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
     expect(messageInfo.messages[0].reacts[0]).toStrictEqual(undefined);
+
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const message2 = requestMessageSendDm(user2.token, dm1.dmId, 'test dm');
+    requestMessageReact(user2.token, message2.messageId, 1);
+    requestMessageUnreact(user2.token, message2.messageId, 1);
+
+    const messageInfoDm = requestDmMessages(user2.token, dm1.dmId, 0);
+    expect(messageInfoDm.messages[0].reacts[0]).toStrictEqual(undefined);
   });
 });
 
@@ -527,6 +599,12 @@ describe('requestMessagePin', () => {
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
     expect(requestMessagePin(user2.token, message1.messageId)).toEqual(400);
+
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const message2 = requestMessageSendDm(user2.token, dm1.dmId, 'test dm');
+
+    expect(requestMessagePin(user3.token, message2.messageId)).toEqual(400);
   });
 
   test('Already pinned', () => {
@@ -536,6 +614,13 @@ describe('requestMessagePin', () => {
     requestMessagePin(user1.token, message1.messageId);
 
     expect(requestMessagePin(user1.token, message1.messageId)).toEqual(400);
+
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const message2 = requestMessageSendDm(user2.token, dm1.dmId, 'test dm');
+    requestMessagePin(user2.token, message2.messageId);
+
+    expect(requestMessagePin(user2.token, message2.messageId)).toEqual(400);
   });
 
   test('Not owner', () => {
@@ -546,6 +631,12 @@ describe('requestMessagePin', () => {
     requestChannelJoin(user2.token, channel1.channelId);
 
     expect(requestMessagePin(user2.token, message1.messageId)).toEqual(403);
+
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId, user3.authUserId]);
+    const message2 = requestMessageSendDm(user1.token, dm1.dmId, 'test dm');
+
+    expect(requestMessagePin(user3.token, message2.messageId)).toEqual(403);
   });
 
   // Successful tests
@@ -555,7 +646,15 @@ describe('requestMessagePin', () => {
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
     requestMessagePin(user1.token, message1.messageId);
 
-    const messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
+    let messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
+    expect(messageInfo.messages[0].isPinned).toStrictEqual(true);
+
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
+    const message2 = requestMessageSendDm(user1.token, dm1.dmId, 'test');
+    requestMessagePin(user1.token, message2.messageId);
+    messageInfo = requestDmMessages(user1.token, dm1.dmId, 0);
+
     expect(messageInfo.messages[0].isPinned).toStrictEqual(true);
   });
 });
@@ -570,6 +669,7 @@ describe('messageUnpin', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    requestMessagePin(user1.token, message1.messageId);
 
     expect(requestMessageUnpin('test', message1.messageId)).toEqual(403);
   });
@@ -588,8 +688,16 @@ describe('messageUnpin', () => {
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
+    requestMessagePin(user1.token, message1.messageId);
 
     expect(requestMessageUnpin(user2.token, message1.messageId)).toEqual(400);
+
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const message2 = requestMessageSendDm(user2.token, dm1.dmId, 'test dm');
+    requestMessagePin(user2.token, message2.messageId);
+
+    expect(requestMessageUnpin(user3.token, message2.messageId)).toEqual(400);
   });
 
   test('Message is not pinned', () => {
@@ -598,6 +706,12 @@ describe('messageUnpin', () => {
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
     expect(requestMessageUnpin(user1.token, message1.messageId)).toEqual(400);
+
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId]);
+    const message2 = requestMessageSendDm(user2.token, dm1.dmId, 'test dm');
+
+    expect(requestMessageUnpin(user2.token, message2.messageId)).toEqual(400);
   });
 
   test('Not owner', () => {
@@ -609,6 +723,13 @@ describe('messageUnpin', () => {
     requestMessagePin(user1.token, message1.messageId);
 
     expect(requestMessageUnpin(user2.token, message1.messageId)).toEqual(403);
+
+    const user3 = requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johnny', 'Mate');
+    const dm1 = requestDmCreate(user2.token, [user1.authUserId, user3.authUserId]);
+    const message2 = requestMessageSendDm(user1.token, dm1.dmId, 'test dm');
+    requestMessagePin(user2.token, message1.messageId);
+
+    expect(requestMessageUnpin(user3.token, message2.messageId)).toEqual(403);
   });
 
   // Successful tests
@@ -618,7 +739,17 @@ describe('messageUnpin', () => {
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
     requestMessagePin(user1.token, message1.messageId);
     requestMessageUnpin(user1.token, message1.messageId);
-    const messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
+    let messageInfo = requestChannelMessages(user1.token, channel1.channelId, 0);
+
+    expect(messageInfo.messages[0].isPinned).toStrictEqual(false);
+
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
+    const message2 = requestMessageSendDm(user1.token, dm1.dmId, 'test');
+    requestMessagePin(user1.token, message2.messageId);
+    requestMessageUnpin(user1.token, message2.messageId);
+    messageInfo = requestDmMessages(user1.token, dm1.dmId, 0);
+
     expect(messageInfo.messages[0].isPinned).toStrictEqual(false);
   });
 });
