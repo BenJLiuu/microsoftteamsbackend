@@ -8,7 +8,7 @@ import {
   requestAuthPasswordResetReset,
 } from './httpHelper';
 
-import { getData, setData } from '../dataStore';
+import { getData } from '../dataStore';
 
 describe('Test authRegister ', () => {
   beforeEach(() => {
@@ -210,8 +210,8 @@ describe('Test authPasswordResetRequest', () => {
 
 describe('Test authPasswordResetReset', () => {
   test('invalid resetCode', () => {
-    const user = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    requestAuthPasswordResetRequest('johnS@email.com')
+    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    requestAuthPasswordResetRequest('johnS@email.com');
     expect(requestAuthPasswordResetReset('1234567', 'validpass')).toEqual(400);
   });
 });
