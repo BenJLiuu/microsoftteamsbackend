@@ -4,9 +4,11 @@ import {
   requestClear,
   requestUserProfile,
   requestAuthLogout,
-  // requestAuthPasswordResetRequest,
-  // requestAuthPasswordResetReset,
+  requestAuthPasswordResetRequest,
+  requestAuthPasswordResetReset,
 } from './httpHelper';
+
+import { getData, setData } from '../dataStore';
 
 describe('Test authRegister ', () => {
   beforeEach(() => {
@@ -45,6 +47,10 @@ describe('Test authRegister ', () => {
 
   test('Test first name contains invalid characters', () => {
     expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'Joh%$y', 'Mate')).toEqual(400);
+  });
+
+  test('Test last name contains invalid characters', () => {
+    expect(requestAuthRegister('johnnymate@gmail.com', 'password123', 'Johy', 'Ma$%te')).toEqual(400);
   });
 
   // Successful Registration tests
@@ -190,39 +196,38 @@ describe('Test authLogout', () => {
   });
 });
 
-/*
 describe('Test authPasswordResetRequest', () => {
   beforeEach(() => {
     requestClear();
   });
 
-  test('invalid email', () => {
-    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    expect(requestAuthPasswordResetRequest('johnSS@email.com')).toStrictEqual({});
-    expect(requestAuthPasswordResetRequest('..abc.def@mail')).toStrictEqual({});
-  });
-
   test('successful request', () => {
-    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    const user = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
     expect(requestAuthPasswordResetRequest('johnS@email.com')).toStrictEqual({});
+    expect(requestAuthLogout(user.token)).toEqual(403);
   });
 });
 
 describe('Test authPasswordResetReset', () => {
-  beforeEach(() => {
-    requestClear();
-  });
-
-  test('New password is too short', () => {
-    requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    requestAuthPasswordResetRequest('johnS@email.com');
-    expect(requestAuthPasswordResetReset('valid', 'short')).toEqual(400);
-  });
-
-  test('successful reset', () => {
-    const user1 = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
-    requestAuthPasswordResetRequest('johnS@email.com');
-    expect(requestAuthLogout(user1.token)).toEqual(403);
+  test('invalid resetCode', () => {
+    const user = requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+    requestAuthPasswordResetRequest('johnS@email.com')
+    expect(requestAuthPasswordResetReset('1234567', 'validpass')).toEqual(400);
   });
 });
-*/
+
+// WHITEBOX TESTS
+test('successful reset and invalidation', () => {
+  requestClear();
+  requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+  expect(requestAuthPasswordResetReset(getData().users[0].resetCode, 'validpass')).toStrictEqual({});
+  expect(getData().users[0].resetCode === '').toBe(true);
+  requestClear();
+});
+
+test('newPassword is too short', () => {
+  requestClear();
+  requestAuthRegister('johnS@email.com', 'passJohn', 'John', 'Smith');
+  expect(requestAuthPasswordResetReset(getData().users[0].resetCode, 'bad')).toEqual(400);
+  requestClear();
+});
