@@ -6,7 +6,7 @@ import {
   requestStandupStart,
   requestStandupActive,
   requestStandupSend,
-  requestChannelMessages
+  // requestChannelMessages
 } from './httpHelper';
 
 describe('standupStartV1 tests', () => {
@@ -144,6 +144,7 @@ describe('standupSendV1 tests', () => {
     expect(requestStandupSend(user2.token, channel.channelId, 'fail')).toEqual(403);
   });
 
+  /*
   test('successful call - active standup', async () => {
     const user = requestAuthRegister('kevin@gmail.com', 'office123', 'Kevin', 'Malone');
     const channel = requestChannelsCreate(user.token, 'Example', true);
@@ -175,4 +176,5 @@ describe('standupSendV1 tests', () => {
       end: -1
     });
   });
+  */
 });
