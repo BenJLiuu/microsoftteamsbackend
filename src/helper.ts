@@ -615,6 +615,7 @@ export function endStandup(token: Token, channelId: ChannelId): Empty {
   const data = getData();
   const standupChannelIndex = data.channels.findIndex(c => c.channelId === channelId);
   if (!data.channels[standupChannelIndex]) return {};
+  if (!getUserIdFromToken(token)) return {};
   const standupMessage = data.channels[standupChannelIndex].standupMessage.replace(/\n$/, ''); // removes last newline
   // basically messageSendV2(token, channelId, message) WITHOUT NOTIFICATIONS
   const standupMessageId = generateMessageId().messageId;
