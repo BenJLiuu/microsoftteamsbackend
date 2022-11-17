@@ -17,14 +17,22 @@ function requestHelper(method: HttpVerb, path: string, payload: object, hashedTo
   if (hashedToken !== '') {
     headers = { token: hashedToken };
   }
-
   const res = request(method, SERVER_URL + path, { qs, json, headers });
-
   if (res.statusCode !== 200) {
     return res.statusCode;
   }
 
   return JSON.parse(res.getBody('utf-8'));
+}
+
+// ADMIN
+
+export function requestUserPermissionChange(token: string, uId: string, permissionId: number) {
+  return requestHelper('POST', '/admin/userpermission/change/v1', { uId, permissionId }, token);
+}
+
+export function requestAdminUserRemove(token: string, uId: string) {
+  return requestHelper('DELETE', '/admin/user/remove/v1', { uId }, token);
 }
 
 // AUTH

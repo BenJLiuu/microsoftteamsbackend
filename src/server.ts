@@ -4,6 +4,7 @@ import config from './config.json';
 import cors from 'cors';
 import errorHandler from 'middleware-http-errors';
 
+import { adminUserPermissionChange, adminUserRemove } from './admin';
 import { channelsCreateV3, channelsListV3, channelsListAllV3 } from './channels';
 import { authRegisterV3, authLoginV3, authLogoutV2 } from './auth';
 import { channelDetailsV3, channelJoinV3, channelInviteV3, channelMessagesV3, channelLeaveV2, channelRemoveOwnerV2, channelAddOwnerV2 } from './channel';
@@ -37,6 +38,28 @@ app.get('/echo', (req: Request, res: Response, next) => {
   try {
     const data = req.query.echo as string;
     return res.json(echo(data));
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ADMIN ROUTES
+
+app.post('/admin/userpermission/change/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const { uId, permissionId } = req.body;
+    res.json(adminUserPermissionChange(token, uId, permissionId));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.delete('/admin/user/remove/v1', (req: Request, res: Response, next) => {
+  try {
+    const token = req.header('token') as string;
+    const uId = req.query.uId as string;
+    res.json(adminUserRemove(token, uId ? parseInt(uId) : undefined));
   } catch (err) {
     next(err);
   }

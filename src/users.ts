@@ -16,7 +16,10 @@ export function usersAllV2 (token: Token): {users: Users} {
   const data = getData();
   const users = [];
   for (const user of data.users) {
-    users.push(getPublicUser(user));
+    if (user.passwordHash !== null) {
+      // This if statement is done for admin/removeduser, which sets passwordHash to null.
+      users.push(getPublicUser(user));
+    }
   }
 
   return {
