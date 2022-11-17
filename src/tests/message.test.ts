@@ -164,7 +164,7 @@ describe('requestMessageEdit', () => {
     });
   });
 
-  test('Empty String Inputted', () => {
+  test('Empty String Inputted yo Channel', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
@@ -172,6 +172,37 @@ describe('requestMessageEdit', () => {
     const message3 = requestMessageSend(user1.token, channel1.channelId, 'hello');
     requestMessageEdit(user1.token, message2.messageId, '');
     expect(requestChannelMessages(user1.token, channel1.channelId, 0)).toEqual({
+      messages: [
+        {
+          messageId: message3.messageId,
+          uId: user1.authUserId,
+          message: 'hello',
+          timeSent: expect.any(Number),
+          reacts: [],
+          isPinned: false
+        },
+        {
+          messageId: message1.messageId,
+          uId: user1.authUserId,
+          message: 'test',
+          timeSent: expect.any(Number),
+          reacts: [],
+          isPinned: false
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('Empty String Inputted to Dm', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const dm1 = requestDmCreate(user1.token, []);
+    const message1 = requestMessageSendDm(user1.token, dm1.dmId, 'test');
+    const message2 = requestMessageSendDm(user1.token, dm1.dmId, 'testing');
+    const message3 = requestMessageSendDm(user1.token, dm1.dmId, 'hello');
+    requestMessageEdit(user1.token, message2.messageId, '');
+    expect(requestDmMessages(user1.token, dm1.dmId, 0)).toEqual({
       messages: [
         {
           messageId: message3.messageId,
