@@ -24,6 +24,7 @@ import { standupStartV1, standupActiveV1, standupSendV1 } from './standup';
 
 // Set up web app
 const app = express();
+app.use('/static', express.static('static'));
 // Use middleware that allows us to access the JSON body of requests
 app.use(json());
 // Use middleware that allows for access from other domains

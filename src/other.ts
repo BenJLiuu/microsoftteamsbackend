@@ -41,13 +41,13 @@ export function clearV1 (): Empty {
     }
   });
 
-  const directory = './imgurl';
+  const directory = './static';
 
   fs.readdir(directory, (err, files) => {
     if (err) throw err;
 
     for (const file of files) {
-      if (file !== '.gitkeep') {
+      if (file !== 'default_profile_photo.jpg') {
         fs.unlink(path.join(directory, file), (err) => {
           if (err) throw err;
         });

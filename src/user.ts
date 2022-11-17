@@ -165,8 +165,8 @@ export function userProfileUploadPhotoV1(token: string, imgUrl: string, xStart: 
   if (Math.sign(xEnd) === -1 || Math.sign(yEnd) === -1) throw HTTPError(400, 'Invalid dimensions.');
   if (!imgUrl.endsWith('.jpg')) throw HTTPError(400, 'Invalid URL.');
   const randomString = (Math.random() + 1).toString(36).substring(2);
-  const newPhotoUrl = 'imgurl/' + randomString + '.jpg';
-  const url = 'https://localhost:' + port + '/' + newPhotoUrl;
+  const newPhotoUrl = 'static/' + randomString + '.jpg';
+  const url = 'http://localhost:' + port + '/' + newPhotoUrl;
   const res = request(
     'GET', imgUrl
   );
@@ -174,9 +174,9 @@ export function userProfileUploadPhotoV1(token: string, imgUrl: string, xStart: 
     throw HTTPError(400, 'Invalid URL.');
   }
   const body = res.getBody();
-  fs.writeFileSync('imgurl/checkSize.jpg', body, { flag: 'w' });
-  const dimensions = sizeOf('imgurl/checkSize.jpg');
-  fs.unlink(path.join('./imgurl', 'checkSize.jpg'), (err) => {
+  fs.writeFileSync('static/checkSize.jpg', body, { flag: 'w' });
+  const dimensions = sizeOf('static/checkSize.jpg');
+  fs.unlink(path.join('./static', 'checkSize.jpg'), (err) => {
     if (err) throw err;
   });
   if (xStart >= dimensions.width || xEnd > dimensions.width) throw HTTPError(400, 'Invalid dimensions.');
