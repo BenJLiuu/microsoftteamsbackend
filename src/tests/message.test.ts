@@ -566,49 +566,49 @@ describe('messageUnpin', () => {
   });
 
   // error tests
-  test('Invalid token', () => {
+  test('Error cases', () => {
     const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
     const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
 
+    // Invalid token
     expect(requestMessageUnpin('test', message1.messageId)).toEqual(403);
-  });
-
-  test('MessageId is invalid ', () => {
-    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
-    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
-    requestMessagePin(user1.token, message1.messageId);
-
+    // Invalid message id
     expect(requestMessageUnpin(user1.token, message1.messageId + 1)).toEqual(400);
-  });
 
-  test('Unathorised user ', () => {
-    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
     const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
-
+    // Unauthorised user
     expect(requestMessageUnpin(user2.token, message1.messageId)).toEqual(400);
-  });
 
-  test('Message is not pinned', () => {
-    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
-    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
-
+    // Message is not pinned
     expect(requestMessageUnpin(user1.token, message1.messageId)).toEqual(400);
-  });
 
-  test('Not owner', () => {
-    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
-    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
-    const channel1 = requestChannelsCreate(user1.token, 'channel1', true);
-    const message1 = requestMessageSend(user1.token, channel1.channelId, 'test');
     requestChannelJoin(user2.token, channel1.channelId);
     requestMessagePin(user1.token, message1.messageId);
-
+    // User is not owner of channel
     expect(requestMessageUnpin(user2.token, message1.messageId)).toEqual(403);
+
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
+    const message2 = requestMessageSendDm(user1.token, dm1.channelId, 'test');
+
+    // Message is not pinned in dm
+    expect(requestMessageUnpin(user1.token, message2.messageId)).toEqual(400);
+
+    const dm2 = requestDmCreate(user1.token, []);
+    const message3 = requestMessageSendDm(user1.token, dm2.channelId, 'test');
+    requestMessagePin(user1.token, message3.messageId);
+    // User is not in dm
+    expect(requestMessageUnpin(user2.token, message3.messageId)).toEqual(400);
+  });
+
+  test('Message was successful sent in dm', () => {
+    const user1 = requestAuthRegister('johnL@gmail.com', 'password123', 'Johnny', 'Lawrence');
+    const user2 = requestAuthRegister('aliceP@fmail.au', 'alice123', 'Alice', 'Person');
+    const dm1 = requestDmCreate(user1.token, [user2.authUserId]);
+    const message1 = requestMessageSendDm(user1.token, dm1.channelId, 'test');
+    requestMessagePin(user1.token, message1.messageId);
+
+    expect(requestMessageUnpin(user1.token, message1.messageId)).toEqual({});
   });
 
   // Successful tests

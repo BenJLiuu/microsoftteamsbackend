@@ -570,7 +570,9 @@ export function messageUnpinV1(token: string, messageId: number): Empty {
   const data = getData();
 
   const isChannel = checkMessageToChannel(messageId);
+  console.log("UNPINNING MESSAGE ");
   if (isChannel === -1) {
+    console.log("In dm, message pinned " + data.dms[isDm].messages[dmPosition].isPinned);
     const isDm = checkMessageToDm(messageId);
     const dmPosition = data.dms[isDm].messages.findIndex(message => message.messageId === messageId);
     const dmId = data.dms[isDm].dmId;
