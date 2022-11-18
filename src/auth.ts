@@ -76,7 +76,7 @@ export function authRegisterV3(email: Email, password: Password, nameFirst: Name
     globalPermissions: newUId === 0 ? 1 : 2,
     notifications: [],
     resetCode: '',
-    profileImgUrl: 'https://localhost:' + port + '/default_profile_photo.jpg',
+    profileImgUrl: 'http://localhost:' + port + '/static/default_profile_photo.jpg',
     userStats: userStatsConstructor(),
   });
 
