@@ -1,0 +1,370 @@
+
+> start
+> ts-node -T src/server.ts
+
+⚡️ Server listening on port 48237 at localhost
+Invalid User Id.
+[0mDELETE /admin/user/remove/v1?uId=-1 [33m400[0m - ms - 40[0m
+Cannot remove only global owner.
+[0mDELETE /admin/user/remove/v1?uId=0 [33m400[0m - ms - 56[0m
+User does not have required privledges to perform action.
+[0mDELETE /admin/user/remove/v1?uId=0 [33m403[0m - ms - 81[0m
+Invalid Token.
+[0mDELETE /admin/user/remove/v1?uId=1 [33m403[0m - ms - 38[0m
+Cannot demote only global owner to global member.
+[0mPOST /admin/userpermission/change/v1 [33m400[0m - ms - 73[0m
+User does not have required privledges to perform action.
+[0mPOST /admin/userpermission/change/v1 [33m403[0m - ms - 81[0m
+Invalid User Id.
+[0mPOST /admin/userpermission/change/v1 [33m400[0m - ms - 40[0m
+Invalid Permission Id.
+[0mPOST /admin/userpermission/change/v1 [33m400[0m - ms - 46[0m
+Cannot demote only global owner to global member.
+[0mPOST /admin/userpermission/change/v1 [33m400[0m - ms - 73[0m
+Invalid Token.
+[0mPOST /admin/userpermission/change/v1 [33m403[0m - ms - 38[0m
+Invalid Token.
+[0mGET /user/profile/v3?uId=0 [33m403[0m - ms - 38[0m
+Email Not Found.
+[0mPOST /auth/login/v3 [33m400[0m - ms - 40[0m
+Incorrect Password.
+[0mPOST /auth/login/v3 [33m400[0m - ms - 43[0m
+Invalid Token.
+[0mPOST /auth/logout/v2 [33m403[0m - ms - 38[0m
+Invalid Email Address.
+[0mPOST /auth/register/v3 [33m400[0m - ms - 46[0m
+Invalid Email Address.
+[0mPOST /auth/register/v3 [33m400[0m - ms - 46[0m
+Invalid Email Address.
+[0mPOST /auth/register/v3 [33m400[0m - ms - 46[0m
+Password too Short.
+[0mPOST /auth/register/v3 [33m400[0m - ms - 43[0m
+Password too Short.
+[0mPOST /auth/register/v3 [33m400[0m - ms - 43[0m
+Invalid First Name.
+[0mPOST /auth/register/v3 [33m400[0m - ms - 43[0m
+Invalid First Name.
+[0mPOST /auth/register/v3 [33m400[0m - ms - 43[0m
+Invalid Last Name.
+[0mPOST /auth/register/v3 [33m400[0m - ms - 42[0m
+Invalid Last Name.
+[0mPOST /auth/register/v3 [33m400[0m - ms - 42[0m
+Invalid First Name.
+[0mPOST /auth/register/v3 [33m400[0m - ms - 43[0m
+Invalid First Name.
+[0mPOST /auth/register/v3 [33m400[0m - ms - 43[0m
+TypeError: Cannot read properties of undefined (reading 'uId')
+    at authPasswordResetRequestV1 (/import/kamen/3/cs1531/project-automarking/tempstore/src/auth.ts:142:20)
+    at /import/kamen/3/cs1531/project-automarking/tempstore/src/server.ts:101:40
+    at Layer.handle [as handle_request] (/import/kamen/3/cs1531/project-automarking/tempstore/node_modules/express/lib/router/layer.js:95:5)
+    at next (/import/kamen/3/cs1531/project-automarking/tempstore/node_modules/express/lib/router/route.js:144:13)
+    at Route.dispatch (/import/kamen/3/cs1531/project-automarking/tempstore/node_modules/express/lib/router/route.js:114:3)
+    at Layer.handle [as handle_request] (/import/kamen/3/cs1531/project-automarking/tempstore/node_modules/express/lib/router/layer.js:95:5)
+    at /import/kamen/3/cs1531/project-automarking/tempstore/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/import/kamen/3/cs1531/project-automarking/tempstore/node_modules/express/lib/router/index.js:346:12)
+    at next (/import/kamen/3/cs1531/project-automarking/tempstore/node_modules/express/lib/router/index.js:280:10)
+    at cors (/import/kamen/3/cs1531/project-automarking/tempstore/node_modules/cors/lib/index.js:188:7)
+[0mPOST /auth/passwordreset/request/v1 [31m500[0m - ms - 75[0m
+Invalid Token.
+[0mGET /users/all/v2 [33m403[0m - ms - 38[0m
+Invalid Token.
+[0mGET /users/all/v2 [33m403[0m - ms - 38[0m
+New password is too short
+[0mPOST /auth/passwordreset/reset/v1 [33m400[0m - ms - 49[0m
+User is not a Member of this channel.
+[0mPOST /channel/addowner/v2 [33m400[0m - ms - 61[0m
+User is not a Member of this channel.
+[0mPOST /channel/addowner/v2 [33m400[0m - ms - 61[0m
+User is not a Member of this channel.
+[0mPOST /channel/addowner/v2 [33m400[0m - ms - 61[0m
+User is not a Member of this channel.
+[0mPOST /channel/addowner/v2 [33m400[0m - ms - 61[0m
+You do not have the required permissions.
+[0mPOST /channel/addowner/v2 [33m400[0m - ms - 65[0m
+User is already an Owner of this channel.
+[0mPOST /channel/addowner/v2 [33m400[0m - ms - 65[0m
+Invalid User Id.
+[0mPOST /channel/addowner/v2 [33m400[0m - ms - 40[0m
+Invalid Channel Id.
+[0mPOST /channel/addowner/v2 [33m400[0m - ms - 43[0m
+Invalid Token.
+[0mPOST /channel/addowner/v2 [33m403[0m - ms - 38[0m
+Authorised User is not a member.
+[0mGET /channel/details/v3?channelId=0 [33m400[0m - ms - 56[0m
+Invalid Channel Id.
+[0mGET /channel/details/v3?channelId=-1 [33m400[0m - ms - 43[0m
+Invalid Session Id.
+[0mGET /channel/details/v3?channelId=0 [33m403[0m - ms - 43[0m
+User is already a member.
+[0mPOST /channel/invite/v3 [33m400[0m - ms - 49[0m
+Authorised User is not a member.
+[0mPOST /channel/invite/v3 [33m400[0m - ms - 56[0m
+Invalid Channel Id.
+[0mPOST /channel/invite/v3 [33m400[0m - ms - 43[0m
+Invalid User Id.
+[0mPOST /channel/invite/v3 [33m400[0m - ms - 40[0m
+Invalid Token.
+[0mPOST /channel/invite/v3 [33m403[0m - ms - 38[0m
+You do not have access to this channel.
+[0mPOST /channel/join/v3 [33m400[0m - ms - 63[0m
+You are already a member.
+[0mPOST /channel/join/v3 [33m400[0m - ms - 49[0m
+Invalid Channel Id.
+[0mPOST /channel/join/v3 [33m400[0m - ms - 43[0m
+Invalid Token.
+[0mPOST /channel/join/v3 [33m403[0m - ms - 38[0m
+You are not a member of this channel.
+[0mPOST /channel/leave/v2 [33m400[0m - ms - 61[0m
+Invalid Channel Id.
+[0mPOST /channel/leave/v2 [33m400[0m - ms - 43[0m
+Invalid Token.
+[0mPOST /channel/leave/v2 [33m403[0m - ms - 38[0m
+Start is greater than total messages
+[0mGET /channel/messages/v3?channelId=0&start=21389429 [33m400[0m - ms - 60[0m
+Authorised user is not a channel member
+[0mGET /channel/messages/v3?channelId=0&start=0 [33m400[0m - ms - 63[0m
+Not valid channelId
+[0mGET /channel/messages/v3?channelId=-1&start=0 [33m400[0m - ms - 43[0m
+Invalid Session.
+[0mGET /channel/messages/v3?channelId=0&start=0 [33m403[0m - ms - 40[0m
+You do not have the required permissions.
+[0mPOST /channel/removeowner/v2 [33m400[0m - ms - 65[0m
+You do not have the required permissions.
+[0mPOST /channel/removeowner/v2 [33m400[0m - ms - 65[0m
+User is not a member of this channel.
+[0mPOST /channel/removeowner/v2 [33m400[0m - ms - 61[0m
+Invalid User Id.
+[0mPOST /channel/removeowner/v2 [33m400[0m - ms - 40[0m
+Invalid Channel Id.
+[0mPOST /channel/removeowner/v2 [33m400[0m - ms - 43[0m
+Invalid Token.
+[0mPOST /channel/removeowner/v2 [33m403[0m - ms - 38[0m
+You do not have access to this channel.
+[0mPOST /channel/join/v3 [33m400[0m - ms - 63[0m
+Channel name must be between 1-20 characters.
+[0mPOST /channels/create/v3 [33m400[0m - ms - 69[0m
+Channel name must be between 1-20 characters.
+[0mPOST /channels/create/v3 [33m400[0m - ms - 69[0m
+Channel name must be between 1-20 characters.
+[0mPOST /channels/create/v3 [33m400[0m - ms - 69[0m
+Channel name must be between 1-20 characters.
+[0mPOST /channels/create/v3 [33m400[0m - ms - 69[0m
+Invalid Session Id.
+[0mPOST /channels/create/v3 [33m403[0m - ms - 43[0m
+Invalid Session Id.
+[0mGET /channels/list/v3 [33m403[0m - ms - 43[0m
+Invalid Session Id.
+[0mGET /channels/listAll/v3 [33m403[0m - ms - 43[0m
+Invalid User Id.
+[0mPOST /dm/create/v2 [33m400[0m - ms - 40[0m
+Invalid User Id.
+[0mPOST /dm/create/v2 [33m400[0m - ms - 40[0m
+Duplicate User Id found.
+[0mPOST /dm/create/v2 [33m400[0m - ms - 48[0m
+Invalid Token.
+[0mPOST /dm/create/v2 [33m403[0m - ms - 38[0m
+Authorised user is not a member of the DM.
+[0mGET /dm/details/v2?dmId=0 [33m400[0m - ms - 66[0m
+Invalid DM Id.
+[0mGET /dm/details/v2?dmId=-1 [33m400[0m - ms - 38[0m
+Invalid Token.
+[0mGET /dm/details/v2?dmId=0 [33m403[0m - ms - 38[0m
+Authorised user is not a member of the DM.
+[0mPOST /dm/leave/v2 [33m400[0m - ms - 66[0m
+Invalid DM Id.
+[0mPOST /dm/leave/v2 [33m400[0m - ms - 38[0m
+Invalid Token.
+[0mPOST /dm/leave/v2 [33m403[0m - ms - 38[0m
+Invalid Token.
+[0mGET /dm/list/v2 [33m403[0m - ms - 38[0m
+Error: Message failed: 432 4.3.2 Concurrent connections limit exceeded. Visit https://aka.ms/concurrent_sending for more information. [Hostname=SG2PR01MB4193.apcprd01.prod.exchangelabs.com]
+    at SMTPConnection._formatError (/import/kamen/3/cs1531/project-automarking/tempstore/node_modules/nodemailer/lib/smtp-connection/index.js:790:19)
+    at SMTPConnection._actionSMTPStream (/import/kamen/3/cs1531/project-automarking/tempstore/node_modules/nodemailer/lib/smtp-connection/index.js:1680:34)
+    at SMTPConnection.<anonymous> (/import/kamen/3/cs1531/project-automarking/tempstore/node_modules/nodemailer/lib/smtp-connection/index.js:1158:22)
+    at SMTPConnection._processResponse (/import/kamen/3/cs1531/project-automarking/tempstore/node_modules/nodemailer/lib/smtp-connection/index.js:953:20)
+    at SMTPConnection._onData (/import/kamen/3/cs1531/project-automarking/tempstore/node_modules/nodemailer/lib/smtp-connection/index.js:755:14)
+    at TLSSocket.SMTPConnection._onSocketData (/import/kamen/3/cs1531/project-automarking/tempstore/node_modules/nodemailer/lib/smtp-connection/index.js:193:44)
+    at TLSSocket.emit (node:events:513:28)
+    at TLSSocket.emit (node:domain:489:12)
+    at addChunk (node:internal/streams/readable:324:12)
+    at readableAddChunk (node:internal/streams/readable:297:9) {
+  code: 'EMESSAGE',
+  response: '432 4.3.2 Concurrent connections limit exceeded. Visit https://aka.ms/concurrent_sending for more information. [Hostname=SG2PR01MB4193.apcprd01.prod.exchangelabs.com]',
+  responseCode: 432,
+  command: 'DATA'
+}
+Email sent: 250 2.0.0 OK <SG2PR01MB41934568AACD58D085ACFE6CD2089@SG2PR01MB4193.apcprd01.prod.exchangelabs.com> [Hostname=SG2PR01MB4193.apcprd01.prod.exchangelabs.com]
+Email sent: 250 2.0.0 OK <SG2PR01MB41934C1046141ABB4384A8EED2089@SG2PR01MB4193.apcprd01.prod.exchangelabs.com> [Hostname=SG2PR01MB4193.apcprd01.prod.exchangelabs.com]
+Start is greater than total messages
+[0mGET /dm/messages/v2?dmId=0&start=21389429 [33m400[0m - ms - 60[0m
+Authorised user is not a member of the DM.
+[0mGET /dm/messages/v2?dmId=0&start=0 [33m400[0m - ms - 66[0m
+Invalid DM Id.
+[0mGET /dm/messages/v2?dmId=-1&start=0 [33m400[0m - ms - 38[0m
+Invalid Token.
+[0mGET /dm/messages/v2?dmId=0&start=0 [33m403[0m - ms - 38[0m
+Authorised user is not owner of DM.
+[0mDELETE /dm/remove/v2?dmId=0 [33m400[0m - ms - 59[0m
+Authorised user is not a member of the DM.
+[0mDELETE /dm/remove/v2?dmId=0 [33m400[0m - ms - 66[0m
+Invalid DM Id.
+[0mDELETE /dm/remove/v2?dmId=0 [33m400[0m - ms - 38[0m
+Invalid Token.
+[0mDELETE /dm/remove/v2?dmId=0 [33m403[0m - ms - 38[0m
+Message  not sent by authorised user.
+[0mPUT /message/edit/v2 [33m400[0m - ms - 61[0m
+Message  not sent by authorised user.
+[0mPUT /message/edit/v2 [33m400[0m - ms - 61[0m
+Message size exceeds limit.
+[0mPUT /message/edit/v2 [33m400[0m - ms - 51[0m
+Invalid Message Id.
+[0mPUT /message/edit/v2 [33m400[0m - ms - 43[0m
+Message  not sent by authorised user.
+[0mPUT /message/edit/v2 [33m400[0m - ms - 61[0m
+Invalid Token.
+[0mPUT /message/edit/v2 [33m403[0m - ms - 38[0m
+User does not have permissions.
+[0mPOST /message/pin/v1 [33m403[0m - ms - 55[0m
+Invalid message.
+[0mPOST /message/pin/v1 [33m400[0m - ms - 40[0m
+Message is already pinned.
+[0mPOST /message/pin/v1 [33m400[0m - ms - 50[0m
+User does not have permissions.
+[0mPOST /message/pin/v1 [33m403[0m - ms - 55[0m
+User does not have permissions.
+[0mPOST /message/pin/v1 [33m403[0m - ms - 55[0m
+User does not have permissions.
+[0mPOST /message/pin/v1 [33m403[0m - ms - 55[0m
+User is not a member of the channel.
+[0mPOST /message/pin/v1 [33m400[0m - ms - 60[0m
+Invalid Session.
+[0mPOST /message/pin/v1 [33m403[0m - ms - 40[0m
+Invalid message.
+[0mPOST /message/react/v1 [33m400[0m - ms - 40[0m
+Invalid reactId.
+[0mPOST /message/react/v1 [33m400[0m - ms - 40[0m
+User already reacted to this message.
+[0mPOST /message/react/v1 [33m400[0m - ms - 61[0m
+User is not a member of the channel.
+[0mPOST /message/react/v1 [33m400[0m - ms - 60[0m
+Invalid Session.
+[0mPOST /message/react/v1 [33m403[0m - ms - 40[0m
+Message  not sent by authorised user.
+[0mDELETE /message/remove/v2?messageId=1 [33m400[0m - ms - 61[0m
+Message  not sent by authorised user.
+[0mDELETE /message/remove/v2?messageId=1 [33m400[0m - ms - 61[0m
+Invalid Message Id.
+[0mDELETE /message/remove/v2?messageId=1 [33m400[0m - ms - 43[0m
+Message  not sent by authorised user.
+[0mDELETE /message/remove/v2?messageId=1 [33m400[0m - ms - 61[0m
+Invalid Token.
+[0mDELETE /message/remove/v2?messageId=1 [33m403[0m - ms - 38[0m
+Authorised user is not a channel member
+[0mPOST /message/send/v2 [33m403[0m - ms - 63[0m
+Invalid Channel Id
+[0mPOST /message/send/v2 [33m400[0m - ms - 42[0m
+Message contains too little characters.
+[0mPOST /message/send/v2 [33m400[0m - ms - 63[0m
+Message contains too many characters.
+[0mPOST /message/send/v2 [33m400[0m - ms - 61[0m
+Invalid Session.
+[0mPOST /message/send/v2 [33m403[0m - ms - 40[0m
+Authorised user is not a member of the Dm
+[0mPOST /message/senddm/v2 [33m403[0m - ms - 65[0m
+Invalid Dm Id
+[0mPOST /message/senddm/v2 [33m400[0m - ms - 37[0m
+Message contains too little characters.
+[0mPOST /message/senddm/v2 [33m400[0m - ms - 63[0m
+Message contains too many characters.
+[0mPOST /message/senddm/v2 [33m400[0m - ms - 61[0m
+Invalid Session
+[0mPOST /message/senddm/v2 [33m403[0m - ms - 39[0m
+Authorised user is not a channel member
+[0mPOST /message/sendlater/v1 [33m403[0m - ms - 63[0m
+Invalid time given!
+[0mPOST /message/sendlater/v1 [33m400[0m - ms - 43[0m
+Message contains too little characters.
+[0mPOST /message/sendlater/v1 [33m400[0m - ms - 63[0m
+Message contains too many characters.
+[0mPOST /message/sendlater/v1 [33m400[0m - ms - 61[0m
+Invalid Channel Id
+[0mPOST /message/sendlater/v1 [33m400[0m - ms - 42[0m
+Invalid Session.
+[0mPOST /message/sendlater/v1 [33m403[0m - ms - 40[0m
+Authorised user is not a member of the Dm
+[0mPOST /message/sendlaterdm/v1 [33m403[0m - ms - 65[0m
+Invalid time given!
+[0mPOST /message/sendlaterdm/v1 [33m400[0m - ms - 43[0m
+Message contains too little characters.
+[0mPOST /message/sendlaterdm/v1 [33m400[0m - ms - 63[0m
+Message contains too many characters.
+[0mPOST /message/sendlaterdm/v1 [33m400[0m - ms - 61[0m
+Invalid Dm Id
+[0mPOST /message/sendlaterdm/v1 [33m400[0m - ms - 37[0m
+Invalid Session.
+[0mPOST /message/sendlaterdm/v1 [33m403[0m - ms - 40[0m
+Not a member of the dm.
+[0mPOST /message/share/v1 [33m403[0m - ms - 47[0m
+Not a member of the channel.
+[0mPOST /message/share/v1 [33m403[0m - ms - 52[0m
+Could not find message in channels/dms the user has joined.
+[0mPOST /message/share/v1 [33m400[0m - ms - 83[0m
+Could not find message in the channels/dms the user has joined.
+[0mPOST /message/share/v1 [33m400[0m - ms - 87[0m
+Invalid message.
+[0mPOST /message/share/v1 [33m400[0m - ms - 40[0m
+Message contains too many characters.
+[0mPOST /message/share/v1 [33m400[0m - ms - 61[0m
+Invalid session.
+[0mPOST /message/share/v1 [33m403[0m - ms - 40[0m
+User does not have permissions.
+[0mPOST /message/pin/v1 [33m403[0m - ms - 55[0m
+Invalid message.
+[0mPOST /message/unpin/v1 [33m400[0m - ms - 40[0m
+Message is not currently pinned.
+[0mPOST /message/unpin/v1 [33m400[0m - ms - 56[0m
+User does not have permissions.
+[0mPOST /message/unpin/v1 [33m403[0m - ms - 55[0m
+User does not have permissions.
+[0mPOST /message/unpin/v1 [33m403[0m - ms - 55[0m
+User does not have permissions.
+[0mPOST /message/unpin/v1 [33m403[0m - ms - 55[0m
+User is not a member of the channel.
+[0mPOST /message/unpin/v1 [33m400[0m - ms - 60[0m
+Invalid Session.
+[0mPOST /message/unpin/v1 [33m403[0m - ms - 40[0m
+Invalid message.
+[0mPOST /message/unreact/v1 [33m400[0m - ms - 40[0m
+Invalid reactId.
+[0mPOST /message/unreact/v1 [33m400[0m - ms - 40[0m
+User has not reacted to this message.
+[0mPOST /message/unreact/v1 [33m400[0m - ms - 61[0m
+User is not a member of the channel.
+[0mPOST /message/unreact/v1 [33m400[0m - ms - 60[0m
+Invalid Session.
+[0mPOST /message/unreact/v1 [33m403[0m - ms - 40[0m
+Invalid Token.
+[0mGET /users/all/v2 [33m403[0m - ms - 38[0m
+Invalid Token.
+[0mGET /notifications/get/v1 [33m403[0m - ms - 38[0m
+Query contains too little characters.
+[0mGET /search/v1?queryStr= [33m400[0m - ms - 61[0m
+Query contains too many characters.
+[0mGET /search/v1?queryStr=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa [33m400[0m - ms - 59[0m
+Invalid Session.
+[0mGET /search/v1?queryStr=anything [33m403[0m - ms - 40[0m
+Invalid Token.
+[0mGET /users/all/v2 [33m403[0m - ms - 38[0m
+Invalid Channel Id
+[0mGET /standup/active/v1?channelId=-1 [33m400[0m - ms - 42[0m
+Invalid Session.
+[0mGET /standup/active/v1?channelId=0 [33m403[0m - ms - 40[0m
+/import/kamen/3/cs1531/project-automarking/tempstore/src/helper.ts:30
+  return data.sessions.find(s => s.token === hashedToken).authUserId;
+                                                         ^
+TypeError: Cannot read properties of undefined (reading 'authUserId')
+    at getUserIdFromToken (/import/kamen/3/cs1531/project-automarking/tempstore/src/helper.ts:30:58)
+    at endStandup (/import/kamen/3/cs1531/project-automarking/tempstore/src/helper.ts:629:12)
+    at Timeout._onTimeout (/import/kamen/3/cs1531/project-automarking/tempstore/src/standup.ts:40:15)
+    at listOnTimeout (node:internal/timers:564:17)
+    at processTimers (node:internal/timers:507:7)
